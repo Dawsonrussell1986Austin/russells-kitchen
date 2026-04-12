@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Russell's Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Special+Elite&family=Courier+Prime:wght@400;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --paper: #efe9dd;
+    --dark: #1a1a1a;
+    --brown: #3d2b1f;
+    --red: #8b1a1a;
+    --red-bright: #c0392b;
+    --gold: #c9a84c;
+    --gold-light: #e8d9a0;
+    --green: #2d5016;
+    --border: #c4b998;
+    --text-light: #8a7e6b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    background: var(--cream);
+    color: var(--dark);
+    background-image:
+      radial-gradient(circle at 20px 20px, rgba(0,0,0,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ============ HEADER ============ */
+  header {
+    background: var(--dark);
+    color: var(--cream);
+    text-align: center;
+    padding: 2rem 1rem 0;
+    border-bottom: 4px solid var(--gold);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .diner-sign {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    color: var(--gold);
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    margin-bottom: 0.15rem;
+  }
+  .diner-subtitle {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.95rem;
+    color: var(--gold-light);
+    opacity: 0.8;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+  .diner-border {
+    display: flex; align-items: center; gap: 0.75rem;
+    justify-content: center; margin-bottom: 1rem;
+  }
+  .diner-border .line { flex: 1; max-width: 120px; height: 1px; background: var(--gold); opacity: 0.4; }
+  .diner-border .diamond { color: var(--gold); font-size: 0.6rem; }
+
+  .tabs {
+    display: flex; gap: 0; justify-content: center;
+  }
+  .tab {
+    padding: 0.75rem 2.5rem; cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 0.95rem;
+    text-transform: uppercase; letter-spacing: 3px;
+    border: none; background: none; color: rgba(245,240,232,0.5);
+    transition: all 0.2s; position: relative;
+  }
+  .tab.active {
+    color: var(--gold);
+  }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+    height: 3px; background: var(--gold);
+  }
+  .tab:hover { color: var(--gold-light); }
+
+  /* ============ MAIN ============ */
+  main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ============ MENU HEADER DECORATIONS ============ */
+  .menu-header {
+    text-align: center; margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .menu-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900;
+    color: var(--brown);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 0.25rem;
+  }
+  .menu-header .flourish {
+    color: var(--gold); font-family: 'Special Elite', cursive;
+    font-size: 0.85rem; letter-spacing: 2px;
+  }
+
+  /* ============ STATS ============ */
+  .stats {
+    display: flex; gap: 0; justify-content: center; margin-bottom: 2rem;
+    border: 2px solid var(--brown); border-radius: 0;
+    background: var(--paper);
+  }
+  .stat-card {
+    flex: 1; text-align: center; padding: 1rem;
+    border-right: 1px solid var(--border);
+  }
+  .stat-card:last-child { border-right: none; }
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; color: var(--red);
+  }
+  .stat-card .label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--text-light);
+  }
+
+  /* ============ SEARCH & FILTERS ============ */
+  .controls {
+    display: flex; gap: 0.75rem; margin-bottom: 2rem;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .search-box {
+    flex: 1; min-width: 220px; max-width: 400px;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--brown); background: var(--paper);
+    font-family: 'Special Elite', cursive; font-size: 0.95rem;
+    color: var(--brown); outline: none;
+  }
+  .search-box::placeholder { color: var(--text-light); }
+  .search-box:focus { border-color: var(--gold); }
+  .filter-btn {
+    padding: 0.5rem 1.2rem; border: 2px solid var(--brown);
+    background: none; cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--brown); transition: all 0.2s;
+  }
+  .filter-btn.active {
+    background: var(--brown); color: var(--cream);
+  }
+  .filter-btn:hover { background: var(--brown); color: var(--cream); }
+
+  /* ============ CATEGORY SECTIONS ============ */
+  .category-section { margin-bottom: 2.5rem; }
+  .category-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem; position: relative;
+    padding-bottom: 0.5rem;
+  }
+  .category-header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 1px; background: repeating-linear-gradient(90deg, var(--brown), var(--brown) 4px, transparent 4px, transparent 8px);
+  }
+  .category-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 700;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .category-header .count {
+    font-family: 'Oswald', sans-serif;
+    background: var(--red); color: var(--cream);
+    font-size: 0.7rem; padding: 0.15rem 0.6rem;
+    letter-spacing: 1px;
+  }
+
+  /* ============ ITEM GRID ============ */
+  .item-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;
+  }
+  .item-card {
+    background: var(--paper); border: 1.5px solid var(--border);
+    overflow: hidden; cursor: pointer; transition: all 0.2s;
+    position: relative;
+  }
+  .item-card:hover {
+    border-color: var(--brown);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+    transform: translate(-1px, -1px);
+  }
+  .item-card .item-img {
+    width: 100%; height: 160px; object-fit: cover; display: block;
+    filter: sepia(0.1) contrast(1.05);
+    border-bottom: 1.5px solid var(--border);
+  }
+  .item-card .item-body { padding: 0.75rem 0.85rem; }
+  .item-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600; font-size: 0.9rem;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--brown); line-height: 1.3;
+  }
+  .item-brand {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.75rem; color: var(--text-light);
+    margin-top: 0.15rem;
+  }
+  .item-location {
+    display: inline-block; margin-top: 0.35rem;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem; text-transform: uppercase;
+    letter-spacing: 2px; padding: 0.15rem 0.5rem;
+    border: 1px solid var(--gold); color: var(--gold);
+  }
+  .item-nutrition-badge {
+    display: flex; gap: 0.3rem; margin-top: 0.4rem; flex-wrap: wrap;
+  }
+  .nutri-pill {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.6rem; padding: 0.1rem 0.35rem;
+    border: 1px solid var(--border); color: var(--text-light);
+    background: var(--cream);
+  }
+  .nutri-pill.cal { border-color: var(--red); color: var(--red); font-weight: 700; }
+  .item-card .remove-btn {
+    position: absolute; top: 4px; right: 4px;
+    background: var(--dark); border: none; color: var(--cream);
+    cursor: pointer; font-size: 0.65rem; opacity: 0; transition: opacity 0.2s;
+    padding: 0.2rem 0.45rem; font-family: 'Oswald', sans-serif;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .item-card:hover .remove-btn { opacity: 0.8; }
+  .item-card .remove-btn:hover { background: var(--red); opacity: 1; }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(26,26,26,0.8);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--paper); max-width: 480px; width: 92%;
+    max-height: 85vh; overflow-y: auto;
+    border: 3px solid var(--brown); position: relative;
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+  }
+  .modal-img { width: 100%; height: 240px; object-fit: cover; display: block; filter: sepia(0.1); border-bottom: 3px solid var(--brown); }
+  .modal-body { padding: 1.5rem; }
+  .modal-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 900;
+    color: var(--brown); text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .modal-body .brand {
+    font-family: 'Special Elite', cursive;
+    color: var(--text-light); font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .modal-close {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--dark); color: var(--gold);
+    border: 2px solid var(--gold); width: 32px; height: 32px;
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif;
+  }
+  .nutrition-label {
+    border: 3px solid var(--dark); padding: 0.75rem; margin-top: 0.75rem;
+  }
+  .nutrition-label h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 8px solid var(--dark);
+    padding-bottom: 0.25rem; margin-bottom: 0.3rem;
+  }
+  .nutrition-label .serving {
+    font-size: 0.8rem; color: var(--text-light);
+    border-bottom: 4px solid var(--dark);
+    padding-bottom: 0.3rem; margin-bottom: 0.3rem;
+  }
+  .nutrition-table { width: 100%; border-collapse: collapse; }
+  .nutrition-table td {
+    padding: 0.2rem 0; font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nutrition-table td:last-child { text-align: right; font-weight: 700; }
+  .nutrition-table tr.thick td { border-bottom: 4px solid var(--dark); }
+  .nutrition-table tr.med td { border-bottom: 2px solid var(--dark); }
+  .nutrition-table .indent { padding-left: 1rem; font-size: 0.8rem; }
+
+  /* ============ RECIPE CARDS ============ */
+  .recipe-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;
+  }
+  .recipe-card {
+    background: var(--paper); border: 2px solid var(--brown);
+    transition: all 0.2s; overflow: hidden;
+  }
+  .recipe-card:hover {
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.12);
+    transform: translate(-2px, -2px);
+  }
+  .recipe-top {
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .recipe-tag {
+    display: inline-block; font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; padding: 0.2rem 0.6rem; margin-bottom: 0.5rem;
+    border: 1px solid;
+  }
+  .tag-easy { border-color: var(--green); color: var(--green); }
+  .tag-medium { border-color: var(--gold); color: #7a6520; }
+  .tag-quick { border-color: var(--red); color: var(--red); }
+  .recipe-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--brown); margin-bottom: 0.3rem;
+  }
+  .recipe-desc {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8rem; color: var(--text-light); line-height: 1.5;
+  }
+  .recipe-meta {
+    display: flex; gap: 1.5rem; padding: 0.5rem 1.25rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.75rem; color: var(--text-light);
+    border-bottom: 1px dashed var(--border);
+  }
+  .match-pct {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+    padding: 0.2rem 0.5rem; float: right;
+    text-transform: uppercase;
+  }
+  .match-high { background: var(--green); color: var(--cream); }
+  .match-mid { background: var(--gold); color: var(--brown); }
+  .match-low { background: var(--red); color: var(--cream); }
+
+  .recipe-nutrition-summary {
+    padding: 0.85rem 1.25rem; border-bottom: 1px dashed var(--border);
+    background: var(--cream);
+  }
+  .recipe-nutrition-summary h4 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--text-light);
+    margin-bottom: 0.5rem; text-align: center;
+  }
+  .recipe-nutri-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+  }
+  .recipe-nutri-item {
+    text-align: center; padding: 0.5rem;
+    border: 1px solid var(--border); background: var(--paper);
+  }
+  .recipe-nutri-item .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 900; color: var(--red);
+  }
+  .recipe-nutri-item .lbl {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.55rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-light);
+  }
+  .recipe-nutri-total {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.7rem; color: var(--text-light);
+    margin-top: 0.4rem; text-align: center;
+  }
+
+  .recipe-ingredients {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .recipe-ingredients h4 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--text-light);
+    margin-bottom: 0.4rem;
+  }
+  .ingredient-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .ingredient-list li {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.75rem; padding: 0.15rem 0.5rem;
+  }
+  .ingredient-list li.have { background: rgba(45,80,22,0.1); color: var(--green); border: 1px solid var(--green); }
+  .ingredient-list li.need { background: rgba(139,26,26,0.08); color: var(--red); border: 1px solid var(--red); text-decoration: line-through; opacity: 0.7; }
+
+  .recipe-steps {
+    padding: 0.85rem 1.25rem 1.25rem;
+    border-top: 1px dashed var(--border); display: none;
+  }
+  .recipe-steps.open { display: block; }
+  .recipe-steps ol {
+    padding-left: 1.2rem;
+    font-family: 'Special Elite', cursive;
+  }
+  .recipe-steps li { font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.3rem; color: var(--brown); }
+  .toggle-steps {
+    width: 100%; padding: 0.65rem; background: var(--cream); border: none;
+    border-top: 1px dashed var(--border); cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 3px;
+    color: var(--brown); transition: background 0.2s;
+  }
+  .toggle-steps:hover { background: var(--gold-light); }
+
+  /* ============ MANAGE PAGE ============ */
+  .add-section {
+    background: var(--paper); border: 2px solid var(--brown);
+    padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .add-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--brown); text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .add-section p {
+    font-family: 'Special Elite', cursive;
+    color: var(--text-light); font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .form-row input, .form-row select {
+    flex: 1; min-width: 150px; padding: 0.6rem 0.8rem;
+    border: 2px solid var(--border); background: var(--cream);
+    font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+    color: var(--brown);
+  }
+  .form-row input:focus, .form-row select:focus { border-color: var(--brown); outline: none; }
+  .btn {
+    padding: 0.65rem 1.5rem; border: 2px solid var(--brown);
+    font-family: 'Oswald', sans-serif; font-size: 0.85rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--brown); color: var(--cream); }
+  .btn-primary:hover { background: var(--dark); }
+  .btn-outline { background: none; color: var(--brown); }
+  .btn-outline:hover { background: var(--brown); color: var(--cream); }
+
+  .empty-state {
+    text-align: center; padding: 3rem;
+    font-family: 'Special Elite', cursive;
+    color: var(--text-light);
+  }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 600px) {
+    main { padding: 1rem; }
+    .diner-sign { font-size: 1.8rem; letter-spacing: 4px; }
+    .tab { padding: 0.65rem 1.2rem; font-size: 0.8rem; letter-spacing: 2px; }
+    .item-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+    .item-card .item-img { height: 120px; }
+    .recipe-grid { grid-template-columns: 1fr; }
+    .recipe-nutri-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats { flex-wrap: wrap; }
+    .stat-card { min-width: 45%; }
+    .stat-card .num { font-size: 1.5rem; }
+    .menu-header h2 { font-size: 1.4rem; }
+  }
+
+  /* ============ DIVIDER ============ */
+  .diner-divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 2rem 0; color: var(--border);
+  }
+  .diner-divider .line { flex: 1; height: 1px; background: var(--border); }
+  .diner-divider .ornament {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; color: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="diner-border">
+    <span class="line"></span>
+    <span class="diamond">&#9670;</span>
+    <span class="diamond">&#9670;</span>
+    <span class="diamond">&#9670;</span>
+    <span class="line"></span>
+  </div>
+  <div class="diner-sign">Russell's Kitchen</div>
+  <div class="diner-subtitle">~ Est. 2026 ~ Fridge to Table ~</div>
+  <div class="diner-border">
+    <span class="line"></span>
+    <span class="diamond">&#9670;</span>
+    <span class="line"></span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-page="inventory">The Pantry</button>
+    <button class="tab" data-page="recipes">Today's Specials</button>
+    <button class="tab" data-page="manage">Stock Room</button>
+  </div>
+</header>
+
+<!-- Item Detail Modal -->
+<div class="modal-overlay" id="itemModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <img class="modal-img" id="modalImg" src="" alt="">
+    <div class="modal-body">
+      <h2 id="modalName"></h2>
+      <div class="brand" id="modalBrand"></div>
+      <div id="modalLocation" style="margin-bottom:0.5rem;"></div>
+      <div class="nutrition-label">
+        <h3>Nutrition Facts</h3>
+        <div class="serving" id="modalServing"></div>
+        <table class="nutrition-table" id="modalNutrition"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- INVENTORY PAGE -->
+  <div class="page active" id="page-inventory">
+    <div class="menu-header">
+      <h2>What's In Stock</h2>
+      <div class="flourish">~ freshly cataloged from the icebox ~</div>
+    </div>
+    <div class="stats">
+      <div class="stat-card"><div class="num" id="totalCount">0</div><div class="label">Items</div></div>
+      <div class="stat-card"><div class="num" id="categoryCount">0</div><div class="label">Categories</div></div>
+      <div class="stat-card"><div class="num" id="recipeCount">0</div><div class="label">Specials</div></div>
+      <div class="stat-card"><div class="num" id="locationCount">0</div><div class="label">Locations</div></div>
+    </div>
+    <div class="controls">
+      <input class="search-box" type="text" placeholder="Search the pantry..." id="searchInput">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="Fridge">Fridge</button>
+      <button class="filter-btn" data-filter="Pantry">Pantry</button>
+      <button class="filter-btn" data-filter="Freezer">Freezer</button>
+      <button class="filter-btn" data-filter="Counter">Counter</button>
+    </div>
+    <div id="inventoryList"></div>
+  </div>
+
+  <!-- RECIPES PAGE -->
+  <div class="page" id="page-recipes">
+    <div class="menu-header">
+      <h2>Today's Specials</h2>
+      <div class="flourish">~ made with what you've got ~</div>
+    </div>
+    <div class="controls">
+      <input class="search-box" type="text" placeholder="Search the menu..." id="recipeSearch">
+      <button class="filter-btn active" data-rfilter="all">All</button>
+      <button class="filter-btn" data-rfilter="quick">Quick</button>
+      <button class="filter-btn" data-rfilter="easy">Easy</button>
+      <button class="filter-btn" data-rfilter="100">Ready Now</button>
+    </div>
+    <div class="recipe-grid" id="recipeList"></div>
+  </div>
+
+  <!-- MANAGE PAGE -->
+  <div class="page" id="page-manage">
+    <div class="menu-header">
+      <h2>Stock Room</h2>
+      <div class="flourish">~ add your pantry & freezer items here ~</div>
+    </div>
+    <div class="add-section">
+      <h3>Add New Item</h3>
+      <p>Got more photos? Add pantry & freezer items here and the specials board updates automatically.</p>
+      <div class="form-row">
+        <input type="text" id="newName" placeholder="Item name...">
+        <input type="text" id="newBrand" placeholder="Brand (optional)">
+      </div>
+      <div class="form-row">
+        <select id="newCategory">
+          <option value="">Category...</option>
+          <option>Condiments & Sauces</option><option>Dairy & Eggs</option>
+          <option>Produce</option><option>Bread & Bakery</option>
+          <option>Meat & Protein</option><option>Spreads & Nut Butters</option>
+          <option>Baking</option><option>Beverages</option>
+          <option>Canned & Jarred</option><option>Snacks</option>
+          <option>Frozen</option><option>Grains & Pasta</option>
+          <option>Spices & Seasonings</option><option>Oils & Vinegars</option>
+        </select>
+        <select id="newLocation">
+          <option value="">Location...</option>
+          <option>Fridge</option><option>Pantry</option><option>Freezer</option><option>Counter</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="addItem()">Add to Stock</button>
+    </div>
+    <div class="add-section">
+      <h3>Bulk Delivery</h3>
+      <p>One item per line: Name | Category | Location</p>
+      <textarea id="bulkInput" rows="5" style="width:100%;padding:0.75rem;border:2px solid var(--border);font-family:'Courier Prime',monospace;font-size:0.85rem;background:var(--cream);color:var(--brown);" placeholder="Chicken Breast | Meat & Protein | Freezer"></textarea>
+      <button class="btn btn-primary" onclick="bulkAdd()" style="margin-top:0.75rem;">Stock All</button>
+    </div>
+    <div class="add-section">
+      <h3>Import / Export</h3>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
+        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV3');location.reload();}">Fresh Start</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ============================================
+// INVENTORY DATA
+// ============================================
+const INITIAL_INVENTORY = [
+  { name: "Grillo's Pickle Spears", brand: "Grillo's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9872.jpg", nutrition: { servingSize: "1 spear (28g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 280, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Bubbies Kosher Dill Pickles", brand: "Bubbies", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9873.jpg", nutrition: { servingSize: "1 oz (28g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 270, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Bread & Butter Pickle Chips", brand: "Trader Joe's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9874.jpg", nutrition: { servingSize: "1 oz (28g)", calories: 30, totalFat: 0, saturatedFat: 0, sodium: 170, totalCarbs: 7, fiber: 0, sugars: 6, protein: 0 }},
+  { name: "Nacho Sliced Jalapenos", brand: "Rio Luna", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9876.jpg", nutrition: { servingSize: "2 tbsp (30g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 310, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Avocado Oil Mayo", brand: "Primal Kitchen", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9877.jpg", nutrition: { servingSize: "1 tbsp (14g)", calories: 100, totalFat: 11, saturatedFat: 1, sodium: 70, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Kewpie Mayonnaise", brand: "Kewpie", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9905.jpg", nutrition: { servingSize: "1 tbsp (15g)", calories: 100, totalFat: 10, saturatedFat: 1.5, sodium: 80, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Organic Dijon Mustard", brand: "Primal Kitchen", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9879.jpg", nutrition: { servingSize: "1 tsp (5g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 120, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Organic Capers", brand: "365", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9878.jpg", nutrition: { servingSize: "1 tbsp (9g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 255, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Coconut Aminos", brand: "Trader Joe's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9881.jpg", nutrition: { servingSize: "1 tbsp (15ml)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 230, totalCarbs: 5, fiber: 0, sugars: 5, protein: 0 }},
+  { name: "Crystal Hot Sauce", brand: "Crystal", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9882.jpg", nutrition: { servingSize: "1 tsp (5ml)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 130, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Blue Agave Sriracha", brand: "Yellowbird", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9883.jpg", nutrition: { servingSize: "1 tsp (5g)", calories: 10, totalFat: 0, saturatedFat: 0, sodium: 110, totalCarbs: 2, fiber: 0, sugars: 2, protein: 0 }},
+  { name: "Magnifi Sauce", brand: "Trader Joe's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9884.jpg", nutrition: { servingSize: "2 tbsp (30g)", calories: 70, totalFat: 6, saturatedFat: 0.5, sodium: 250, totalCarbs: 4, fiber: 0, sugars: 3, protein: 0 }},
+  { name: "Cholula Original", brand: "Cholula", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9885.jpg", nutrition: { servingSize: "1 tsp (5ml)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 110, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Buffalo Sauce", brand: "Primal Kitchen", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9886.jpg", nutrition: { servingSize: "1 tbsp (15ml)", calories: 10, totalFat: 0.5, saturatedFat: 0, sodium: 390, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "RedHot Buffalo Wings Sauce", brand: "Frank's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9887.jpg", nutrition: { servingSize: "1 tbsp (15ml)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 460, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Organic Ketchup", brand: "Heinz", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9907.jpg", nutrition: { servingSize: "1 tbsp (17g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 160, totalCarbs: 5, fiber: 0, sugars: 4, protein: 0 }},
+  { name: "Texas True BBQ Sauce", brand: "365", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9908.jpg", nutrition: { servingSize: "2 tbsp (36g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 310, totalCarbs: 14, fiber: 0, sugars: 12, protein: 0 }},
+  { name: "Soyaki Teriyaki", brand: "Trader Joe's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9913.jpg", nutrition: { servingSize: "1 tbsp (18g)", calories: 25, totalFat: 0, saturatedFat: 0, sodium: 380, totalCarbs: 5, fiber: 0, sugars: 4, protein: 1 }},
+  { name: "Japanese BBQ Sauce", brand: "Bachan's", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9914.jpg", nutrition: { servingSize: "1 tbsp (18g)", calories: 40, totalFat: 0, saturatedFat: 0, sodium: 310, totalCarbs: 9, fiber: 0, sugars: 8, protein: 1 }},
+  { name: "Marinara Sauce", brand: "Carbone", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9891.jpg", nutrition: { servingSize: "1/2 cup (120g)", calories: 90, totalFat: 5, saturatedFat: 0.5, sodium: 460, totalCarbs: 9, fiber: 2, sugars: 5, protein: 2 }},
+  { name: "The Salsa Boss (Medium)", brand: "The Salsa Boss", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9920.jpg", nutrition: { servingSize: "2 tbsp (30g)", calories: 10, totalFat: 0, saturatedFat: 0, sodium: 140, totalCarbs: 2, fiber: 1, sugars: 1, protein: 0 }},
+  { name: "Organic Maple Syrup", brand: "Kirkland", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9925.jpg", nutrition: { servingSize: "1/4 cup (60ml)", calories: 210, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 54, fiber: 0, sugars: 48, protein: 0 }},
+  { name: "Better Than Bouillon", brand: "Better Than Bouillon", category: "Condiments & Sauces", location: "Fridge", image: "photos/IMG_9912.jpg", nutrition: { servingSize: "1 tsp (6g)", calories: 10, totalFat: 0.5, saturatedFat: 0, sodium: 680, totalCarbs: 1, fiber: 0, sugars: 1, protein: 1 }},
+  { name: "Philadelphia Cream Cheese", brand: "Philadelphia", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9888.jpg", nutrition: { servingSize: "2 tbsp (31g)", calories: 90, totalFat: 8, saturatedFat: 5, sodium: 105, totalCarbs: 1, fiber: 0, sugars: 1, protein: 2 }},
+  { name: "Organic Cottage Cheese", brand: "Kalona SuperNatural", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9894.jpg", nutrition: { servingSize: "1/2 cup (113g)", calories: 90, totalFat: 2.5, saturatedFat: 1.5, sodium: 370, totalCarbs: 4, fiber: 0, sugars: 4, protein: 13 }},
+  { name: "Grated Parmesan", brand: "H-E-B Copper Kettle", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9895.jpg", nutrition: { servingSize: "2 tbsp (10g)", calories: 40, totalFat: 2.5, saturatedFat: 1.5, sodium: 160, totalCarbs: 0, fiber: 0, sugars: 0, protein: 4 }},
+  { name: "Fresh Mozzarella Ciliegine", brand: "H-E-B", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9898.jpg", nutrition: { servingSize: "1 oz (28g)", calories: 70, totalFat: 5, saturatedFat: 3.5, sodium: 105, totalCarbs: 0, fiber: 0, sugars: 0, protein: 5 }},
+  { name: "Fresh Mozzarella Pearls", brand: "Cappiello", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9923.jpg", nutrition: { servingSize: "1 oz (28g)", calories: 70, totalFat: 5, saturatedFat: 3, sodium: 85, totalCarbs: 1, fiber: 0, sugars: 0, protein: 5 }},
+  { name: "Shredded Mozzarella", brand: "H-E-B Organics", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9927.jpg", nutrition: { servingSize: "1/4 cup (28g)", calories: 80, totalFat: 6, saturatedFat: 3.5, sodium: 200, totalCarbs: 1, fiber: 0, sugars: 0, protein: 7 }},
+  { name: "Whole Milk Ricotta", brand: "Galbani", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9916.jpg", nutrition: { servingSize: "1/4 cup (62g)", calories: 90, totalFat: 6, saturatedFat: 4, sodium: 55, totalCarbs: 3, fiber: 0, sugars: 2, protein: 6 }},
+  { name: "Sliced Cheese", brand: "", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9917.jpg", nutrition: { servingSize: "1 slice (21g)", calories: 70, totalFat: 5, saturatedFat: 3, sodium: 250, totalCarbs: 1, fiber: 0, sugars: 0, protein: 4 }},
+  { name: "Unsalted Organic Butter", brand: "Organic", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9915.jpg", nutrition: { servingSize: "1 tbsp (14g)", calories: 100, totalFat: 11, saturatedFat: 7, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Irish Spreadable Butter", brand: "Golden Irish", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9928.jpg", nutrition: { servingSize: "1 tbsp (15g)", calories: 80, totalFat: 9, saturatedFat: 4, sodium: 65, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "A2 Organic Whole Milk", brand: "Kirkland", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9929.jpg", nutrition: { servingSize: "1 cup (240ml)", calories: 150, totalFat: 8, saturatedFat: 5, sodium: 120, totalCarbs: 12, fiber: 0, sugars: 12, protein: 8 }},
+  { name: "Fairlife Fat Free Milk (x2)", brand: "Fairlife", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9931.jpg", nutrition: { servingSize: "1 cup (240ml)", calories: 80, totalFat: 0, saturatedFat: 0, sodium: 120, totalCarbs: 6, fiber: 0, sugars: 6, protein: 13 }},
+  { name: "Greek Yogurt (Plain)", brand: "Kirkland", category: "Dairy & Eggs", location: "Fridge", image: "photos/IMG_9930.jpg", nutrition: { servingSize: "3/4 cup (170g)", calories: 120, totalFat: 5, saturatedFat: 3, sodium: 65, totalCarbs: 6, fiber: 0, sugars: 5, protein: 14 }},
+  { name: "Limes", brand: "", category: "Produce", location: "Fridge", image: "photos/IMG_9909.jpg", nutrition: { servingSize: "1 lime (67g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 1, totalCarbs: 7, fiber: 2, sugars: 1, protein: 0 }},
+  { name: "Mini Sweet Peppers", brand: "H-E-B", category: "Produce", location: "Fridge", image: "photos/IMG_9924.jpg", nutrition: { servingSize: "3 peppers (85g)", calories: 25, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 5, fiber: 1, sugars: 4, protein: 1 }},
+  { name: "Cherry Tomatoes", brand: "Flavor Bombs", category: "Produce", location: "Fridge", image: "photos/IMG_9922.jpg", nutrition: { servingSize: "5 tomatoes (85g)", calories: 15, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 3, fiber: 1, sugars: 2, protein: 1 }},
+  { name: "Castelvetrano Olives", brand: "Divina", category: "Produce", location: "Fridge", image: "photos/IMG_9892.jpg", nutrition: { servingSize: "4 olives (15g)", calories: 25, totalFat: 2.5, saturatedFat: 0.5, sodium: 90, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Hot Dog Buns (8 ct)", brand: "Mrs Baird's", category: "Bread & Bakery", location: "Counter", image: "photos/IMG_9893.jpg", nutrition: { servingSize: "1 bun (43g)", calories: 120, totalFat: 2, saturatedFat: 0, sodium: 210, totalCarbs: 22, fiber: 1, sugars: 3, protein: 4 }},
+  { name: "Flour Tortillas", brand: "Vista Hermosa", category: "Bread & Bakery", location: "Counter", image: "photos/IMG_9910.jpg", nutrition: { servingSize: "1 tortilla (49g)", calories: 140, totalFat: 4, saturatedFat: 1.5, sodium: 330, totalCarbs: 23, fiber: 1, sugars: 1, protein: 3 }},
+  { name: "Organic Flaky Biscuits", brand: "Annie's", category: "Bread & Bakery", location: "Fridge", image: "photos/IMG_9889.jpg", nutrition: { servingSize: "1 biscuit (57g)", calories: 180, totalFat: 7, saturatedFat: 2.5, sodium: 540, totalCarbs: 25, fiber: 0, sugars: 3, protein: 4 }},
+  { name: "Applewood Smoked Bacon", brand: "Organic", category: "Meat & Protein", location: "Fridge", image: "photos/IMG_9921.jpg", nutrition: { servingSize: "2 slices (14g)", calories: 60, totalFat: 4, saturatedFat: 1.5, sodium: 260, totalCarbs: 0, fiber: 0, sugars: 0, protein: 6 }},
+  { name: "Tahini", brand: "Mighty Sesame", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9880.jpg", nutrition: { servingSize: "2 tbsp (30g)", calories: 180, totalFat: 16, saturatedFat: 2, sodium: 80, totalCarbs: 6, fiber: 2, sugars: 0, protein: 5 }},
+  { name: "Fig Butter", brand: "Trader Joe's", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9900.jpg", nutrition: { servingSize: "1 tbsp (18g)", calories: 35, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 9, fiber: 0, sugars: 7, protein: 0 }},
+  { name: "Blackberry Sage Jam", brand: "Van's Jam", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9901.jpg", nutrition: { servingSize: "1 tbsp (20g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 13, fiber: 0, sugars: 12, protein: 0 }},
+  { name: "Wild Blueberry Preserves", brand: "Bonne Maman", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9902.jpg", nutrition: { servingSize: "1 tbsp (20g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 13, fiber: 0, sugars: 12, protein: 0 }},
+  { name: "Concord Grape Spread", brand: "Bonne Maman", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9903.jpg", nutrition: { servingSize: "1 tbsp (20g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 13, fiber: 0, sugars: 11, protein: 0 }},
+  { name: "Almond Butter", brand: "MaraNatha", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9911.jpg", nutrition: { servingSize: "2 tbsp (32g)", calories: 190, totalFat: 17, saturatedFat: 1.5, sodium: 0, totalCarbs: 6, fiber: 3, sugars: 2, protein: 7 }},
+  { name: "Everything Bagel Hummus", brand: "H-E-B Deli", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9899.jpg", nutrition: { servingSize: "2 tbsp (28g)", calories: 45, totalFat: 3, saturatedFat: 0, sodium: 140, totalCarbs: 4, fiber: 1, sugars: 0, protein: 1 }},
+  { name: "Roasted Garlic Hummus", brand: "Trader Joe's", category: "Spreads & Nut Butters", location: "Fridge", image: "photos/IMG_9919.jpg", nutrition: { servingSize: "2 tbsp (28g)", calories: 50, totalFat: 3, saturatedFat: 0, sodium: 125, totalCarbs: 5, fiber: 1, sugars: 0, protein: 2 }},
+  { name: "Active Dry Yeast", brand: "Red Star", category: "Baking", location: "Fridge", image: "photos/IMG_9875.jpg", nutrition: { servingSize: "1 tsp (4g)", calories: 10, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 1 }},
+  { name: "Ground Flaxseed", brand: "Spectrum", category: "Baking", location: "Fridge", image: "photos/IMG_9926.jpg", nutrition: { servingSize: "2 tbsp (13g)", calories: 60, totalFat: 4.5, saturatedFat: 0.5, sodium: 0, totalCarbs: 4, fiber: 3, sugars: 0, protein: 3 }},
+  { name: "Chai Latte Concentrate", brand: "Tazo", category: "Beverages", location: "Fridge", image: "photos/IMG_9918.jpg", nutrition: { servingSize: "3/4 cup (180ml)", calories: 90, totalFat: 0, saturatedFat: 0, sodium: 35, totalCarbs: 21, fiber: 0, sugars: 20, protein: 0 }},
+];
+
+const RECIPES = [
+  { title: "Caprese with Olives & Capers", desc: "Fresh mozzarella, cherry tomatoes, and Castelvetrano olives.", time: "10 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Fresh Mozzarella Ciliegine",amount:4},{item:"Cherry Tomatoes",amount:2},{item:"Castelvetrano Olives",amount:3},{item:"Organic Capers",amount:1},{item:"Limes",amount:1}],
+    extraIngredients: [], steps: ["Halve tomatoes and mozzarella.","Arrange with olives and capers.","Squeeze lime, drizzle olive oil, season."] },
+  { title: "Buffalo Bacon Quesadilla", desc: "Crispy tortilla with bacon, buffalo sauce, and melted cheese.", time: "15 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Flour Tortillas",amount:2},{item:"Applewood Smoked Bacon",amount:3},{item:"Buffalo Sauce",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Avocado Oil Mayo",amount:1}],
+    extraIngredients: [], steps: ["Cook bacon crispy, chop.","Spread mayo on tortilla.","Add cheese, bacon, buffalo sauce.","Fold, cook 3 min/side.","Cut into wedges."] },
+  { title: "Japanese BBQ Wraps", desc: "Asian-fusion wraps with Bachan's and Soyaki teriyaki.", time: "12 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Flour Tortillas",amount:2},{item:"Japanese BBQ Sauce",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Mini Sweet Peppers",amount:2}],
+    extraIngredients: [], steps: ["Slice peppers thin.","Warm tortillas.","Mix sauces.","Layer cheese, peppers, sauce.","Roll and toast seam-down."] },
+  { title: "Ricotta & Fig Toast", desc: "Creamy ricotta and sweet fig butter on flaky biscuits.", time: "8 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Organic Flaky Biscuits",amount:2},{item:"Whole Milk Ricotta",amount:2},{item:"Fig Butter",amount:2},{item:"Blackberry Sage Jam",amount:1}],
+    extraIngredients: [], steps: ["Bake biscuits per package.","Split warm.","Spread ricotta.","Top with fig butter or jam."] },
+  { title: "Sriracha Bacon Dogs", desc: "Hot dogs with bacon, sriracha, and jalapenos.", time: "15 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Hot Dog Buns (8 ct)",amount:4},{item:"Applewood Smoked Bacon",amount:4},{item:"Blue Agave Sriracha",amount:4},{item:"Nacho Sliced Jalapenos",amount:4},{item:"Organic Ketchup",amount:4}],
+    extraIngredients: ["hot dogs"], steps: ["Cook bacon crispy.","Grill hot dogs.","Assemble with toppings.","Drizzle sriracha and ketchup."] },
+  { title: "Cottage Cheese Power Bowl", desc: "High-protein bowl with flaxseed, almond butter, and maple.", time: "5 min", servings: 1, difficulty: "easy",
+    ingredients: [{item:"Organic Cottage Cheese",amount:2},{item:"Almond Butter",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Organic Maple Syrup",amount:0.25}],
+    extraIngredients: [], steps: ["Scoop cottage cheese.","Add almond butter.","Sprinkle flaxseed.","Drizzle maple syrup."] },
+  { title: "Tahini Lime Veggie Bowl", desc: "Creamy tahini dressing with lime over fresh vegetables.", time: "10 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Tahini",amount:1},{item:"Limes",amount:1},{item:"Mini Sweet Peppers",amount:2},{item:"Cherry Tomatoes",amount:2}],
+    extraIngredients: [], steps: ["Whisk tahini with lime and water.","Season with salt.","Slice peppers, halve tomatoes.","Toss with dressing."] },
+  { title: "Cream Cheese Stuffed Peppers", desc: "Mini peppers stuffed with cream cheese, jalapenos, and bacon.", time: "25 min", servings: 4, difficulty: "medium",
+    ingredients: [{item:"Mini Sweet Peppers",amount:3},{item:"Philadelphia Cream Cheese",amount:4},{item:"Nacho Sliced Jalapenos",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Applewood Smoked Bacon",amount:2}],
+    extraIngredients: [], steps: ["Preheat to 400F. Halve peppers.","Mix cream cheese with jalapenos.","Fill peppers.","Top with mozz and bacon.","Bake 15-18 min."] },
+  { title: "Greek Yogurt Parfait", desc: "Protein-packed yogurt with preserves, flax, and maple.", time: "5 min", servings: 1, difficulty: "easy",
+    ingredients: [{item:"Greek Yogurt (Plain)",amount:1},{item:"Wild Blueberry Preserves",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Organic Maple Syrup",amount:0.15}],
+    extraIngredients: [], steps: ["Layer yogurt.","Spoon preserves.","Add flaxseed.","Drizzle maple syrup."] },
+  { title: "Cheesy Marinara Biscuits", desc: "Biscuits baked with Carbone marinara and melted mozzarella.", time: "20 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Marinara Sauce",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"Grated Parmesan",amount:2}],
+    extraIngredients: [], steps: ["Preheat to 375F.","Flatten biscuits.","Spoon marinara.","Top with cheese.","Bake 12-15 min."] },
+  { title: "Hummus & Veggie Wraps", desc: "Quick wraps with two hummus flavors and fresh veggies.", time: "8 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Flour Tortillas",amount:2},{item:"Everything Bagel Hummus",amount:2},{item:"Roasted Garlic Hummus",amount:2},{item:"Mini Sweet Peppers",amount:1},{item:"Cherry Tomatoes",amount:1}],
+    extraIngredients: [], steps: ["Spread hummus on tortillas.","Slice peppers, halve tomatoes.","Layer veggies.","Roll tightly, slice."] },
+  { title: "Almond Butter & Jam Biscuits", desc: "Warm biscuits with almond butter and Bonne Maman.", time: "12 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Almond Butter",amount:2},{item:"Concord Grape Spread",amount:2},{item:"Wild Blueberry Preserves",amount:2}],
+    extraIngredients: [], steps: ["Bake biscuits.","Split warm.","Spread almond butter.","Add preserves.","Press together."] },
+  { title: "Bacon Tomato Mozz Melt", desc: "Open-faced melts with bacon, tomato, and fresh mozzarella.", time: "15 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Hot Dog Buns (8 ct)",amount:4},{item:"Applewood Smoked Bacon",amount:3},{item:"Cherry Tomatoes",amount:2},{item:"Fresh Mozzarella Pearls",amount:3},{item:"Avocado Oil Mayo",amount:2}],
+    extraIngredients: [], steps: ["Cook bacon. Halve tomatoes.","Split buns, spread mayo.","Layer bacon, tomato, mozz.","Broil 2-3 min."] },
+  { title: "Chai Overnight Oats", desc: "Creamy oats infused with Tazo chai and almond butter.", time: "5 min + overnight", servings: 1, difficulty: "easy",
+    ingredients: [{item:"Chai Latte Concentrate",amount:0.5},{item:"Greek Yogurt (Plain)",amount:0.5},{item:"Ground Flaxseed",amount:1},{item:"Almond Butter",amount:0.5},{item:"Organic Maple Syrup",amount:0.15}],
+    extraIngredients: ["rolled oats"], steps: ["Mix oats with chai and yogurt.","Add flaxseed.","Refrigerate overnight.","Top with almond butter and maple."] },
+  { title: "Dijon Parmesan Crisps", desc: "Crispy tortilla chips with Dijon and parmesan.", time: "10 min", servings: 3, difficulty: "easy",
+    ingredients: [{item:"Flour Tortillas",amount:3},{item:"Organic Dijon Mustard",amount:3},{item:"Grated Parmesan",amount:3},{item:"Unsalted Organic Butter",amount:2}],
+    extraIngredients: [], steps: ["Preheat to 400F.","Brush with butter and mustard.","Top with parmesan.","Cut into triangles.","Bake 6-8 min."] },
+  { title: "Coconut Aminos Stir-Fry", desc: "Quick veggie stir-fry with coconut aminos and lime.", time: "15 min", servings: 2, difficulty: "easy",
+    ingredients: [{item:"Coconut Aminos",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Limes",amount:1},{item:"Flour Tortillas",amount:2}],
+    extraIngredients: [], steps: ["Slice peppers.","Stir-fry 3-4 min.","Add aminos and Soyaki.","Squeeze lime.","Serve in warm tortillas."] },
+  { title: "Irish Butter Biscuits", desc: "Warm biscuits with Golden Irish butter and maple.", time: "12 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Irish Spreadable Butter",amount:4},{item:"Organic Maple Syrup",amount:0.25}],
+    extraIngredients: [], steps: ["Bake biscuits.","Split warm.","Spread butter generously.","Drizzle maple."] },
+  { title: "Salsa Cream Cheese Dip", desc: "Tangy cream cheese dip with salsa and jalapenos.", time: "5 min", servings: 6, difficulty: "easy",
+    ingredients: [{item:"Philadelphia Cream Cheese",amount:4},{item:"The Salsa Boss (Medium)",amount:4},{item:"Nacho Sliced Jalapenos",amount:2},{item:"Cholula Original",amount:2}],
+    extraIngredients: [], steps: ["Soften cream cheese.","Spread on plate.","Pour salsa over.","Add jalapenos.","Drizzle Cholula."] },
+  { title: "Kewpie Bacon Tomato Bites", desc: "Cherry tomatoes with Kewpie mayo, bacon, and parmesan.", time: "15 min", servings: 4, difficulty: "easy",
+    ingredients: [{item:"Cherry Tomatoes",amount:3},{item:"Kewpie Mayonnaise",amount:2},{item:"Applewood Smoked Bacon",amount:2},{item:"Grated Parmesan",amount:1}],
+    extraIngredients: [], steps: ["Cook and crumble bacon.","Halve tomatoes.","Dollop Kewpie on each.","Sprinkle bacon and parm."] },
+  { title: "Olive & Mozz Antipasto", desc: "Italian snack plate with olives, mozzarella, and capers.", time: "5 min", servings: 3, difficulty: "easy",
+    ingredients: [{item:"Castelvetrano Olives",amount:4},{item:"Fresh Mozzarella Ciliegine",amount:3},{item:"Fresh Mozzarella Pearls",amount:2},{item:"Organic Capers",amount:1},{item:"Cherry Tomatoes",amount:2}],
+    extraIngredients: [], steps: ["Arrange olives and cheese.","Add capers and tomatoes.","Drizzle olive oil.","Season with pepper."] },
+];
+
+// ============================================
+// APP LOGIC
+// ============================================
+let inventory = [];
+let currentFilter = 'all';
+
+function loadInventory() {
+  const saved = localStorage.getItem('kitchenInventoryV3');
+  inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
+  if (!saved) saveInventory();
+}
+function saveInventory() { localStorage.setItem('kitchenInventoryV3', JSON.stringify(inventory)); }
+function getCategories() {
+  const cats = {};
+  inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
+  return cats;
+}
+function getItemNutrition(name) { return inventory.find(i => i.name === name)?.nutrition || null; }
+function calcRecipeNutrition(r) {
+  let t = { calories:0, totalFat:0, protein:0, totalCarbs:0, fiber:0, sugars:0, sodium:0, saturatedFat:0 };
+  for (const ing of r.ingredients) {
+    const n = getItemNutrition(ing.item);
+    if (n) { const m = ing.amount||1; for (const k in t) t[k] += (n[k]||0)*m; }
+  }
+  for (const k in t) t[k] = Math.round(t[k]);
+  return t;
+}
+
+const ICONS = {"Condiments & Sauces":"\uD83C\uDF36","Dairy & Eggs":"\uD83E\uDDC0","Produce":"\uD83E\uDD66","Bread & Bakery":"\uD83C\uDF5E","Meat & Protein":"\uD83E\uDD69","Spreads & Nut Butters":"\uD83E\uDD5C","Baking":"\uD83E\uDDC1","Beverages":"\u2615","Frozen":"\u2744\uFE0F","Grains & Pasta":"\uD83C\uDF5D"};
+
+function renderInventory(filter, search) {
+  filter = filter || currentFilter; search = search || '';
+  const el = document.getElementById('inventoryList');
+  const cats = getCategories(); const sl = search.toLowerCase();
+  let html = '';
+  for (const cat of Object.keys(cats).sort()) {
+    let items = cats[cat];
+    if (filter !== "all") items = items.filter(i => i.location === filter);
+    if (search) items = items.filter(i => i.name.toLowerCase().includes(sl) || (i.brand||'').toLowerCase().includes(sl));
+    if (!items.length) continue;
+    html += `<div class="category-section"><div class="category-header"><h2>${ICONS[cat]||'\uD83D\uDCE6'} ${cat}</h2><span class="count">${items.length}</span></div><div class="item-grid">`;
+    for (const item of items) {
+      const idx = inventory.indexOf(item); const n = item.nutrition;
+      html += `<div class="item-card" onclick="openItemModal(${idx})">
+        <button class="remove-btn" onclick="event.stopPropagation();removeItem(${idx})">X</button>
+        ${item.image ? `<img class="item-img" src="${item.image}" alt="${item.name}" loading="lazy">` : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--cream);">${ICONS[item.category]||'\uD83D\uDCE6'}</div>`}
+        <div class="item-body">
+          <div class="item-name">${item.name}</div>
+          ${item.brand ? `<div class="item-brand">${item.brand}</div>` : ''}
+          <div class="item-location">${item.location}</div>
+          ${n ? `<div class="item-nutrition-badge">
+            <span class="nutri-pill cal">${n.calories} cal</span>
+            <span class="nutri-pill">${n.protein}g P</span>
+            <span class="nutri-pill">${n.totalCarbs}g C</span>
+            <span class="nutri-pill">${n.totalFat}g F</span>
+          </div>` : ''}
+        </div></div>`;
+    }
+    html += '</div></div>';
+  }
+  if (!html) html = '<div class="empty-state"><div class="icon">\uD83D\uDD0D</div><p>Nothing found, partner</p></div>';
+  el.innerHTML = html;
+  document.getElementById('totalCount').textContent = inventory.length;
+  document.getElementById('categoryCount').textContent = Object.keys(cats).length;
+  document.getElementById('recipeCount').textContent = RECIPES.length;
+  document.getElementById('locationCount').textContent = new Set(inventory.map(i => i.location)).size;
+}
+
+function openItemModal(idx) {
+  const item = inventory[idx]; if (!item) return;
+  document.getElementById('modalImg').src = item.image || '';
+  document.getElementById('modalImg').style.display = item.image ? 'block' : 'none';
+  document.getElementById('modalName').textContent = item.name;
+  document.getElementById('modalBrand').textContent = item.brand ? `${item.brand} \u2022 ${item.category}` : item.category;
+  document.getElementById('modalLocation').innerHTML = `<span class="item-location">${item.location}</span>`;
+  const n = item.nutrition;
+  if (n) {
+    document.getElementById('modalServing').textContent = `Serving Size ${n.servingSize}`;
+    document.getElementById('modalNutrition').innerHTML = `
+      <tr class="thick"><td><strong>Calories</strong></td><td style="font-size:1.2rem;">${n.calories}</td></tr>
+      <tr class="med"><td><strong>Total Fat</strong></td><td>${n.totalFat}g</td></tr>
+      <tr><td class="indent">Saturated Fat</td><td>${n.saturatedFat}g</td></tr>
+      <tr class="med"><td><strong>Sodium</strong></td><td>${n.sodium}mg</td></tr>
+      <tr class="med"><td><strong>Total Carbs</strong></td><td>${n.totalCarbs}g</td></tr>
+      <tr><td class="indent">Dietary Fiber</td><td>${n.fiber}g</td></tr>
+      <tr><td class="indent">Sugars</td><td>${n.sugars}g</td></tr>
+      <tr class="thick"><td><strong>Protein</strong></td><td>${n.protein}g</td></tr>`;
+  } else {
+    document.getElementById('modalServing').textContent = 'Nutrition data not available';
+    document.getElementById('modalNutrition').innerHTML = '';
+  }
+  document.getElementById('itemModal').classList.add('open');
+}
+function closeModal() { document.getElementById('itemModal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function renderRecipes(filter, search) {
+  filter = filter || 'all'; search = search || '';
+  const el = document.getElementById('recipeList');
+  const names = inventory.map(i => i.name); const sl = search.toLowerCase();
+  let recipes = RECIPES.map(r => {
+    const have = r.ingredients.filter(i => names.includes(i.item)).length;
+    return {...r, have, total: r.ingredients.length, matchPct: Math.round(have/r.ingredients.length*100), nutri: calcRecipeNutrition(r)};
+  }).sort((a,b) => b.matchPct - a.matchPct);
+  if (filter==="quick") recipes = recipes.filter(r => parseInt(r.time)<=15);
+  if (filter==="easy") recipes = recipes.filter(r => r.difficulty==="easy");
+  if (filter==="100") recipes = recipes.filter(r => r.matchPct===100 && !r.extraIngredients.length);
+  if (search) recipes = recipes.filter(r => r.title.toLowerCase().includes(sl) || r.ingredients.some(i => i.item.toLowerCase().includes(sl)));
+  let html = '';
+  for (const r of recipes) {
+    const mc = r.matchPct===100?'match-high':r.matchPct>=70?'match-mid':'match-low';
+    const tc = r.difficulty==='easy'?'tag-easy':'tag-medium';
+    const id = r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
+    const n = r.nutri; const ps = {cal:Math.round(n.calories/r.servings),fat:Math.round(n.totalFat/r.servings),pro:Math.round(n.protein/r.servings),carb:Math.round(n.totalCarbs/r.servings)};
+    html += `<div class="recipe-card">
+      <div class="recipe-top">
+        <span class="match-pct ${mc}">${r.matchPct}%</span>
+        ${parseInt(r.time)<=15?'<span class="recipe-tag tag-quick">Quick</span> ':''}<span class="recipe-tag ${tc}">${r.difficulty}</span>
+        <h3 class="recipe-title">${r.title}</h3>
+        <p class="recipe-desc">${r.desc}</p>
+      </div>
+      <div class="recipe-meta"><span>\u23F1 ${r.time}</span><span>\uD83C\uDF7D ${r.servings} srv</span><span>${r.have}/${r.total} on hand</span></div>
+      <div class="recipe-nutrition-summary">
+        <h4>Per Serving</h4>
+        <div class="recipe-nutri-grid">
+          <div class="recipe-nutri-item"><div class="val">${ps.cal}</div><div class="lbl">Cal</div></div>
+          <div class="recipe-nutri-item"><div class="val">${ps.pro}g</div><div class="lbl">Protein</div></div>
+          <div class="recipe-nutri-item"><div class="val">${ps.carb}g</div><div class="lbl">Carbs</div></div>
+          <div class="recipe-nutri-item"><div class="val">${ps.fat}g</div><div class="lbl">Fat</div></div>
+        </div>
+        <p class="recipe-nutri-total">Total: ${n.calories} cal &bull; ${n.sodium}mg sodium &bull; ${n.fiber}g fiber</p>
+      </div>
+      <div class="recipe-ingredients"><h4>Ingredients</h4>
+        <ul class="ingredient-list">
+          ${r.ingredients.map(i=>`<li class="${names.includes(i.item)?'have':'need'}">${i.item}</li>`).join('')}
+          ${r.extraIngredients.map(i=>`<li class="need">${i}</li>`).join('')}
+        </ul>
+      </div>
+      <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
+      <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+    </div>`;
+  }
+  if (!html) html = '<div class="empty-state"><div class="icon">\uD83C\uDF73</div><p>No specials today</p></div>';
+  el.innerHTML = html;
+}
+function toggleSteps(id) { const el=document.getElementById('steps-'+id); if(!el)return; el.classList.toggle('open'); el.previousElementSibling.textContent=el.classList.contains('open')?'Hide Directions':'Show Directions'; }
+function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();} }
+function addItem() {
+  const nm=document.getElementById('newName').value.trim(),br=document.getElementById('newBrand').value.trim(),
+    cat=document.getElementById('newCategory').value,loc=document.getElementById('newLocation').value;
+  if(!nm||!cat||!loc){alert('Fill in name, category, location.');return;}
+  inventory.push({name:nm,brand:br,category:cat,location:loc,image:'',nutrition:null});
+  saveInventory();renderInventory();renderRecipes();
+  document.getElementById('newName').value='';document.getElementById('newBrand').value='';
+  alert(`"${nm}" stocked!`);
+}
+function bulkAdd() {
+  const t=document.getElementById('bulkInput').value.trim(); if(!t)return; let c=0;
+  for(const l of t.split('\n').filter(l=>l.trim())){const p=l.split('|').map(s=>s.trim());if(p[0]){inventory.push({name:p[0],brand:'',category:p[1]||'Uncategorized',location:p[2]||'Pantry',image:'',nutrition:null});c++;}}
+  saveInventory();renderInventory();renderRecipes();document.getElementById('bulkInput').value='';alert(`Stocked ${c} items!`);
+}
+function exportInventory(){const b=new Blob([JSON.stringify(inventory,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kitchen-inventory.json';a.click();}
+function importInventory(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(Array.isArray(d)){inventory=d;saveInventory();renderInventory();renderRecipes();alert(`Imported ${d.length} items!`);}}catch{alert('Bad file.');}};r.readAsText(f);}
+
+// Navigation
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');
+}));
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');currentFilter=b.dataset.filter;renderInventory(currentFilter,document.getElementById('searchInput').value);
+}));
+document.querySelectorAll('[data-rfilter]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-rfilter]').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');renderRecipes(b.dataset.rfilter,document.getElementById('recipeSearch').value);
+}));
+document.getElementById('searchInput').addEventListener('input',e=>renderInventory(currentFilter,e.target.value));
+document.getElementById('recipeSearch').addEventListener('input',e=>{
+  const f=document.querySelector('[data-rfilter].active')?.dataset.rfilter||'all';renderRecipes(f,e.target.value);
+});
+
+document.getElementById('dateStamp')&&(document.getElementById('dateStamp').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
+loadInventory();renderInventory();renderRecipes();
+</script>
+</body>
+</html>
