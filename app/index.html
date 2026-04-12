@@ -480,6 +480,94 @@
   }
   .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
 
+  /* ============ RECIPE PHOTO MODAL ============ */
+  .photo-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    z-index: 300; align-items: center; justify-content: center; cursor: zoom-out;
+  }
+  .photo-modal-overlay.open { display: flex; }
+  .photo-modal-overlay img {
+    max-width: 92vw; max-height: 88vh; object-fit: contain;
+    border: 3px solid var(--gold); box-shadow: 0 0 60px rgba(0,0,0,0.5);
+  }
+  .photo-modal-title {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold);
+    background: rgba(0,0,0,0.7); padding: 0.5rem 1.5rem; border: 1px solid var(--gold);
+  }
+  .recipe-hero { cursor: zoom-in; }
+
+  /* ============ MEAL CATEGORY TAGS ============ */
+  .meal-tag {
+    display: inline-block; font-family: 'Oswald', sans-serif;
+    font-size: 0.55rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; padding: 0.15rem 0.5rem; margin-right: 0.3rem;
+    background: var(--brown); color: var(--gold-light);
+  }
+
+  /* ============ GROCERY LIST ============ */
+  .grocery-section { margin-bottom: 2rem; }
+  .grocery-section h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem;
+    color: var(--brown); margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem; border-bottom: 1px dashed var(--border);
+  }
+  .grocery-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border);
+    background: var(--paper); font-family: 'Courier Prime', monospace;
+    font-size: 0.85rem;
+  }
+  .grocery-item:hover { background: var(--cream); }
+  .grocery-item .item-name-col { flex: 1; font-weight: 700; }
+  .grocery-item .needed-for {
+    font-size: 0.7rem; color: var(--text-light);
+    font-family: 'Special Elite', cursive;
+  }
+  .grocery-item .est-price {
+    font-family: 'Oswald', sans-serif; font-weight: 600;
+    color: var(--green); font-size: 0.85rem;
+  }
+  .grocery-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--green); cursor: pointer;
+  }
+  .grocery-item.checked { opacity: 0.4; text-decoration: line-through; }
+  .budget-card {
+    background: var(--paper); border: 2px solid var(--brown);
+    padding: 1.25rem; margin-bottom: 1rem; text-align: center;
+  }
+  .budget-card h4 {
+    font-family: 'Oswald', sans-serif; text-transform: uppercase;
+    letter-spacing: 3px; font-size: 0.75rem; color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+  .budget-amount {
+    font-family: 'Playfair Display', serif; font-size: 2.2rem;
+    font-weight: 900; color: var(--red);
+  }
+  .budget-detail {
+    font-family: 'Special Elite', cursive; font-size: 0.85rem;
+    color: var(--text-light); margin-top: 0.3rem;
+  }
+  .budget-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .budget-tier {
+    background: var(--paper); border: 2px solid var(--border);
+    padding: 1rem; text-align: center; transition: all 0.2s;
+  }
+  .budget-tier:hover { border-color: var(--brown); }
+  .budget-tier .tier-price {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    font-weight: 900; color: var(--green);
+  }
+  .budget-tier .tier-label {
+    font-family: 'Oswald', sans-serif; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--text-light);
+  }
+  .budget-tier .tier-desc {
+    font-family: 'Special Elite', cursive; font-size: 0.8rem;
+    color: var(--brown); margin-top: 0.3rem;
+  }
+
   /* ============ RESPONSIVE ============ */
   @media (max-width: 600px) {
     main { padding: 1rem; }
@@ -526,10 +614,17 @@
   </div>
   <div class="tabs">
     <button class="tab active" data-page="inventory">The Pantry</button>
-    <button class="tab" data-page="recipes">Today's Specials</button>
+    <button class="tab" data-page="recipes">The Menu</button>
+    <button class="tab" data-page="grocery">Grocery List</button>
     <button class="tab" data-page="manage">Stock Room</button>
   </div>
 </header>
+
+<!-- Recipe Photo Modal -->
+<div class="photo-modal-overlay" id="photoModal" onclick="closePhotoModal()">
+  <img id="photoModalImg" src="" alt="">
+  <div class="photo-modal-title" id="photoModalTitle"></div>
+</div>
 
 <!-- Item Detail Modal -->
 <div class="modal-overlay" id="itemModal" onclick="if(event.target===this)closeModal()">
@@ -576,17 +671,29 @@
   <!-- RECIPES PAGE -->
   <div class="page" id="page-recipes">
     <div class="menu-header">
-      <h2>Today's Specials</h2>
+      <h2>The Menu</h2>
       <div class="flourish">~ made with what you've got ~</div>
     </div>
     <div class="controls">
       <input class="search-box" type="text" placeholder="Search the menu..." id="recipeSearch">
       <button class="filter-btn active" data-rfilter="all">All</button>
-      <button class="filter-btn" data-rfilter="quick">Quick</button>
-      <button class="filter-btn" data-rfilter="easy">Easy</button>
+      <button class="filter-btn" data-rfilter="breakfast">Breakfast</button>
+      <button class="filter-btn" data-rfilter="lunch">Lunch</button>
+      <button class="filter-btn" data-rfilter="dinner">Dinner</button>
+      <button class="filter-btn" data-rfilter="snack">Snacks</button>
       <button class="filter-btn" data-rfilter="100">Ready Now</button>
     </div>
     <div class="recipe-grid" id="recipeList"></div>
+  </div>
+
+  <!-- GROCERY LIST PAGE -->
+  <div class="page" id="page-grocery">
+    <div class="menu-header">
+      <h2>Grocery List</h2>
+      <div class="flourish">~ what you need from H-E-B ~</div>
+    </div>
+    <div class="budget-tiers" id="budgetTiers"></div>
+    <div id="groceryList"></div>
   </div>
 
   <!-- MANAGE PAGE -->
@@ -721,64 +828,64 @@ const INITIAL_INVENTORY = [
 ];
 
 const RECIPES = [
-  { title: "Caprese with Olives & Capers", desc: "Fresh mozzarella, cherry tomatoes, and Castelvetrano olives with a bright lime vinaigrette.", time: "10 min", servings: 2, difficulty: "easy",
+  { title: "Caprese with Olives & Capers", desc: "Fresh mozzarella, cherry tomatoes, and Castelvetrano olives with a bright lime vinaigrette.", time: "10 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
     ingredients: [{item:"Fresh Mozzarella Ciliegine",amount:4},{item:"Cherry Tomatoes",amount:2},{item:"Castelvetrano Olives",amount:3},{item:"Organic Capers",amount:1},{item:"Limes",amount:1},{item:"Extra Virgin Olive Oil",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Red Pepper Flakes",amount:1}],
     extraIngredients: [], steps: ["Halve 1 pint cherry tomatoes and 8 oz mozzarella ciliegine. Arrange on a platter.","Scatter 1/2 cup Castelvetrano olives and 1 tbsp drained capers over the top.","Whisk together 2 tbsp olive oil, juice of 1 lime, 1/4 tsp kosher salt, and a pinch of black pepper.","Drizzle the vinaigrette over everything. Finish with a pinch of red pepper flakes.","Let sit 5 minutes at room temperature before serving so flavors meld."] },
-  { title: "Buffalo Bacon Quesadilla", desc: "Crispy flour tortilla loaded with smoky bacon, buffalo sauce, and gooey melted mozzarella.", time: "15 min", servings: 2, difficulty: "easy",
+  { title: "Buffalo Bacon Quesadilla", desc: "Crispy flour tortilla loaded with smoky bacon, buffalo sauce, and gooey melted mozzarella.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Flour Tortillas",amount:2},{item:"Applewood Smoked Bacon",amount:3},{item:"Buffalo Sauce",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Avocado Oil Mayo",amount:1},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1}],
     extraIngredients: [], steps: ["Cook 6 slices bacon in a skillet over medium heat until crispy, about 8 minutes. Drain on paper towels, then chop.","Spread 1 tbsp Primal Kitchen mayo on one half of each tortilla. Sprinkle with a pinch of garlic powder.","Layer 1/4 cup shredded mozzarella, half the chopped bacon, and 1 tbsp buffalo sauce on each tortilla.","Fold tortillas in half. Heat 1 tsp avocado oil in the skillet over medium heat.","Cook each quesadilla 2-3 minutes per side until golden brown and cheese is melted. Cut into wedges.","Serve with extra buffalo sauce and a drizzle of mayo for dipping."] },
-  { title: "Japanese BBQ Wraps", desc: "Warm tortillas with caramelized peppers glazed in a Bachan's and Soyaki teriyaki sauce.", time: "12 min", servings: 2, difficulty: "easy",
+  { title: "Japanese BBQ Wraps", desc: "Warm tortillas with caramelized peppers glazed in a Bachan's and Soyaki teriyaki sauce.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Flour Tortillas",amount:2},{item:"Japanese BBQ Sauce",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Slice 6 mini sweet peppers into thin strips.","Heat 1 tbsp avocado oil in a skillet over medium-high heat. Saute peppers 3-4 minutes until slightly charred.","Mix 2 tbsp Bachan's Japanese BBQ with 2 tbsp Soyaki in a small bowl. Pour over peppers, toss to coat, and cook 1 more minute.","Warm tortillas in a dry skillet 20 seconds per side.","Layer 1/4 cup shredded mozzarella on each tortilla, add the glazed peppers, and sprinkle with garlic powder and black pepper.","Roll up tightly and toast seam-side down in the skillet until golden, about 2 minutes."] },
-  { title: "Ricotta & Fig Toast", desc: "Warm flaky biscuits with whipped ricotta, fig butter, and a drizzle of maple and flaky salt.", time: "18 min", servings: 2, difficulty: "easy",
+  { title: "Ricotta & Fig Toast", desc: "Warm flaky biscuits with whipped ricotta, fig butter, and a drizzle of maple and flaky salt.", time: "18 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:2},{item:"Whole Milk Ricotta",amount:2},{item:"Fig Butter",amount:2},{item:"Blackberry Sage Jam",amount:1},{item:"Organic Maple Syrup",amount:0.15},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Bake 2 biscuits on a parchment-lined sheet for 12-14 minutes until golden.","While biscuits bake, whip 1/2 cup ricotta with a fork until fluffy. Season with a pinch of salt and black pepper.","Split each warm biscuit in half horizontally.","Spread a generous 2 tbsp whipped ricotta on each biscuit half.","Top two halves with 1 tbsp fig butter each, and the other two with blackberry sage jam.","Finish with a light drizzle of maple syrup and a pinch of flaky salt."] },
-  { title: "Sriracha Bacon Dogs", desc: "Loaded hot dogs wrapped in bacon with sriracha, pickled jalapenos, and a ketchup drizzle.", time: "20 min", servings: 4, difficulty: "easy",
+  { title: "Sriracha Bacon Dogs", desc: "Loaded hot dogs wrapped in bacon with sriracha, pickled jalapenos, and a ketchup drizzle.", time: "20 min", servings: 4, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Hot Dog Buns (8 ct)",amount:4},{item:"Applewood Smoked Bacon",amount:4},{item:"Blue Agave Sriracha",amount:4},{item:"Nacho Sliced Jalapenos",amount:4},{item:"Organic Ketchup",amount:4},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1}],
     extraIngredients: ["hot dogs (4)"], steps: ["Cook 8 slices bacon in a large skillet over medium heat until crispy, 8-10 minutes. Set aside on paper towels.","In the same skillet with a little bacon fat, cook 4 hot dogs over medium-high heat, rolling occasionally, until charred on all sides, about 5 minutes.","Toast buns cut-side down in the skillet for 30 seconds until lightly golden.","Place a hot dog in each bun. Lay 2 strips of bacon alongside each dog.","Top each with 2 tbsp sliced jalapenos, a generous drizzle of sriracha, and a zigzag of ketchup.","Dust with a pinch of garlic powder and serve immediately."] },
-  { title: "Cottage Cheese Power Bowl", desc: "High-protein bowl with creamy cottage cheese, almond butter swirl, crunchy flaxseed, and maple.", time: "5 min", servings: 1, difficulty: "easy",
+  { title: "Cottage Cheese Power Bowl", desc: "High-protein bowl with creamy cottage cheese, almond butter swirl, crunchy flaxseed, and maple.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Organic Cottage Cheese",amount:2},{item:"Almond Butter",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Organic Maple Syrup",amount:0.25},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Scoop 1 cup cottage cheese into a bowl.","Warm 2 tbsp almond butter in the microwave for 10 seconds, then drizzle over the cottage cheese.","Sprinkle 2 tbsp ground flaxseed evenly on top.","Drizzle 1 tbsp maple syrup in a spiral pattern.","Add a tiny pinch of flaky salt to balance the sweetness. Swirl gently with a spoon and enjoy."] },
-  { title: "Tahini Lime Veggie Bowl", desc: "A bright, creamy tahini-lime dressing over crisp peppers and tomatoes with olive oil and cumin.", time: "10 min", servings: 2, difficulty: "easy",
+  { title: "Tahini Lime Veggie Bowl", desc: "A bright, creamy tahini-lime dressing over crisp peppers and tomatoes with olive oil and cumin.", time: "10 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
     ingredients: [{item:"Tahini",amount:1},{item:"Limes",amount:1},{item:"Mini Sweet Peppers",amount:2},{item:"Cherry Tomatoes",amount:2},{item:"Extra Virgin Olive Oil",amount:1},{item:"Kosher Salt",amount:1},{item:"Cumin",amount:1},{item:"Garlic Powder",amount:1}],
     extraIngredients: [], steps: ["Whisk 2 tbsp tahini with the juice of 1 lime, 1 tbsp olive oil, 2 tbsp warm water, 1/4 tsp cumin, 1/4 tsp garlic powder, and 1/4 tsp salt until smooth and creamy.","Slice 6 mini sweet peppers into rings and halve 1 pint cherry tomatoes.","Arrange the vegetables in bowls.","Drizzle the tahini-lime dressing generously over the vegetables.","Finish with an extra squeeze of lime and a drizzle of olive oil."] },
-  { title: "Cream Cheese Stuffed Peppers", desc: "Sweet mini peppers stuffed with herbed cream cheese, jalapenos, mozzarella, and topped with crispy bacon.", time: "25 min", servings: 4, difficulty: "medium",
+  { title: "Cream Cheese Stuffed Peppers", desc: "Sweet mini peppers stuffed with herbed cream cheese, jalapenos, mozzarella, and topped with crispy bacon.", time: "25 min", servings: 4, difficulty: "medium", meal: ["snack","dinner"],
     ingredients: [{item:"Mini Sweet Peppers",amount:3},{item:"Philadelphia Cream Cheese",amount:4},{item:"Nacho Sliced Jalapenos",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Applewood Smoked Bacon",amount:2},{item:"Garlic Powder",amount:1},{item:"Smoked Paprika",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 400F. Line a baking sheet with parchment paper.","Cook 4 slices bacon until crispy. Crumble and set aside.","Halve 12 mini sweet peppers lengthwise and remove seeds.","In a bowl, mix 4 oz softened cream cheese with 2 tbsp chopped jalapenos, 1/4 tsp garlic powder, 1/4 tsp smoked paprika, salt and pepper to taste.","Fill each pepper half with a heaping spoonful of the cream cheese mixture.","Top each with shredded mozzarella and crumbled bacon.","Bake 15-18 minutes until peppers are tender and cheese is bubbly and golden."] },
-  { title: "Greek Yogurt Parfait", desc: "Thick Greek yogurt layered with wild blueberry preserves, crunchy flaxseed, and a kiss of maple.", time: "5 min", servings: 1, difficulty: "easy",
+  { title: "Greek Yogurt Parfait", desc: "Thick Greek yogurt layered with wild blueberry preserves, crunchy flaxseed, and a kiss of maple.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Greek Yogurt (Plain)",amount:1},{item:"Wild Blueberry Preserves",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Organic Maple Syrup",amount:0.15},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Spoon 3/4 cup Greek yogurt into a glass or bowl.","Add 1 tbsp wild blueberry preserves in dollops around the yogurt (don't stir — keep it pretty).","Sprinkle 1 tbsp ground flaxseed over the top for crunch.","Drizzle 1 tsp maple syrup in a thin stream.","Add the tiniest pinch of salt to make the flavors pop. Eat immediately."] },
-  { title: "Cheesy Marinara Biscuits", desc: "Flaky biscuits pressed flat, smothered in Carbone marinara, and baked with bubbly mozzarella and parmesan.", time: "22 min", servings: 4, difficulty: "easy",
+  { title: "Cheesy Marinara Biscuits", desc: "Flaky biscuits pressed flat, smothered in Carbone marinara, and baked with bubbly mozzarella and parmesan.", time: "22 min", servings: 4, difficulty: "easy", meal: ["lunch","dinner","snack"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Marinara Sauce",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"Grated Parmesan",amount:2},{item:"Extra Virgin Olive Oil",amount:1},{item:"Italian Seasoning",amount:1},{item:"Garlic Powder",amount:1},{item:"Red Pepper Flakes",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Lightly oil a baking sheet or cast iron skillet.","Press each biscuit flat to about 1/2 inch thick and place on the sheet.","Spoon 2 tbsp Carbone marinara onto each biscuit round, leaving a small border.","Top each with 2 tbsp shredded mozzarella and 1 tbsp grated parmesan.","Sprinkle with Italian seasoning, garlic powder, and a pinch of red pepper flakes.","Bake 12-15 minutes until biscuits are golden and cheese is bubbly.","Drizzle with a touch of olive oil and serve hot. Dip in extra marinara."] },
-  { title: "Hummus & Veggie Wraps", desc: "Loaded tortilla wraps with everything bagel and roasted garlic hummus, fresh peppers, tomatoes, and olive oil.", time: "8 min", servings: 2, difficulty: "easy",
+  { title: "Hummus & Veggie Wraps", desc: "Loaded tortilla wraps with everything bagel and roasted garlic hummus, fresh peppers, tomatoes, and olive oil.", time: "8 min", servings: 2, difficulty: "easy", meal: ["lunch"],
     ingredients: [{item:"Flour Tortillas",amount:2},{item:"Everything Bagel Hummus",amount:2},{item:"Roasted Garlic Hummus",amount:2},{item:"Mini Sweet Peppers",amount:1},{item:"Cherry Tomatoes",amount:1},{item:"Extra Virgin Olive Oil",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Spread 2 tbsp everything bagel hummus on one tortilla and 2 tbsp roasted garlic hummus on the other.","Slice 3 mini sweet peppers into thin rings and halve 6-8 cherry tomatoes.","Layer the veggies down the center of each tortilla.","Drizzle 1 tsp olive oil on each, season with salt and pepper.","Roll up tightly, tucking in the sides as you go. Slice in half on a diagonal.","Serve with extra hummus on the side for dipping."] },
-  { title: "Almond Butter & Jam Biscuits", desc: "Warm buttery biscuits with creamy almond butter and Bonne Maman preserves. Simple and perfect.", time: "18 min", servings: 4, difficulty: "easy",
+  { title: "Almond Butter & Jam Biscuits", desc: "Warm buttery biscuits with creamy almond butter and Bonne Maman preserves. Simple and perfect.", time: "18 min", servings: 4, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Almond Butter",amount:2},{item:"Concord Grape Spread",amount:2},{item:"Wild Blueberry Preserves",amount:2},{item:"Unsalted Organic Butter",amount:1},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Bake 4 biscuits on a parchment-lined sheet for 12-14 minutes until golden brown.","While hot, brush the tops with a thin layer of melted butter.","Split each biscuit in half while still warm.","Spread 1 tbsp almond butter on each bottom half.","Spread your choice of Concord grape or wild blueberry preserves on each top half.","Press halves together gently. Add a tiny pinch of flaky salt on top. Serve warm."] },
-  { title: "Bacon Tomato Mozz Melt", desc: "Open-faced hot dog bun melts with crispy bacon, burst cherry tomatoes, and bubbling fresh mozzarella.", time: "15 min", servings: 4, difficulty: "easy",
+  { title: "Bacon Tomato Mozz Melt", desc: "Open-faced hot dog bun melts with crispy bacon, burst cherry tomatoes, and bubbling fresh mozzarella.", time: "15 min", servings: 4, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Hot Dog Buns (8 ct)",amount:4},{item:"Applewood Smoked Bacon",amount:3},{item:"Cherry Tomatoes",amount:2},{item:"Fresh Mozzarella Pearls",amount:3},{item:"Avocado Oil Mayo",amount:2},{item:"Garlic Powder",amount:1},{item:"Italian Seasoning",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Preheat broiler to high. Cook 6 slices bacon until crispy, crumble and set aside.","Halve 1 pint cherry tomatoes. Toss with a pinch of salt.","Split 4 hot dog buns open like a book. Spread 1 tsp mayo on each side.","Sprinkle each with a pinch of garlic powder and Italian seasoning.","Layer crumbled bacon, tomato halves, and sliced mozzarella pearls on each bun.","Season with salt and pepper. Broil 2-3 minutes until cheese is melted and bubbly.","Finish with a crack of black pepper and serve immediately."] },
-  { title: "Chai Overnight Oats", desc: "Creamy overnight oats soaked in spiced Tazo chai with Greek yogurt, almond butter, and maple.", time: "5 min + overnight", servings: 1, difficulty: "easy",
+  { title: "Chai Overnight Oats", desc: "Creamy overnight oats soaked in spiced Tazo chai with Greek yogurt, almond butter, and maple.", time: "5 min + overnight", servings: 1, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Rolled Oats",amount:1},{item:"Chai Latte Concentrate",amount:0.5},{item:"Greek Yogurt (Plain)",amount:0.5},{item:"Ground Flaxseed",amount:1},{item:"Almond Butter",amount:0.5},{item:"Organic Maple Syrup",amount:0.15},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["In a jar or container, combine 1/2 cup rolled oats, 1/2 cup Tazo chai concentrate, and 1/4 cup Greek yogurt.","Stir in 1 tbsp ground flaxseed and a tiny pinch of salt. Mix well.","Cover and refrigerate at least 6 hours or overnight.","In the morning, stir the oats. They should be thick and creamy — add a splash of milk if too thick.","Top with 1 tbsp almond butter and a drizzle of maple syrup.","Eat cold or microwave for 1-2 minutes if you prefer it warm."] },
-  { title: "Dijon Parmesan Crisps", desc: "Buttery tortilla triangles baked with sharp Dijon mustard, aged parmesan, and garlic. Addictive snacking.", time: "12 min", servings: 3, difficulty: "easy",
+  { title: "Dijon Parmesan Crisps", desc: "Buttery tortilla triangles baked with sharp Dijon mustard, aged parmesan, and garlic. Addictive snacking.", time: "12 min", servings: 3, difficulty: "easy", meal: ["snack"],
     ingredients: [{item:"Flour Tortillas",amount:3},{item:"Organic Dijon Mustard",amount:3},{item:"Grated Parmesan",amount:3},{item:"Unsalted Organic Butter",amount:2},{item:"Garlic Powder",amount:1},{item:"Black Pepper",amount:1},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 400F. Line a baking sheet with parchment paper.","Melt 2 tbsp butter. Brush each tortilla with a thin layer of melted butter.","Spread 1 tsp Dijon mustard evenly over each buttered tortilla.","Sprinkle generously with grated parmesan (about 2 tbsp per tortilla), plus a dusting of garlic powder and black pepper.","Cut each tortilla into 8 triangles with a pizza cutter or sharp knife.","Arrange in a single layer on the baking sheet. Sprinkle with a pinch of flaky salt.","Bake 6-8 minutes until golden and crispy. Watch carefully — they can burn fast. Cool 2 minutes before eating."] },
-  { title: "Coconut Aminos Stir-Fry Wraps", desc: "Quick-seared peppers in a savory coconut aminos and teriyaki glaze, wrapped in warm tortillas with lime.", time: "15 min", servings: 2, difficulty: "easy",
+  { title: "Coconut Aminos Stir-Fry Wraps", desc: "Quick-seared peppers in a savory coconut aminos and teriyaki glaze, wrapped in warm tortillas with lime.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Coconut Aminos",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Limes",amount:1},{item:"Flour Tortillas",amount:2},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Slice 6 mini sweet peppers into strips. Pat dry with a paper towel.","Heat 1 tbsp avocado oil in a skillet or wok over high heat until smoking.","Add peppers in a single layer. Don't stir for 2 minutes to get a good char.","Toss, then add 2 tbsp coconut aminos and 2 tbsp Soyaki. Add a pinch of garlic powder and red pepper flakes.","Cook 1-2 more minutes until sauce thickens and coats the peppers.","Warm tortillas in a dry skillet 20 seconds per side.","Fill tortillas with the glazed peppers, squeeze lime juice over the top, and wrap."] },
-  { title: "Irish Butter Biscuits & Maple", desc: "Warm flaky biscuits split and slathered with Irish butter, drizzled with maple syrup and flaky salt.", time: "18 min", servings: 4, difficulty: "easy",
+  { title: "Irish Butter Biscuits & Maple", desc: "Warm flaky biscuits split and slathered with Irish butter, drizzled with maple syrup and flaky salt.", time: "18 min", servings: 4, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Irish Spreadable Butter",amount:4},{item:"Organic Maple Syrup",amount:0.25},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Place 4 biscuits on a parchment-lined baking sheet.","Bake 12-14 minutes until puffed and deep golden brown on top.","Let cool just 1 minute — you want them hot.","Split each biscuit in half. Immediately spread a generous 1 tbsp Irish butter on each cut side (it should melt on contact).","Drizzle 1 tsp maple syrup over each biscuit half.","Finish with a pinch of flaky kosher salt. Serve immediately while the butter is still melting."] },
-  { title: "Salsa Cream Cheese Dip", desc: "A Texas-style layered dip with whipped cream cheese, Salsa Boss, pickled jalapenos, and Cholula.", time: "5 min", servings: 6, difficulty: "easy",
+  { title: "Salsa Cream Cheese Dip", desc: "A Texas-style layered dip with whipped cream cheese, Salsa Boss, pickled jalapenos, and Cholula.", time: "5 min", servings: 6, difficulty: "easy", meal: ["snack"],
     ingredients: [{item:"Philadelphia Cream Cheese",amount:4},{item:"The Salsa Boss (Medium)",amount:4},{item:"Nacho Sliced Jalapenos",amount:2},{item:"Cholula Original",amount:2},{item:"Garlic Powder",amount:1},{item:"Cumin",amount:1},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Let 8 oz cream cheese come to room temperature (or microwave 20 seconds to soften).","Beat cream cheese with a fork until smooth. Mix in 1/4 tsp garlic powder, 1/4 tsp cumin, and a pinch of salt.","Spread the seasoned cream cheese in an even layer on a plate or shallow bowl.","Pour 1/2 cup Salsa Boss over the cream cheese, spreading to the edges.","Scatter 2-3 tbsp sliced jalapenos over the top.","Drizzle Cholula hot sauce in a zigzag pattern.","Serve immediately with tortilla chips, or chill 30 minutes for the flavors to meld."] },
-  { title: "Kewpie Bacon Tomato Bites", desc: "Halved cherry tomatoes topped with a swirl of Kewpie mayo, crispy bacon crumbles, and aged parmesan.", time: "15 min", servings: 4, difficulty: "easy",
+  { title: "Kewpie Bacon Tomato Bites", desc: "Halved cherry tomatoes topped with a swirl of Kewpie mayo, crispy bacon crumbles, and aged parmesan.", time: "15 min", servings: 4, difficulty: "easy", meal: ["snack"],
     ingredients: [{item:"Cherry Tomatoes",amount:3},{item:"Kewpie Mayonnaise",amount:2},{item:"Applewood Smoked Bacon",amount:2},{item:"Grated Parmesan",amount:1},{item:"Black Pepper",amount:1},{item:"Kosher Salt",amount:1},{item:"Smoked Paprika",amount:1}],
     extraIngredients: [], steps: ["Cook 4 slices bacon in a skillet over medium heat until very crispy, about 10 minutes. Drain and crumble finely.","Halve 1 pint cherry tomatoes. Arrange cut-side up on a serving plate.","Lightly salt the cut tops of each tomato.","Squeeze a small rosette of Kewpie mayo on each tomato half (the Kewpie bottle tip makes this easy).","Sprinkle each with crumbled bacon and a pinch of grated parmesan.","Finish with a light dusting of smoked paprika and a crack of black pepper.","Serve at room temperature as an appetizer or snack."] },
-  { title: "Olive & Mozz Antipasto", desc: "An elegant Italian antipasto plate with buttery olives, two styles of fresh mozzarella, capers, and tomatoes.", time: "5 min", servings: 3, difficulty: "easy",
+  { title: "Olive & Mozz Antipasto", desc: "An elegant Italian antipasto plate with buttery olives, two styles of fresh mozzarella, capers, and tomatoes.", time: "5 min", servings: 3, difficulty: "easy", meal: ["snack","lunch"],
     ingredients: [{item:"Castelvetrano Olives",amount:4},{item:"Fresh Mozzarella Ciliegine",amount:3},{item:"Fresh Mozzarella Pearls",amount:2},{item:"Organic Capers",amount:1},{item:"Cherry Tomatoes",amount:2},{item:"Extra Virgin Olive Oil",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Red Pepper Flakes",amount:1}],
     extraIngredients: [], steps: ["Drain and arrange 1/2 cup Castelvetrano olives on a large plate or board.","Add mozzarella ciliegine and pearls in clusters around the olives.","Halve 8-10 cherry tomatoes and scatter them around the plate.","Sprinkle 1 tbsp drained capers over everything.","Drizzle generously with 2-3 tbsp good olive oil.","Season with flaky salt, cracked black pepper, and a pinch of red pepper flakes.","Serve with crusty bread or the Dijon Parmesan Crisps from this menu."] },
 ];
@@ -877,7 +984,13 @@ function openItemModal(idx) {
   document.getElementById('itemModal').classList.add('open');
 }
 function closeModal() { document.getElementById('itemModal').classList.remove('open'); }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+function openPhotoModal(src, title) {
+  document.getElementById('photoModalImg').src = src;
+  document.getElementById('photoModalTitle').textContent = title;
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal() { document.getElementById('photoModal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closePhotoModal(); } });
 
 // Map recipe titles to photo slugs
 const RECIPE_PHOTOS = {
@@ -916,80 +1029,219 @@ function renderRecipes(filter, search) {
     const matchPct = Math.round(have / totalNeeded * 100);
     return {...r, have, total: totalNeeded, matchPct, nutri: calcRecipeNutrition(r)};
   }).sort((a,b) => b.matchPct - a.matchPct);
-  if (filter==="quick") recipes = recipes.filter(r => parseInt(r.time)<=15);
-  if (filter==="easy") recipes = recipes.filter(r => r.difficulty==="easy");
+  const mealFilter = filter;
   if (filter==="100") recipes = recipes.filter(r => r.matchPct===100);
+  else if (filter!=="all") recipes = recipes.filter(r => r.meal && r.meal.includes(filter));
   if (search) recipes = recipes.filter(r => r.title.toLowerCase().includes(sl) || r.ingredients.some(i => i.item.toLowerCase().includes(sl)));
+
+  // Group by meal category for menu-style display
+  const MEAL_ORDER = ["breakfast","lunch","dinner","snack"];
+  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Appetizers & Snacks"};
+  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ small bites ~"};
+
   let html = '';
-  for (const r of recipes) {
-    const mc = r.matchPct===100?'match-high':r.matchPct>=70?'match-mid':'match-low';
-    const tc = r.difficulty==='easy'?'tag-easy':'tag-medium';
-    const id = r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
-    const n = r.nutri; const ps = {cal:Math.round(n.calories/r.servings),fat:Math.round(n.totalFat/r.servings),pro:Math.round(n.protein/r.servings),carb:Math.round(n.totalCarbs/r.servings)};
-    const photoSlug = RECIPE_PHOTOS[r.title];
-    const photoSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
-
-    // Build ingredient thumbnail strip (only items with photos, skip pantry staples)
-    const thumbsHtml = r.ingredients
-      .map(ing => {
-        const item = getItemByName(ing.item);
-        if (!item || !item.image) return '';
-        const idx = inventory.indexOf(item);
-        const cls = names.includes(ing.item) ? '' : ' missing';
-        return `<img class="ingredient-thumb${cls}" src="${item.image}" alt="${ing.item}" title="${ing.item}" onclick="openItemModal(${idx})" loading="lazy">`;
-      }).filter(Boolean).join('');
-
-    html += `<div class="recipe-card">
-      ${photoSrc ? `<img class="recipe-hero" src="${photoSrc}" alt="${r.title}" loading="lazy">` : ''}
-      <div class="recipe-top">
-        <span class="match-pct ${mc}">${r.matchPct}%</span>
-        ${parseInt(r.time)<=15?'<span class="recipe-tag tag-quick">Quick</span> ':''}<span class="recipe-tag ${tc}">${r.difficulty}</span>
-        <h3 class="recipe-title">${r.title}</h3>
-        <p class="recipe-desc">${r.desc}</p>
-      </div>
-      <div class="recipe-meta"><span>\u23F1 ${r.time}</span><span>\uD83C\uDF7D ${r.servings} srv</span><span>${r.have}/${r.total} on hand</span></div>
-      <div class="recipe-nutrition-summary">
-        <h4>Per Serving</h4>
-        <div class="recipe-nutri-grid">
-          <div class="recipe-nutri-item"><div class="val">${ps.cal}</div><div class="lbl">Cal</div></div>
-          <div class="recipe-nutri-item"><div class="val">${ps.pro}g</div><div class="lbl">Protein</div></div>
-          <div class="recipe-nutri-item"><div class="val">${ps.carb}g</div><div class="lbl">Carbs</div></div>
-          <div class="recipe-nutri-item"><div class="val">${ps.fat}g</div><div class="lbl">Fat</div></div>
-        </div>
-        <p class="recipe-nutri-total">Total: ${n.calories} cal &bull; ${n.sodium}mg sodium &bull; ${n.fiber}g fiber</p>
-      </div>
-      <div class="recipe-ingredients"><h4>Ingredients</h4>
-        <ul class="ingredient-list">
-          ${r.ingredients.map(i=>`<li class="${names.includes(i.item)?'have':'need'}">${i.item}</li>`).join('')}
-          ${r.extraIngredients.map(i=>`<li class="need">${i} (NEED TO BUY)</li>`).join('')}
-        </ul>
-        ${thumbsHtml ? `<div class="ingredient-thumbs">${thumbsHtml}</div>` : ''}
-      </div>
-      <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
-      <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
-    </div>`;
+  if (mealFilter === 'all' && !search) {
+    // Show grouped by meal category like a real menu
+    for (const meal of MEAL_ORDER) {
+      const mealRecipes = recipes.filter(r => r.meal && r.meal.includes(meal));
+      if (!mealRecipes.length) continue;
+      html += `<div class="category-section"><div class="menu-header" style="margin-bottom:1rem;padding-bottom:0.75rem;">
+        <h2>${MEAL_NAMES[meal]}</h2>
+        <div class="flourish">${MEAL_FLOURISH[meal]}</div>
+      </div><div class="recipe-grid">`;
+      for (const r of mealRecipes) {
+        html += renderRecipeCard(r, names);
+      }
+      html += '</div></div>';
+    }
+  } else {
+    html += '<div class="recipe-grid">';
+    for (const r of recipes) {
+      html += renderRecipeCard(r, names);
+    }
+    html += '</div>';
   }
+  // (card rendering moved to renderRecipeCard function below)
   if (!html) html = '<div class="empty-state"><div class="icon">\uD83C\uDF73</div><p>No specials today</p></div>';
   el.innerHTML = html;
 }
+function renderRecipeCard(r, names) {
+  const mc = r.matchPct===100?'match-high':r.matchPct>=70?'match-mid':'match-low';
+  const tc = r.difficulty==='easy'?'tag-easy':'tag-medium';
+  const id = r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
+  const n = r.nutri; const ps = {cal:Math.round(n.calories/r.servings),fat:Math.round(n.totalFat/r.servings),pro:Math.round(n.protein/r.servings),carb:Math.round(n.totalCarbs/r.servings)};
+  const photoSlug = RECIPE_PHOTOS[r.title];
+  const photoSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
+  const mealTags = (r.meal||[]).map(m => `<span class="meal-tag">${m}</span>`).join('');
+  const thumbsHtml = r.ingredients
+    .map(ing => {
+      const item = getItemByName(ing.item);
+      if (!item || !item.image) return '';
+      const idx = inventory.indexOf(item);
+      const cls = names.includes(ing.item) ? '' : ' missing';
+      return `<img class="ingredient-thumb${cls}" src="${item.image}" alt="${ing.item}" title="${ing.item}" onclick="openItemModal(${idx})" loading="lazy">`;
+    }).filter(Boolean).join('');
+
+  return `<div class="recipe-card">
+    ${photoSrc ? `<img class="recipe-hero" src="${photoSrc}" alt="${r.title}" loading="lazy" onclick="openPhotoModal('${photoSrc}','${r.title.replace(/'/g,"\\'")}')">` : ''}
+    <div class="recipe-top">
+      <span class="match-pct ${mc}">${r.matchPct}%</span>
+      ${mealTags}
+      ${parseInt(r.time)<=15?'<span class="recipe-tag tag-quick">Quick</span> ':''}<span class="recipe-tag ${tc}">${r.difficulty}</span>
+      <h3 class="recipe-title">${r.title}</h3>
+      <p class="recipe-desc">${r.desc}</p>
+    </div>
+    <div class="recipe-meta"><span>\u23F1 ${r.time}</span><span>\uD83C\uDF7D ${r.servings} srv</span><span>${r.have}/${r.total} on hand</span></div>
+    <div class="recipe-nutrition-summary">
+      <h4>Per Serving</h4>
+      <div class="recipe-nutri-grid">
+        <div class="recipe-nutri-item"><div class="val">${ps.cal}</div><div class="lbl">Cal</div></div>
+        <div class="recipe-nutri-item"><div class="val">${ps.pro}g</div><div class="lbl">Protein</div></div>
+        <div class="recipe-nutri-item"><div class="val">${ps.carb}g</div><div class="lbl">Carbs</div></div>
+        <div class="recipe-nutri-item"><div class="val">${ps.fat}g</div><div class="lbl">Fat</div></div>
+      </div>
+      <p class="recipe-nutri-total">Total: ${n.calories} cal &bull; ${n.sodium}mg sodium &bull; ${n.fiber}g fiber</p>
+    </div>
+    <div class="recipe-ingredients"><h4>Ingredients</h4>
+      <ul class="ingredient-list">
+        ${r.ingredients.map(i=>`<li class="${names.includes(i.item)?'have':'need'}">${i.item}</li>`).join('')}
+        ${r.extraIngredients.map(i=>`<li class="need">${i} (NEED TO BUY)</li>`).join('')}
+      </ul>
+      ${thumbsHtml ? `<div class="ingredient-thumbs">${thumbsHtml}</div>` : ''}
+    </div>
+    <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
+    <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+  </div>`;
+}
+
 function toggleSteps(id) { const el=document.getElementById('steps-'+id); if(!el)return; el.classList.toggle('open'); el.previousElementSibling.textContent=el.classList.contains('open')?'Hide Directions':'Show Directions'; }
-function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();} }
+
+// ============================================
+// GROCERY LIST with HEB price estimates
+// ============================================
+const HEB_PRICES = {
+  "hot dogs": 4.99, "rolled oats": 3.49, "chicken breast": 8.99, "ground beef": 6.99,
+  "eggs": 3.99, "bread": 3.49, "rice": 2.99, "pasta": 1.79, "tortilla chips": 3.49,
+  "onion": 0.99, "garlic": 0.69, "lemons": 2.99, "avocado": 1.50, "lettuce": 2.49,
+  "cilantro": 0.79, "sour cream": 2.49, "cheddar cheese": 4.99, "salsa": 3.99,
+  "chicken thighs": 7.49, "sausage": 5.99, "frozen vegetables": 2.99,
+  "ice cream": 5.49, "frozen fruit": 3.99, "pizza dough": 3.49
+};
+
+function renderGroceryList() {
+  const el = document.getElementById('groceryList');
+  const names = inventory.map(i => i.name);
+
+  // Collect all needed items across recipes
+  const neededMap = {}; // item -> [recipe names]
+  for (const r of RECIPES) {
+    for (const ing of r.ingredients) {
+      if (!names.includes(ing.item)) {
+        if (!neededMap[ing.item]) neededMap[ing.item] = [];
+        neededMap[ing.item].push(r.title);
+      }
+    }
+    for (const extra of r.extraIngredients) {
+      if (!neededMap[extra]) neededMap[extra] = [];
+      neededMap[extra].push(r.title);
+    }
+  }
+
+  const neededItems = Object.entries(neededMap).sort((a,b) => b[1].length - a[1].length);
+
+  // Estimate prices
+  let totalEst = 0;
+  const itemsWithPrices = neededItems.map(([item, recipes]) => {
+    const key = item.toLowerCase().replace(/\(.*\)/,'').trim();
+    const price = HEB_PRICES[key] || 3.99; // default estimate
+    totalEst += price;
+    return { item, recipes, price };
+  });
+
+  // Budget tiers
+  const tiersEl = document.getElementById('budgetTiers');
+  if (neededItems.length === 0) {
+    tiersEl.innerHTML = '';
+    el.innerHTML = `<div class="empty-state"><div class="icon">\u2705</div>
+      <p style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--brown);">You've got everything you need!</p>
+      <p style="font-family:'Special Elite',cursive;margin-top:0.5rem;">All recipes on the menu can be made with what's in your kitchen.</p></div>`;
+    return;
+  }
+
+  // Calculate what you can unlock at each tier
+  const recipesUnlockable = (budget) => {
+    let spent = 0;
+    const bought = new Set();
+    for (const {item, price} of itemsWithPrices) {
+      if (spent + price <= budget) { spent += price; bought.add(item); }
+    }
+    // Count recipes now fully doable
+    return RECIPES.filter(r => {
+      const allHave = r.ingredients.every(i => names.includes(i.item) || bought.has(i.item));
+      const allExtra = r.extraIngredients.every(e => bought.has(e));
+      return allHave && allExtra;
+    }).length;
+  };
+
+  const currentReady = RECIPES.filter(r => r.ingredients.every(i => names.includes(i.item)) && r.extraIngredients.every(e => names.includes(e))).length;
+
+  tiersEl.innerHTML = `
+    <div class="budget-tier">
+      <div class="tier-price">$0</div>
+      <div class="tier-label">Right Now</div>
+      <div class="tier-desc">${currentReady} recipes ready to cook</div>
+    </div>
+    <div class="budget-tier">
+      <div class="tier-price">~$25</div>
+      <div class="tier-label">Quick Run</div>
+      <div class="tier-desc">${recipesUnlockable(25)} recipes unlocked</div>
+    </div>
+    <div class="budget-tier">
+      <div class="tier-price">~$50</div>
+      <div class="tier-label">Stock Up</div>
+      <div class="tier-desc">${recipesUnlockable(50)} recipes unlocked</div>
+    </div>
+    <div class="budget-tier">
+      <div class="tier-price">~$${Math.ceil(totalEst)}</div>
+      <div class="tier-label">Full Menu</div>
+      <div class="tier-desc">All ${RECIPES.length} recipes unlocked</div>
+    </div>
+  `;
+
+  let html = `<div class="grocery-section">
+    <h3>Shopping List for H-E-B (${neededItems.length} items &bull; Est. $${totalEst.toFixed(2)})</h3>`;
+
+  for (const {item, recipes, price} of itemsWithPrices) {
+    html += `<div class="grocery-item" onclick="this.classList.toggle('checked');this.querySelector('input').checked=!this.querySelector('input').checked;">
+      <input type="checkbox" onclick="event.stopPropagation();">
+      <div>
+        <div class="item-name-col">${item}</div>
+        <div class="needed-for">For: ${recipes.slice(0,3).join(', ')}${recipes.length>3?' +more':''}</div>
+      </div>
+      <div class="est-price">~$${price.toFixed(2)}</div>
+    </div>`;
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
 function addItem() {
   const nm=document.getElementById('newName').value.trim(),br=document.getElementById('newBrand').value.trim(),
     cat=document.getElementById('newCategory').value,loc=document.getElementById('newLocation').value;
   if(!nm||!cat||!loc){alert('Fill in name, category, location.');return;}
   inventory.push({name:nm,brand:br,category:cat,location:loc,image:'',nutrition:null});
-  saveInventory();renderInventory();renderRecipes();
+  saveInventory();renderInventory();renderRecipes();renderGroceryList();
   document.getElementById('newName').value='';document.getElementById('newBrand').value='';
   alert(`"${nm}" stocked!`);
 }
 function bulkAdd() {
   const t=document.getElementById('bulkInput').value.trim(); if(!t)return; let c=0;
   for(const l of t.split('\n').filter(l=>l.trim())){const p=l.split('|').map(s=>s.trim());if(p[0]){inventory.push({name:p[0],brand:'',category:p[1]||'Uncategorized',location:p[2]||'Pantry',image:'',nutrition:null});c++;}}
-  saveInventory();renderInventory();renderRecipes();document.getElementById('bulkInput').value='';alert(`Stocked ${c} items!`);
+  saveInventory();renderInventory();renderRecipes();renderGroceryList();document.getElementById('bulkInput').value='';alert(`Stocked ${c} items!`);
 }
 function exportInventory(){const b=new Blob([JSON.stringify(inventory,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kitchen-inventory.json';a.click();}
-function importInventory(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(Array.isArray(d)){inventory=d;saveInventory();renderInventory();renderRecipes();alert(`Imported ${d.length} items!`);}}catch{alert('Bad file.');}};r.readAsText(f);}
+function importInventory(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(Array.isArray(d)){inventory=d;saveInventory();renderInventory();renderRecipes();renderGroceryList();alert(`Imported ${d.length} items!`);}}catch{alert('Bad file.');}};r.readAsText(f);}
 
 // Navigation
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
@@ -1011,7 +1263,7 @@ document.getElementById('recipeSearch').addEventListener('input',e=>{
 });
 
 document.getElementById('dateStamp')&&(document.getElementById('dateStamp').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
-loadInventory();renderInventory();renderRecipes();
+loadInventory();renderInventory();renderRecipes();renderGroceryList();
 </script>
 </body>
 </html>
