@@ -307,9 +307,31 @@
     box-shadow: 4px 4px 0 rgba(0,0,0,0.12);
     transform: translate(-2px, -2px);
   }
+  .recipe-hero {
+    width: 100%; height: 200px; object-fit: cover; display: block;
+    filter: sepia(0.05) contrast(1.05);
+    border-bottom: 2px solid var(--brown);
+  }
   .recipe-top {
     padding: 1.25rem 1.25rem 0.75rem;
     border-bottom: 1px dashed var(--border);
+  }
+  /* Ingredient thumbnails */
+  .ingredient-thumbs {
+    display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem;
+    padding-top: 0.5rem; border-top: 1px dashed var(--border);
+  }
+  .ingredient-thumb {
+    width: 48px; height: 48px; border-radius: 4px; object-fit: cover;
+    border: 1.5px solid var(--border); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ingredient-thumb:hover {
+    border-color: var(--brown); transform: scale(1.15); z-index: 2;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  }
+  .ingredient-thumb.missing {
+    opacity: 0.35; border-color: var(--red);
   }
   .recipe-tag {
     display: inline-block; font-family: 'Oswald', sans-serif;
@@ -857,17 +879,46 @@ function openItemModal(idx) {
 function closeModal() { document.getElementById('itemModal').classList.remove('open'); }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+// Map recipe titles to photo slugs
+const RECIPE_PHOTOS = {
+  "Caprese with Olives & Capers": "caprese-olives-capers",
+  "Buffalo Bacon Quesadilla": "buffalo-bacon-quesadilla",
+  "Japanese BBQ Wraps": "japanese-bbq-wraps",
+  "Ricotta & Fig Toast": "ricotta-fig-toast",
+  "Sriracha Bacon Dogs": "sriracha-bacon-dogs",
+  "Cottage Cheese Power Bowl": "cottage-cheese-power-bowl",
+  "Tahini Lime Veggie Bowl": "tahini-lime-veggie-bowl",
+  "Cream Cheese Stuffed Peppers": "cream-cheese-stuffed-peppers",
+  "Greek Yogurt Parfait": "greek-yogurt-parfait",
+  "Cheesy Marinara Biscuits": "cheesy-marinara-biscuits",
+  "Hummus & Veggie Wraps": "hummus-veggie-wraps",
+  "Almond Butter & Jam Biscuits": "almond-butter-jam-biscuits",
+  "Bacon Tomato Mozz Melt": "bacon-tomato-mozz-melt",
+  "Chai Overnight Oats": "chai-overnight-oats",
+  "Dijon Parmesan Crisps": "dijon-parmesan-crisps",
+  "Coconut Aminos Stir-Fry Wraps": "coconut-aminos-stir-fry",
+  "Irish Butter Biscuits & Maple": "irish-butter-biscuits",
+  "Salsa Cream Cheese Dip": "salsa-cream-cheese-dip",
+  "Kewpie Bacon Tomato Bites": "kewpie-bacon-tomato-bites",
+  "Olive & Mozz Antipasto": "olive-mozz-antipasto",
+};
+
+function getItemByName(name) { return inventory.find(i => i.name === name); }
+
 function renderRecipes(filter, search) {
   filter = filter || 'all'; search = search || '';
   const el = document.getElementById('recipeList');
   const names = inventory.map(i => i.name); const sl = search.toLowerCase();
   let recipes = RECIPES.map(r => {
     const have = r.ingredients.filter(i => names.includes(i.item)).length;
-    return {...r, have, total: r.ingredients.length, matchPct: Math.round(have/r.ingredients.length*100), nutri: calcRecipeNutrition(r)};
+    // Count extraIngredients as things you DON'T have
+    const totalNeeded = r.ingredients.length + r.extraIngredients.length;
+    const matchPct = Math.round(have / totalNeeded * 100);
+    return {...r, have, total: totalNeeded, matchPct, nutri: calcRecipeNutrition(r)};
   }).sort((a,b) => b.matchPct - a.matchPct);
   if (filter==="quick") recipes = recipes.filter(r => parseInt(r.time)<=15);
   if (filter==="easy") recipes = recipes.filter(r => r.difficulty==="easy");
-  if (filter==="100") recipes = recipes.filter(r => r.matchPct===100 && !r.extraIngredients.length);
+  if (filter==="100") recipes = recipes.filter(r => r.matchPct===100);
   if (search) recipes = recipes.filter(r => r.title.toLowerCase().includes(sl) || r.ingredients.some(i => i.item.toLowerCase().includes(sl)));
   let html = '';
   for (const r of recipes) {
@@ -875,7 +926,21 @@ function renderRecipes(filter, search) {
     const tc = r.difficulty==='easy'?'tag-easy':'tag-medium';
     const id = r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
     const n = r.nutri; const ps = {cal:Math.round(n.calories/r.servings),fat:Math.round(n.totalFat/r.servings),pro:Math.round(n.protein/r.servings),carb:Math.round(n.totalCarbs/r.servings)};
+    const photoSlug = RECIPE_PHOTOS[r.title];
+    const photoSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
+
+    // Build ingredient thumbnail strip (only items with photos, skip pantry staples)
+    const thumbsHtml = r.ingredients
+      .map(ing => {
+        const item = getItemByName(ing.item);
+        if (!item || !item.image) return '';
+        const idx = inventory.indexOf(item);
+        const cls = names.includes(ing.item) ? '' : ' missing';
+        return `<img class="ingredient-thumb${cls}" src="${item.image}" alt="${ing.item}" title="${ing.item}" onclick="openItemModal(${idx})" loading="lazy">`;
+      }).filter(Boolean).join('');
+
     html += `<div class="recipe-card">
+      ${photoSrc ? `<img class="recipe-hero" src="${photoSrc}" alt="${r.title}" loading="lazy">` : ''}
       <div class="recipe-top">
         <span class="match-pct ${mc}">${r.matchPct}%</span>
         ${parseInt(r.time)<=15?'<span class="recipe-tag tag-quick">Quick</span> ':''}<span class="recipe-tag ${tc}">${r.difficulty}</span>
@@ -896,8 +961,9 @@ function renderRecipes(filter, search) {
       <div class="recipe-ingredients"><h4>Ingredients</h4>
         <ul class="ingredient-list">
           ${r.ingredients.map(i=>`<li class="${names.includes(i.item)?'have':'need'}">${i.item}</li>`).join('')}
-          ${r.extraIngredients.map(i=>`<li class="need">${i}</li>`).join('')}
+          ${r.extraIngredients.map(i=>`<li class="need">${i} (NEED TO BUY)</li>`).join('')}
         </ul>
+        ${thumbsHtml ? `<div class="ingredient-thumbs">${thumbsHtml}</div>` : ''}
       </div>
       <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
       <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
