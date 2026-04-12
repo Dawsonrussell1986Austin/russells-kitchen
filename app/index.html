@@ -680,7 +680,7 @@
       <button class="filter-btn" data-rfilter="breakfast">Breakfast</button>
       <button class="filter-btn" data-rfilter="lunch">Lunch</button>
       <button class="filter-btn" data-rfilter="dinner">Dinner</button>
-      <button class="filter-btn" data-rfilter="snack">Snacks</button>
+      <button class="filter-btn" data-rfilter="snack">Small Bites</button>
       <button class="filter-btn" data-rfilter="100">Ready Now</button>
     </div>
     <div class="recipe-grid" id="recipeList"></div>
@@ -1036,8 +1036,8 @@ function renderRecipes(filter, search) {
 
   // Group by meal category for menu-style display
   const MEAL_ORDER = ["breakfast","lunch","dinner","snack"];
-  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Appetizers & Snacks"};
-  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ small bites ~"};
+  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Small Bites & Appetizers"};
+  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ just a little somethin' ~"};
 
   let html = '';
   if (mealFilter === 'all' && !search) {
