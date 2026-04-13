@@ -607,6 +607,92 @@
   }
   .receipt-actions { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
 
+  /* ============ SNAP & COOK ============ */
+  .snap-cook-bar {
+    background: var(--paper); border: 2px solid var(--brown); padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .snap-cook-bar:hover { background: var(--cream); border-color: var(--gold); }
+  .snap-cook-bar .snap-icon {
+    font-size: 2rem; flex-shrink: 0;
+  }
+  .snap-cook-bar .snap-text {
+    flex: 1;
+  }
+  .snap-cook-bar .snap-title {
+    font-family: 'Oswald', sans-serif; font-size: 0.85rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--brown);
+  }
+  .snap-cook-bar .snap-desc {
+    font-family: 'Special Elite', cursive; font-size: 0.75rem; color: var(--text-light);
+    margin-top: 0.15rem;
+  }
+  .snap-results-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    z-index: 350; display: flex; align-items: flex-start; justify-content: center;
+    padding: 2rem 1rem; overflow-y: auto;
+  }
+  .snap-results {
+    background: var(--paper); max-width: 640px; width: 100%;
+    border: 3px solid var(--brown);
+  }
+  .snap-results-header {
+    background: var(--brown); color: var(--gold-light); padding: 1rem 1.25rem;
+    font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 3px;
+    text-align: center; font-size: 0.85rem; position: relative;
+  }
+  .snap-results-header .close-x {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--gold-light); font-size: 1.2rem; cursor: pointer;
+  }
+  .snap-results-body { padding: 1rem; }
+  .snap-identified {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem;
+  }
+  .snap-id-tag {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: var(--cream); border: 1px solid var(--border); padding: 0.3rem 0.6rem;
+    font-family: 'Courier Prime', monospace; font-size: 0.75rem; font-weight: 700;
+    color: var(--brown);
+  }
+  .snap-id-tag.in-stock { border-color: var(--green); }
+  .snap-id-tag.not-stock { border-color: var(--red); opacity: 0.7; }
+  .snap-id-tag .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .snap-id-tag .dot.green { background: var(--green); }
+  .snap-id-tag .dot.red { background: var(--red); }
+  .snap-recipe-card {
+    border: 2px solid var(--border); margin-bottom: 1rem; background: var(--paper);
+  }
+  .snap-recipe-card .src-header {
+    background: var(--cream); padding: 0.75rem 1rem;
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-light); border-bottom: 1px solid var(--border);
+  }
+  .snap-recipe-card .src-body { padding: 1rem; }
+  .snap-recipe-card .src-title {
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700;
+    color: var(--brown); margin-bottom: 0.3rem;
+  }
+  .snap-recipe-card .src-meta {
+    font-family: 'Courier Prime', monospace; font-size: 0.7rem; color: var(--text-light);
+    margin-bottom: 0.75rem;
+  }
+  .snap-recipe-card .src-ingredients {
+    font-family: 'Courier Prime', monospace; font-size: 0.75rem; color: var(--brown);
+    margin-bottom: 0.75rem; line-height: 1.6;
+  }
+  .snap-recipe-card .src-steps {
+    font-family: 'Courier Prime', monospace; font-size: 0.75rem; color: var(--brown);
+    line-height: 1.6;
+  }
+  .snap-recipe-card .src-steps ol { padding-left: 1.25rem; }
+  .snap-recipe-card .src-steps li { margin-bottom: 0.3rem; }
+  .snap-recipe-card .src-actions {
+    padding: 0.75rem 1rem; border-top: 1px solid var(--border);
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+  }
+
   /* ============ CUSTOM MEAL BUILDER ============ */
   .meal-builder-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
@@ -1161,6 +1247,16 @@
       <h2>The Menu</h2>
       <div class="flourish">~ made with what you've got ~</div>
     </div>
+    <div class="snap-cook-bar" onclick="document.getElementById('snapCookFile').click()">
+      <div class="snap-icon">&#128248;</div>
+      <div class="snap-text">
+        <div class="snap-title">Snap & Cook</div>
+        <div class="snap-desc">Snap a photo of ingredients on the counter and get instant recipe ideas</div>
+      </div>
+    </div>
+    <input type="file" id="snapCookFile" accept="image/*" capture="environment" style="display:none" onchange="handleSnapCook(event)">
+    <div id="snapCookScanning" style="display:none;text-align:center;padding:2rem;font-family:'Special Elite',cursive;font-size:1.1rem;color:var(--brown);margin-bottom:1rem;">Looking at your ingredients<span class="dots"></span></div>
+
     <div class="controls">
       <input class="search-box" type="text" placeholder="Search the menu..." id="recipeSearch">
       <button class="filter-btn active" data-rfilter="all">All</button>
@@ -3072,6 +3168,224 @@ function getWeekEatOutStats() {
     }
   }
   return { totalMeals, ateOutCount, pct: totalMeals > 0 ? Math.round(ateOutCount / totalMeals * 100) : 0 };
+}
+
+// ============================================
+// SNAP & COOK (photo → recipe ideas)
+// ============================================
+async function handleSnapCook(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const scanning = document.getElementById('snapCookScanning');
+  scanning.style.display = 'block';
+
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const base64 = ev.target.result.split(',')[1];
+    const mimeType = file.type || 'image/jpeg';
+    const names = inventory.map(i => i.name);
+    const inventoryList = names.join(', ');
+
+    try {
+      const resp = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: `You are a creative home chef assistant. Look at this photo of ingredients and:
+
+1. IDENTIFY every food item you see in the photo. Return their common names.
+
+2. I also have these items in my kitchen: ${inventoryList}
+
+3. Come up with 3 recipe ideas that use the items from the photo AS THE STAR, plus items from my kitchen. Be creative! Include:
+   - A quick/easy option (under 20 min)
+   - A more impressive dinner option
+   - A fun/creative wildcard option
+
+For each recipe include:
+- title
+- description (1 sentence)
+- time (cook time)
+- servings
+- difficulty (easy/medium)
+- ingredients (list with amounts — mark which ones are "from photo" vs "from pantry")
+- spices & seasonings to use
+- steps (clear numbered steps, how to cook it)
+
+Return as JSON:
+{
+  "identified": ["item1", "item2"],
+  "recipes": [
+    {
+      "title": "...",
+      "description": "...",
+      "time": "...",
+      "servings": 4,
+      "difficulty": "easy",
+      "type": "quick",
+      "ingredients": [{"name":"...","amount":"...","source":"photo"},{"name":"...","amount":"...","source":"pantry"}],
+      "spices": ["salt","pepper","garlic powder"],
+      "steps": ["Step 1...","Step 2..."]
+    }
+  ]
+}
+
+Return ONLY valid JSON, no markdown.` },
+                { inlineData: { mimeType, data: base64 } }
+              ]
+            }],
+            generationConfig: { temperature: 0.8, maxOutputTokens: 8192 }
+          })
+        }
+      );
+      const data = await resp.json();
+      scanning.style.display = 'none';
+      document.getElementById('snapCookFile').value = '';
+
+      if (data.error) {
+        alert('Gemini error: ' + (data.error.message || 'Unknown'));
+        return;
+      }
+
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        alert('Could not analyze the photo. Try a clearer shot with items visible.');
+        return;
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+      showSnapCookResults(result, ev.target.result);
+    } catch (err) {
+      scanning.style.display = 'none';
+      alert('Failed to analyze: ' + err.message);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function showSnapCookResults(result, photoDataUrl) {
+  const names = inventory.map(i => i.name.toLowerCase());
+
+  // Build identified items tags
+  const idTags = (result.identified || []).map(item => {
+    const inStock = names.some(n => n.includes(item.toLowerCase()) || item.toLowerCase().includes(n));
+    return `<span class="snap-id-tag ${inStock ? 'in-stock' : 'not-stock'}">
+      <span class="dot ${inStock ? 'green' : 'red'}"></span>${item}
+    </span>`;
+  }).join('');
+
+  // Build recipe cards
+  const recipeCards = (result.recipes || []).map((r, idx) => {
+    const typeLabels = { quick: '&#9889; Quick & Easy', impressive: '&#127860; Dinner Worthy', wildcard: '&#127922; Creative Wildcard' };
+    const typeLabel = typeLabels[r.type] || (idx === 0 ? typeLabels.quick : idx === 1 ? typeLabels.impressive : typeLabels.wildcard);
+
+    const ingList = (r.ingredients || []).map(i =>
+      `<div style="display:flex;gap:0.4rem;align-items:baseline;">
+        <span style="color:${i.source==='photo'?'var(--gold)':'var(--green)'};font-size:0.6rem;">&#9679;</span>
+        <span>${i.amount} ${i.name}</span>
+        <span style="font-size:0.55rem;color:var(--text-light);font-style:italic;">${i.source==='photo'?'from photo':'pantry'}</span>
+      </div>`
+    ).join('');
+
+    const spiceList = (r.spices || []).join(', ');
+    const stepsList = (r.steps || []).map(s => `<li>${s}</li>`).join('');
+
+    return `<div class="snap-recipe-card">
+      <div class="src-header">${typeLabel}</div>
+      <div class="src-body">
+        <div class="src-title">${r.title}</div>
+        <div class="src-meta">${r.time} &bull; ${r.servings} servings &bull; ${r.difficulty}</div>
+        <div class="src-ingredients">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">Ingredients:</strong>
+          ${ingList}
+        </div>
+        ${spiceList ? `<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:var(--text-light);margin-bottom:0.75rem;">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown);">Spices:</strong> ${spiceList}
+        </div>` : ''}
+        <div class="src-steps">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">How to Cook:</strong>
+          <ol>${stepsList}</ol>
+        </div>
+      </div>
+      <div class="src-actions">
+        <button class="btn btn-primary" style="font-size:0.7rem;" onclick="addSnapRecipeToWeek('${r.title.replace(/'/g,"\\'")}')">Add to Week</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Matching existing recipes
+  const identified = (result.identified || []).map(i => i.toLowerCase());
+  const matchingExisting = RECIPES.filter(r =>
+    r.ingredients.some(i => identified.some(id => i.item.toLowerCase().includes(id) || id.includes(i.item.toLowerCase())))
+  ).slice(0, 5);
+
+  const existingCards = matchingExisting.length > 0 ? `
+    <div style="margin-top:1.5rem;padding-top:1rem;border-top:2px solid var(--brown);">
+      <div style="font-family:'Oswald',sans-serif;font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-bottom:0.75rem;">Also in Your Recipe Book</div>
+      ${matchingExisting.map(r => {
+        const slug = RECIPE_PHOTOS[r.title];
+        const img = slug ? `photos/recipes/${slug}.jpg` : '';
+        return `<div style="display:flex;gap:0.75rem;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="document.getElementById('snapCookOverlay').remove();showRecipeFromWeek('${r.title.replace(/'/g,"\\'")}')">
+          ${img ? `<img src="${img}" style="width:55px;height:42px;object-fit:cover;border:1px solid var(--border);border-radius:3px;">` : ''}
+          <div style="flex:1;">
+            <div style="font-family:'Oswald',sans-serif;font-size:0.8rem;color:var(--brown);">${r.title}</div>
+            <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:var(--text-light);">${r.time} &bull; ${r.servings} srv</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'snap-results-overlay';
+  overlay.id = 'snapCookOverlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="snap-results">
+      <div class="snap-results-header">
+        Snap & Cook Results
+        <button class="close-x" onclick="document.getElementById('snapCookOverlay').remove()">&times;</button>
+      </div>
+      <div class="snap-results-body">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <img src="${photoDataUrl}" style="max-width:200px;max-height:150px;border:2px solid var(--brown);object-fit:cover;">
+        </div>
+        <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-bottom:0.5rem;">I See These Items</div>
+        <div class="snap-identified">${idTags}</div>
+        ${recipeCards}
+        ${existingCards}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function addSnapRecipeToWeek(title) {
+  // Find the next empty dinner slot (or lunch, or breakfast)
+  const days = getWeekDates(weekOffset);
+  const plan = loadWeekPlan();
+  const today = new Date().toISOString().split('T')[0];
+
+  for (const meal of ['dinner', 'lunch', 'breakfast']) {
+    for (const d of days) {
+      const dk = d.toISOString().split('T')[0];
+      if (dk < today) continue;
+      if (!plan[dk]?.[meal]) {
+        if (!plan[dk]) plan[dk] = {};
+        plan[dk][meal] = { title, custom: true, items: [{ name: title, inStock: true }] };
+        saveWeekPlan(plan);
+        renderWeek();
+        const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        alert(`"${title}" added to ${meal} on ${dayLabel}!`);
+        return;
+      }
+    }
+  }
+  alert('No empty meal slots this week! Clear some first.');
 }
 
 // ============================================
