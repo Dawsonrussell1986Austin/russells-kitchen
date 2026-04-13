@@ -1017,7 +1017,7 @@
 <div class="modal-overlay" id="itemModal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <img class="modal-img" id="modalImg" src="" alt="">
+    <img class="modal-img" id="modalImg" src="" alt="" style="cursor:zoom-in;" onclick="if(this.src)openPhotoModal(this.src,document.getElementById('modalName').textContent)">
     <div class="modal-body">
       <h2 id="modalName"></h2>
       <div class="brand" id="modalBrand"></div>
@@ -1052,6 +1052,7 @@
       <button class="filter-btn" data-filter="Pantry">Pantry</button>
       <button class="filter-btn" data-filter="Freezer">Freezer</button>
       <button class="filter-btn" data-filter="Counter">Counter</button>
+      <button class="filter-btn" data-filter="Proteins">Proteins</button>
     </div>
     <div id="inventoryList"></div>
   </div>
@@ -1767,7 +1768,15 @@ function renderInventory(filter, search) {
   let html = '';
   for (const cat of Object.keys(cats).sort()) {
     let items = cats[cat];
-    if (filter !== "all") items = items.filter(i => i.location === filter);
+    if (filter === "Proteins") {
+      items = items.filter(i => {
+        if (i.category === "Meat & Protein") return true;
+        const n = i.name.toLowerCase();
+        const isProtein = /bacon|ribeye|steak|beef patties|tenderloin|meatball|salmon|sausage|drumstick|wing|nugget|strip|cutlet|turkey|pork|shrimp|lamb|fish/i.test(n);
+        const isFlavoring = /broth|gravy|sauce|ramen|seasoning|tallow|rice mix|fajita/i.test(n);
+        return isProtein && !isFlavoring;
+      });
+    } else if (filter !== "all") items = items.filter(i => i.location === filter);
     if (search) items = items.filter(i => i.name.toLowerCase().includes(sl) || (i.brand||'').toLowerCase().includes(sl));
     if (!items.length) continue;
     html += `<div class="category-section"><div class="category-header"><h2>${ICONS[cat]||'\uD83D\uDCE6'} ${cat}</h2><span class="count">${items.length}</span></div><div class="item-grid">`;
@@ -1775,7 +1784,7 @@ function renderInventory(filter, search) {
       const idx = inventory.indexOf(item); const n = item.nutrition;
       html += `<div class="item-card" onclick="openItemModal(${idx})">
         <button class="remove-btn" onclick="event.stopPropagation();removeItem(${idx})">X</button>
-        ${item.image ? `<img class="item-img" src="${item.image}" alt="${item.name}" loading="lazy">` : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--cream);">${ICONS[item.category]||'\uD83D\uDCE6'}</div>`}
+        ${item.image ? `<img class="item-img" src="${item.image}" alt="${item.name}" loading="lazy" style="cursor:zoom-in;" onclick="event.stopPropagation();openPhotoModal('${item.image}','${item.name.replace(/'/g,"\\'")}')">` : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--cream);">${ICONS[item.category]||'\uD83D\uDCE6'}</div>`}
         <div class="item-body">
           <div class="item-name">${item.name}</div>
           ${item.brand ? `<div class="item-brand">${item.brand}</div>` : ''}
@@ -2444,7 +2453,7 @@ function renderWeek() {
           <button class="meal-slot-remove" onclick="event.stopPropagation();removeMealFromWeek('${dayKey}','${m}')" title="Remove">&times;</button>
           <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
           <div class="meal-slot-title">${slot.title}</div>
-          ${imgSrc ? `<img class="meal-slot-img" src="${imgSrc}" loading="lazy">` : ''}
+          ${imgSrc ? `<img class="meal-slot-img" src="${imgSrc}" loading="lazy" style="cursor:zoom-in;" onclick="event.stopPropagation();openPhotoModal('${imgSrc}','${slot.title.replace(/'/g,"\\'")}')">` : ''}
         </div>`;
       } else {
         html += `<div class="week-meal-slot" style="position:relative;"
