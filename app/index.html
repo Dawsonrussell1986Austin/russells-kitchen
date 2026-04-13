@@ -757,18 +757,72 @@
   }
 
   /* ============ RESPONSIVE ============ */
-  @media (max-width: 600px) {
-    main { padding: 1rem; }
-    .diner-sign { font-size: 1.8rem; letter-spacing: 4px; }
-    .tab { padding: 0.65rem 1.2rem; font-size: 0.8rem; letter-spacing: 2px; }
-    .item-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
-    .item-card .item-img { height: 120px; }
+  /* Tablet */
+  @media (max-width: 768px) {
+    .tab { padding: 0.6rem 0.8rem; font-size: 0.7rem; letter-spacing: 1px; }
     .recipe-grid { grid-template-columns: 1fr; }
-    .recipe-nutri-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats { flex-wrap: wrap; }
-    .stat-card { min-width: 45%; }
-    .stat-card .num { font-size: 1.5rem; }
-    .menu-header h2 { font-size: 1.4rem; }
+    .item-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .controls { justify-content: flex-start; }
+  }
+  /* Mobile */
+  @media (max-width: 500px) {
+    main { padding: 0.75rem; }
+    header { padding: 1rem 0.75rem 0; }
+    .diner-sign { font-size: 1.5rem; letter-spacing: 3px; }
+    .diner-subtitle { font-size: 0.75rem; letter-spacing: 1px; }
+    .diner-border { margin-bottom: 0.5rem; }
+    .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab { padding: 0.55rem 0.6rem; font-size: 0.6rem; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
+    .item-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .item-card .item-img { height: 110px; }
+    .item-name { font-size: 0.8rem; }
+    .item-brand { font-size: 0.65rem; }
+    .nutri-pill { font-size: 0.55rem; padding: 0.05rem 0.25rem; }
+    .recipe-grid { grid-template-columns: 1fr; }
+    .recipe-nutri-grid { grid-template-columns: repeat(4, 1fr); gap: 0.3rem; }
+    .recipe-nutri-item { padding: 0.35rem; }
+    .recipe-nutri-item .val { font-size: 0.95rem; }
+    .recipe-nutri-item .lbl { font-size: 0.5rem; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+    .stat-card { min-width: auto; text-align: center; border-right: 1px solid var(--border); }
+    .stat-card .num { font-size: 1.4rem; }
+    .stat-card .label { font-size: 0.55rem; letter-spacing: 2px; }
+    .menu-header h2 { font-size: 1.2rem; letter-spacing: 2px; }
+    .menu-header .flourish { font-size: 0.75rem; }
+    .search-box { font-size: 0.85rem; min-width: 100%; }
+    .filter-btn { font-size: 0.7rem; padding: 0.45rem 0.8rem; letter-spacing: 1px; }
+    .controls { gap: 0.4rem; }
+    .category-header h2 { font-size: 1rem; letter-spacing: 1px; }
+    .recipe-hero { height: 180px; }
+    .recipe-title { font-size: 1.05rem; }
+    .recipe-desc { font-size: 0.75rem; }
+    .recipe-meta { font-size: 0.7rem; gap: 0.75rem; }
+    .ingredient-list li { font-size: 0.7rem; }
+    .ingredient-thumb { width: 40px; height: 40px; }
+    .toggle-steps { font-size: 0.7rem; letter-spacing: 2px; }
+    .recipe-steps li { font-size: 0.8rem; }
+    .week-grid { grid-template-columns: 1fr; }
+    .week-day { min-height: auto; }
+    .week-day-header { padding: 0.4rem; }
+    .week-day-header .day-date { font-size: 1rem; }
+    .meal-slot-title { font-size: 0.65rem; }
+    .meal-slot-img { height: 35px; }
+    .week-nav h3 { font-size: 1rem; min-width: 160px; }
+    .daily-hero { height: 200px; }
+    .daily-recipe-title { font-size: 1.3rem; }
+    .daily-nutri-row { gap: 0.4rem; }
+    .daily-nutri-box .val { font-size: 1rem; }
+    .add-section { padding: 1rem; }
+    .add-section h3 { font-size: 0.95rem; }
+    .form-row { flex-direction: column; }
+    .form-row input, .form-row select { min-width: 100%; }
+    .btn { width: 100%; text-align: center; }
+    .grocery-item { font-size: 0.8rem; }
+    .budget-tiers { grid-template-columns: repeat(2, 1fr); }
+    .budget-tier .tier-price { font-size: 1.2rem; }
+    .modal { width: 96%; }
+    .modal-img { height: 180px; }
+    .photo-modal-title { font-size: 1rem; padding: 0.4rem 1rem; }
   }
 
   /* ============ DIVIDER ============ */
@@ -805,7 +859,7 @@
     <button class="tab" data-page="recipes">The Menu</button>
     <button class="tab" data-page="week">The Week</button>
     <button class="tab" data-page="grocery">Grocery List</button>
-    <button class="tab" data-page="manage">Stock Room</button>
+    <button class="tab" data-page="manage">Re-Stock</button>
   </div>
 </header>
 
@@ -841,6 +895,7 @@
         <div class="serving" id="modalServing"></div>
         <table class="nutrition-table" id="modalNutrition"></table>
       </div>
+      <div id="modalUsedIn"></div>
     </div>
   </div>
 </div>
@@ -882,7 +937,8 @@
       <button class="filter-btn" data-rfilter="lunch">Lunch</button>
       <button class="filter-btn" data-rfilter="dinner">Dinner</button>
       <button class="filter-btn" data-rfilter="snack">Small Bites</button>
-      <button class="filter-btn" data-rfilter="100">Ready Now</button>
+      <button class="filter-btn" data-rfilter="dessert">Dessert</button>
+      <button class="filter-btn" data-rfilter="100">100% Match</button>
     </div>
     <div class="recipe-grid" id="recipeList"></div>
   </div>
@@ -918,7 +974,7 @@
   <!-- MANAGE PAGE -->
   <div class="page" id="page-manage">
     <div class="menu-header">
-      <h2>Stock Room</h2>
+      <h2>Re-Stock</h2>
       <div class="flourish">~ add your pantry & freezer items here ~</div>
     </div>
     <div class="add-section">
@@ -958,7 +1014,7 @@
         <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
-        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV9');location.reload();}">Fresh Start</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV12');location.reload();}">Fresh Start</button>
       </div>
     </div>
   </div>
@@ -1008,6 +1064,9 @@ const INITIAL_INVENTORY = [
   { name: "Limes", brand: "", category: "Produce", location: "Fridge", image: "photos/IMG_9909.jpg", nutrition: { servingSize: "1 lime (67g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 1, totalCarbs: 7, fiber: 2, sugars: 1, protein: 0 }},
   { name: "Mini Sweet Peppers", brand: "H-E-B", category: "Produce", location: "Fridge", image: "photos/IMG_9924.jpg", nutrition: { servingSize: "3 peppers (85g)", calories: 25, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 5, fiber: 1, sugars: 4, protein: 1 }},
   { name: "Cherry Tomatoes", brand: "Flavor Bombs", category: "Produce", location: "Fridge", image: "photos/IMG_9922.jpg", nutrition: { servingSize: "5 tomatoes (85g)", calories: 15, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 3, fiber: 1, sugars: 2, protein: 1 }},
+  { name: "Fresh Garlic", brand: "", category: "Produce", location: "Counter", image: "photos/products/garlic.jpg", nutrition: { servingSize: "1 clove (3g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 1, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Yellow Onion", brand: "", category: "Produce", location: "Counter", image: "photos/products/onion.jpg", nutrition: { servingSize: "1/2 medium (75g)", calories: 30, totalFat: 0, saturatedFat: 0, sodium: 3, totalCarbs: 7, fiber: 1, sugars: 3, protein: 1 }},
+  { name: "Avocado", brand: "", category: "Produce", location: "Counter", image: "photos/products/avocado.jpg", nutrition: { servingSize: "1/3 medium (50g)", calories: 80, totalFat: 7, saturatedFat: 1, sodium: 0, totalCarbs: 4, fiber: 3, sugars: 0, protein: 1 }},
   { name: "Castelvetrano Olives", brand: "Divina", category: "Produce", location: "Fridge", image: "photos/IMG_9892.jpg", nutrition: { servingSize: "4 olives (15g)", calories: 25, totalFat: 2.5, saturatedFat: 0.5, sodium: 90, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
   { name: "Hot Dog Buns (8 ct)", brand: "Mrs Baird's", category: "Bread & Bakery", location: "Counter", image: "photos/IMG_9893.jpg", nutrition: { servingSize: "1 bun (43g)", calories: 120, totalFat: 2, saturatedFat: 0, sodium: 210, totalCarbs: 22, fiber: 1, sugars: 3, protein: 4 }},
   { name: "Flour Tortillas", brand: "Vista Hermosa", category: "Bread & Bakery", location: "Counter", image: "photos/IMG_9910.jpg", nutrition: { servingSize: "1 tortilla (49g)", calories: 140, totalFat: 4, saturatedFat: 1.5, sodium: 330, totalCarbs: 23, fiber: 1, sugars: 1, protein: 3 }},
@@ -1155,15 +1214,15 @@ const INITIAL_INVENTORY = [
   { name: "Frozen Jasmine Rice", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0029.jpg", nutrition: { servingSize: "1 cup (200g)", calories: 240, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 54, fiber: 0, sugars: 0, protein: 4 }},
   { name: "Shredded Hash Browns", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0030.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 15, totalCarbs: 15, fiber: 1, sugars: 0, protein: 2 }},
   { name: "Organic Riced Cauliflower", brand: "365", category: "Frozen", location: "Freezer", image: "photos/IMG_0031.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 4, fiber: 2, sugars: 2, protein: 2 }},
-  { name: "Unknown Frozen Item 1", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0032.jpg", nutrition: null },
-  { name: "Unknown Frozen Item 2", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0033.jpg", nutrition: null },
+  { name: "Ribeye Steaks (Vacuum Sealed)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0032.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 310, totalFat: 24, saturatedFat: 10, sodium: 55, totalCarbs: 0, fiber: 0, sugars: 0, protein: 22 } },
+  { name: "Frozen Pineapple", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0033.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 80, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 21, fiber: 2, sugars: 16, protein: 1 } },
   { name: "1905 Vanilla Ice Cream", brand: "H-E-B Creamy Creations", category: "Frozen", location: "Freezer", image: "photos/IMG_0034.jpg", nutrition: { servingSize: "2/3 cup (97g)", calories: 250, totalFat: 14, saturatedFat: 9, sodium: 80, totalCarbs: 28, fiber: 0, sugars: 24, protein: 4 }},
   { name: "Wild Gulf White Shrimp", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0035.jpg", nutrition: { servingSize: "4 oz (112g)", calories: 120, totalFat: 2, saturatedFat: 0.5, sodium: 120, totalCarbs: 0, fiber: 0, sugars: 0, protein: 23 }},
   { name: "Frozen Passion Fruit Pieces", brand: "Pitaya Foods", category: "Frozen", location: "Freezer", image: "photos/IMG_0036.jpg", nutrition: { servingSize: "1/2 cup (100g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 13, fiber: 7, sugars: 4, protein: 1 }},
   { name: "Spicy Mexican Riced Cauliflower", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0037.jpg", nutrition: { servingSize: "1 cup (155g)", calories: 50, totalFat: 1.5, saturatedFat: 0, sodium: 340, totalCarbs: 8, fiber: 3, sugars: 3, protein: 2 }},
   { name: "Beef Tenderloin Steaks", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0038.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 8, saturatedFat: 3, sodium: 55, totalCarbs: 0, fiber: 0, sugars: 0, protein: 26 }},
   { name: "Mild Italian Sausage", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0039.jpg", nutrition: { servingSize: "1 link (84g)", calories: 230, totalFat: 18, saturatedFat: 6, sodium: 550, totalCarbs: 2, fiber: 0, sugars: 1, protein: 14 }},
-  { name: "Unknown Frozen Item 3", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0040.jpg", nutrition: null },
+  { name: "Homemade Meatballs (Vacuum Sealed)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0040.jpg", nutrition: { servingSize: "3 meatballs (85g)", calories: 200, totalFat: 14, saturatedFat: 6, sodium: 400, totalCarbs: 3, fiber: 0, sugars: 0, protein: 15 } },
   { name: "Organic Chicken Wings", brand: "Pine Manor", category: "Frozen", location: "Freezer", image: "photos/IMG_0041.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 190, totalFat: 13, saturatedFat: 3.5, sodium: 85, totalCarbs: 0, fiber: 0, sugars: 0, protein: 17 }},
   { name: "Cheese Kolaches", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0042.jpg", nutrition: { servingSize: "1 kolache (71g)", calories: 200, totalFat: 8, saturatedFat: 3.5, sodium: 350, totalCarbs: 25, fiber: 1, sugars: 5, protein: 7 }},
   { name: "Chicken Drumsticks", brand: "Sprouts", category: "Frozen", location: "Freezer", image: "photos/IMG_0043.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 10, saturatedFat: 3, sodium: 80, totalCarbs: 0, fiber: 0, sugars: 0, protein: 21 }},
@@ -1171,13 +1230,13 @@ const INITIAL_INVENTORY = [
   { name: "Grass-Fed Beef Patties (1/3 lb)", brand: "Kirkland", category: "Frozen", location: "Freezer", image: "photos/IMG_0045.jpg", nutrition: { servingSize: "1 patty (151g)", calories: 370, totalFat: 28, saturatedFat: 12, sodium: 100, totalCarbs: 0, fiber: 0, sugars: 0, protein: 28 }},
   { name: "Breaded Chicken Strips (GF)", brand: "Real Good Foods", category: "Frozen", location: "Freezer", image: "photos/IMG_0046.jpg", nutrition: { servingSize: "3 oz (85g)", calories: 170, totalFat: 9, saturatedFat: 2, sodium: 380, totalCarbs: 4, fiber: 0, sugars: 0, protein: 23 }},
   { name: "Argentinian Red Shrimp", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0047.jpg", nutrition: { servingSize: "4 oz (112g)", calories: 110, totalFat: 1.5, saturatedFat: 0.5, sodium: 480, totalCarbs: 0, fiber: 0, sugars: 0, protein: 23 }},
-  { name: "Unknown Frozen Item 4 (Popsicles)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0048.jpg", nutrition: null },
+  { name: "Frozen Popsicles", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0048.jpg", nutrition: { servingSize: "1 popsicle (52g)", calories: 40, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 10, fiber: 0, sugars: 8, protein: 0 } },
   { name: "Rao's Veggie Pizza", brand: "Rao's", category: "Frozen", location: "Freezer", image: "photos/IMG_0049.jpg", nutrition: { servingSize: "1/3 pizza (143g)", calories: 310, totalFat: 15, saturatedFat: 7, sodium: 620, totalCarbs: 33, fiber: 2, sugars: 5, protein: 13 }},
   { name: "Daybreak Fruit Blend", brand: "Wawona", category: "Frozen", location: "Freezer", image: "photos/IMG_0050.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 15, fiber: 2, sugars: 12, protein: 1 }},
   { name: "Organic Peas", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0051.jpg", nutrition: { servingSize: "2/3 cup (89g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 10, fiber: 4, sugars: 4, protein: 4 }},
   { name: "Spicy Mexican Riced Cauliflower (2nd)", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0052.jpg", nutrition: { servingSize: "1 cup (155g)", calories: 50, totalFat: 1.5, saturatedFat: 0, sodium: 340, totalCarbs: 8, fiber: 3, sugars: 3, protein: 2 }},
   { name: "Angus Beef Meatballs", brand: "Nature's Rancher", category: "Frozen", location: "Freezer", image: "photos/IMG_0053.jpg", nutrition: { servingSize: "3 meatballs (85g)", calories: 200, totalFat: 14, saturatedFat: 6, sodium: 470, totalCarbs: 4, fiber: 0, sugars: 1, protein: 14 }},
-  { name: "Unknown Frozen Item 5 (Broccoli)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0054.jpg", nutrition: null },
+  { name: "Frozen Broccoli", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0054.jpg", nutrition: { servingSize: "1 cup (91g)", calories: 30, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 5, fiber: 3, sugars: 1, protein: 3 } },
   { name: "Organic Peach Slices", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0055.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 13, fiber: 2, sugars: 10, protein: 1 }},
   { name: "Silver Dollar Pancakes", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0056.jpg", nutrition: { servingSize: "11 pancakes (55g)", calories: 170, totalFat: 4, saturatedFat: 1, sodium: 370, totalCarbs: 29, fiber: 1, sugars: 5, protein: 4 }},
   { name: "Atlantic Salmon Fillet", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0057.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 10, saturatedFat: 2.5, sodium: 50, totalCarbs: 0, fiber: 0, sugars: 0, protein: 22 }},
@@ -1192,13 +1251,13 @@ const INITIAL_INVENTORY = [
   { name: "Oven Roasted Turkey Breast", brand: "Applegate", category: "Frozen", location: "Freezer", image: "photos/IMG_0066.jpg", nutrition: { servingSize: "2 oz (56g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 360, totalCarbs: 0, fiber: 0, sugars: 0, protein: 12 }},
   { name: "Cinnamon Raisin Bread", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0067.jpg", nutrition: { servingSize: "1 slice (32g)", calories: 90, totalFat: 1, saturatedFat: 0, sodium: 100, totalCarbs: 18, fiber: 1, sugars: 5, protein: 3 }},
   { name: "Crustless PB&J Sandwiches", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0068.jpg", nutrition: { servingSize: "1 sandwich (57g)", calories: 200, totalFat: 8, saturatedFat: 2, sodium: 190, totalCarbs: 27, fiber: 1, sugars: 9, protein: 5 }},
-  { name: "Unknown Frozen Item 6 (Fish/Meat)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0069.jpg", nutrition: null },
+  { name: "Atlantic Salmon (Vacuum Sealed)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0069.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 10, saturatedFat: 2.5, sodium: 50, totalCarbs: 0, fiber: 0, sugars: 0, protein: 22 } },
   { name: "Frozen Strawberries", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0070.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 12, fiber: 3, sugars: 8, protein: 1 }},
-  { name: "Unknown Frozen Item 7 (Popsicles 2)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0071.jpg", nutrition: null },
+  { name: "Frozen Popsicles (2nd pack)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0071.jpg", nutrition: { servingSize: "1 popsicle (52g)", calories: 40, totalFat: 0, saturatedFat: 0, sodium: 5, totalCarbs: 10, fiber: 0, sugars: 8, protein: 0 } },
   { name: "Dorot Crushed Garlic Cubes", brand: "Dorot Gardens", category: "Frozen", location: "Freezer", image: "photos/IMG_0072.jpg", nutrition: { servingSize: "1 cube (4g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
   { name: "Dorot Crushed Ginger Cubes", brand: "Dorot Gardens", category: "Frozen", location: "Freezer", image: "photos/IMG_0073.jpg", nutrition: { servingSize: "1 cube (4g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
   { name: "Acai Packs (Unsweetened)", brand: "Sambazon", category: "Frozen", location: "Freezer", image: "photos/IMG_0074.jpg", nutrition: { servingSize: "1 pack (100g)", calories: 70, totalFat: 5, saturatedFat: 1.5, sodium: 5, totalCarbs: 4, fiber: 3, sugars: 0, protein: 1 }},
-  { name: "Unknown Frozen Item 8 (Turkey/Meat)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0075.jpg", nutrition: null },
+  { name: "Turkey Cutlets", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0075.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 120, totalFat: 1, saturatedFat: 0, sodium: 55, totalCarbs: 0, fiber: 0, sugars: 0, protein: 26 } },
   { name: "Straus Vanilla Bean Ice Cream", brand: "Straus Family Creamery", category: "Frozen", location: "Freezer", image: "photos/IMG_0076.jpg", nutrition: { servingSize: "2/3 cup (96g)", calories: 250, totalFat: 16, saturatedFat: 10, sodium: 55, totalCarbs: 22, fiber: 0, sugars: 21, protein: 4 }},
   { name: "Organic Green Peas (2nd bag)", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0077.jpg", nutrition: { servingSize: "2/3 cup (89g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 10, fiber: 4, sugars: 4, protein: 4 }},
   { name: "Organic Frozen Blueberries", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0078.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 80, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 20, fiber: 4, sugars: 14, protein: 1 }},
@@ -1211,10 +1270,10 @@ const RECIPES = [
     extraIngredients: [], steps: ["Halve 1 pint cherry tomatoes and 8 oz mozzarella ciliegine. Arrange on a platter.","Scatter 1/2 cup Castelvetrano olives and 1 tbsp drained capers over the top.","Whisk together 2 tbsp olive oil, juice of 1 lime, 1/4 tsp kosher salt, and a pinch of black pepper.","Drizzle the vinaigrette over everything. Finish with a pinch of red pepper flakes.","Let sit 5 minutes at room temperature before serving so flavors meld."] },
   { title: "Buffalo Bacon Quesadilla", desc: "Crispy flour tortilla loaded with smoky bacon, buffalo sauce, and gooey melted mozzarella.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Flour Tortillas",amount:2},{item:"Applewood Smoked Bacon",amount:3},{item:"Buffalo Sauce",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Avocado Oil Mayo",amount:1},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1}],
-    extraIngredients: [], steps: ["Cook 6 slices bacon in a skillet over medium heat until crispy, about 8 minutes. Drain on paper towels, then chop.","Spread 1 tbsp Primal Kitchen mayo on one half of each tortilla. Sprinkle with a pinch of garlic powder.","Layer 1/4 cup shredded mozzarella, half the chopped bacon, and 1 tbsp buffalo sauce on each tortilla.","Fold tortillas in half. Heat 1 tsp avocado oil in the skillet over medium heat.","Cook each quesadilla 2-3 minutes per side until golden brown and cheese is melted. Cut into wedges.","Serve with extra buffalo sauce and a drizzle of mayo for dipping."] },
+    sides: ["The Salsa Boss salsa & chips","Organic Riced Cauliflower"], extraIngredients: [], steps: ["Cook 6 slices bacon in a skillet over medium heat until crispy, about 8 minutes. Drain on paper towels, then chop.","Spread 1 tbsp Primal Kitchen mayo on one half of each tortilla. Sprinkle with a pinch of garlic powder.","Layer 1/4 cup shredded mozzarella, half the chopped bacon, and 1 tbsp buffalo sauce on each tortilla.","Fold tortillas in half. Heat 1 tsp avocado oil in the skillet over medium heat.","Cook each quesadilla 2-3 minutes per side until golden brown and cheese is melted. Cut into wedges.","Serve with extra buffalo sauce and a drizzle of mayo for dipping."] },
   { title: "Japanese BBQ Wraps", desc: "Warm tortillas with caramelized peppers glazed in a Bachan's and Soyaki teriyaki sauce.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Flour Tortillas",amount:2},{item:"Japanese BBQ Sauce",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1},{item:"Black Pepper",amount:1}],
-    extraIngredients: [], steps: ["Slice 6 mini sweet peppers into thin strips.","Heat 1 tbsp avocado oil in a skillet over medium-high heat. Saute peppers 3-4 minutes until slightly charred.","Mix 2 tbsp Bachan's Japanese BBQ with 2 tbsp Soyaki in a small bowl. Pour over peppers, toss to coat, and cook 1 more minute.","Warm tortillas in a dry skillet 20 seconds per side.","Layer 1/4 cup shredded mozzarella on each tortilla, add the glazed peppers, and sprinkle with garlic powder and black pepper.","Roll up tightly and toast seam-side down in the skillet until golden, about 2 minutes."] },
+    sides: ["Organic Edamame","Organic Jasmine Rice"], extraIngredients: [], steps: ["Slice 6 mini sweet peppers into thin strips.","Heat 1 tbsp avocado oil in a skillet over medium-high heat. Saute peppers 3-4 minutes until slightly charred.","Mix 2 tbsp Bachan's Japanese BBQ with 2 tbsp Soyaki in a small bowl. Pour over peppers, toss to coat, and cook 1 more minute.","Warm tortillas in a dry skillet 20 seconds per side.","Layer 1/4 cup shredded mozzarella on each tortilla, add the glazed peppers, and sprinkle with garlic powder and black pepper.","Roll up tightly and toast seam-side down in the skillet until golden, about 2 minutes."] },
   { title: "Ricotta & Fig Toast", desc: "Warm flaky biscuits with whipped ricotta, fig butter, and a drizzle of maple and flaky salt.", time: "18 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:2},{item:"Whole Milk Ricotta",amount:2},{item:"Fig Butter",amount:2},{item:"Blackberry Sage Jam",amount:1},{item:"Organic Maple Syrup",amount:0.15},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Bake 2 biscuits on a parchment-lined sheet for 12-14 minutes until golden.","While biscuits bake, whip 1/2 cup ricotta with a fork until fluffy. Season with a pinch of salt and black pepper.","Split each warm biscuit in half horizontally.","Spread a generous 2 tbsp whipped ricotta on each biscuit half.","Top two halves with 1 tbsp fig butter each, and the other two with blackberry sage jam.","Finish with a light drizzle of maple syrup and a pinch of flaky salt."] },
@@ -1229,7 +1288,7 @@ const RECIPES = [
     extraIngredients: [], steps: ["Whisk 2 tbsp tahini with the juice of 1 lime, 1 tbsp olive oil, 2 tbsp warm water, 1/4 tsp cumin, 1/4 tsp garlic powder, and 1/4 tsp salt until smooth and creamy.","Slice 6 mini sweet peppers into rings and halve 1 pint cherry tomatoes.","Arrange the vegetables in bowls.","Drizzle the tahini-lime dressing generously over the vegetables.","Finish with an extra squeeze of lime and a drizzle of olive oil."] },
   { title: "Cream Cheese Stuffed Peppers", desc: "Sweet mini peppers stuffed with herbed cream cheese, jalapenos, mozzarella, and topped with crispy bacon.", time: "25 min", servings: 4, difficulty: "medium", meal: ["snack","dinner"],
     ingredients: [{item:"Mini Sweet Peppers",amount:3},{item:"Philadelphia Cream Cheese",amount:4},{item:"Nacho Sliced Jalapenos",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Applewood Smoked Bacon",amount:2},{item:"Garlic Powder",amount:1},{item:"Smoked Paprika",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
-    extraIngredients: [], steps: ["Preheat oven to 400F. Line a baking sheet with parchment paper.","Cook 4 slices bacon until crispy. Crumble and set aside.","Halve 12 mini sweet peppers lengthwise and remove seeds.","In a bowl, mix 4 oz softened cream cheese with 2 tbsp chopped jalapenos, 1/4 tsp garlic powder, 1/4 tsp smoked paprika, salt and pepper to taste.","Fill each pepper half with a heaping spoonful of the cream cheese mixture.","Top each with shredded mozzarella and crumbled bacon.","Bake 15-18 minutes until peppers are tender and cheese is bubbly and golden."] },
+    sides: ["Organic Jasmine Rice","Refried Pinto Beans"], extraIngredients: [], steps: ["Preheat oven to 400F. Line a baking sheet with parchment paper.","Cook 4 slices bacon until crispy. Crumble and set aside.","Halve 12 mini sweet peppers lengthwise and remove seeds.","In a bowl, mix 4 oz softened cream cheese with 2 tbsp chopped jalapenos, 1/4 tsp garlic powder, 1/4 tsp smoked paprika, salt and pepper to taste.","Fill each pepper half with a heaping spoonful of the cream cheese mixture.","Top each with shredded mozzarella and crumbled bacon.","Bake 15-18 minutes until peppers are tender and cheese is bubbly and golden."] },
   { title: "Greek Yogurt Parfait", desc: "Thick Greek yogurt layered with wild blueberry preserves, crunchy flaxseed, and a kiss of maple.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Greek Yogurt (Plain)",amount:1},{item:"Wild Blueberry Preserves",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Organic Maple Syrup",amount:0.15},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Spoon 3/4 cup Greek yogurt into a glass or bowl.","Add 1 tbsp wild blueberry preserves in dollops around the yogurt (don't stir — keep it pretty).","Sprinkle 1 tbsp ground flaxseed over the top for crunch.","Drizzle 1 tsp maple syrup in a thin stream.","Add the tiniest pinch of salt to make the flavors pop. Eat immediately."] },
@@ -1253,7 +1312,7 @@ const RECIPES = [
     extraIngredients: [], steps: ["Preheat oven to 400F. Line a baking sheet with parchment paper.","Melt 2 tbsp butter. Brush each tortilla with a thin layer of melted butter.","Spread 1 tsp Dijon mustard evenly over each buttered tortilla.","Sprinkle generously with grated parmesan (about 2 tbsp per tortilla), plus a dusting of garlic powder and black pepper.","Cut each tortilla into 8 triangles with a pizza cutter or sharp knife.","Arrange in a single layer on the baking sheet. Sprinkle with a pinch of flaky salt.","Bake 6-8 minutes until golden and crispy. Watch carefully — they can burn fast. Cool 2 minutes before eating."] },
   { title: "Coconut Aminos Stir-Fry Wraps", desc: "Quick-seared peppers in a savory coconut aminos and teriyaki glaze, wrapped in warm tortillas with lime.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Coconut Aminos",amount:2},{item:"Soyaki Teriyaki",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Limes",amount:1},{item:"Flour Tortillas",amount:2},{item:"Avocado Oil",amount:1},{item:"Garlic Powder",amount:1},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
-    extraIngredients: [], steps: ["Slice 6 mini sweet peppers into strips. Pat dry with a paper towel.","Heat 1 tbsp avocado oil in a skillet or wok over high heat until smoking.","Add peppers in a single layer. Don't stir for 2 minutes to get a good char.","Toss, then add 2 tbsp coconut aminos and 2 tbsp Soyaki. Add a pinch of garlic powder and red pepper flakes.","Cook 1-2 more minutes until sauce thickens and coats the peppers.","Warm tortillas in a dry skillet 20 seconds per side.","Fill tortillas with the glazed peppers, squeeze lime juice over the top, and wrap."] },
+    sides: ["Organic Edamame","Organic Jasmine Rice"], extraIngredients: [], steps: ["Slice 6 mini sweet peppers into strips. Pat dry with a paper towel.","Heat 1 tbsp avocado oil in a skillet or wok over high heat until smoking.","Add peppers in a single layer. Don't stir for 2 minutes to get a good char.","Toss, then add 2 tbsp coconut aminos and 2 tbsp Soyaki. Add a pinch of garlic powder and red pepper flakes.","Cook 1-2 more minutes until sauce thickens and coats the peppers.","Warm tortillas in a dry skillet 20 seconds per side.","Fill tortillas with the glazed peppers, squeeze lime juice over the top, and wrap."] },
   { title: "Irish Butter Biscuits & Maple", desc: "Warm flaky biscuits split and slathered with Irish butter, drizzled with maple syrup and flaky salt.", time: "18 min", servings: 4, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Irish Spreadable Butter",amount:4},{item:"Organic Maple Syrup",amount:0.25},{item:"Kosher Salt",amount:1}],
     extraIngredients: [], steps: ["Preheat oven to 375F. Place 4 biscuits on a parchment-lined baking sheet.","Bake 12-14 minutes until puffed and deep golden brown on top.","Let cool just 1 minute — you want them hot.","Split each biscuit in half. Immediately spread a generous 1 tbsp Irish butter on each cut side (it should melt on contact).","Drizzle 1 tsp maple syrup over each biscuit half.","Finish with a pinch of flaky kosher salt. Serve immediately while the butter is still melting."] },
@@ -1278,15 +1337,15 @@ const RECIPES = [
 
   { title: "Coconut Curry Ramen", desc: "Creamy coconut milk broth with ramen noodles, turmeric, garam masala, and lime.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Chicken Ramen Noodles",amount:2},{item:"Coconut Milk (Unsweetened)",amount:1},{item:"Better Than Bouillon",amount:2},{item:"Limes",amount:1},{item:"Ground Turmeric",amount:2},{item:"Garam Masala",amount:2},{item:"Garlic Powder",amount:1},{item:"Yellowbird Serrano Hot Sauce",amount:2}],
-    extraIngredients: [], steps: ["Bring 2 cups water to a boil. Stir in 2 tsp Better Than Bouillon.","Add 1 can coconut milk, 1/2 tsp turmeric, and 1/2 tsp garam masala. Stir well.","Add ramen noodles (discard the flavor packets). Cook 3 minutes.","Season with garlic powder, salt, and a squeeze of lime.","Ladle into bowls. Drizzle serrano hot sauce on top.","Serve with a lime wedge."] },
+    sides: ["Organic Edamame","Green Onion Pancakes"], extraIngredients: [], steps: ["Bring 2 cups water to a boil. Stir in 2 tsp Better Than Bouillon.","Add 1 can coconut milk, 1/2 tsp turmeric, and 1/2 tsp garam masala. Stir well.","Add ramen noodles (discard the flavor packets). Cook 3 minutes.","Season with garlic powder, salt, and a squeeze of lime.","Ladle into bowls. Drizzle serrano hot sauce on top.","Serve with a lime wedge."] },
 
   { title: "Black Bean & Cheese Quesadillas", desc: "Flour tortillas stuffed with refried black beans, shredded mozzarella, green chiles, and adobo seasoning.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"HEB Flour Tortillas (20 ct)",amount:2},{item:"Refried Black Beans",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"Diced Green Chiles (x2)",amount:2},{item:"Adobo Seasoning",amount:1},{item:"Avocado Oil",amount:1},{item:"The Salsa Boss (Medium)",amount:2}],
-    extraIngredients: [], steps: ["Spread 3 tbsp refried black beans on one half of each tortilla.","Sprinkle with shredded mozzarella, 1 tbsp green chiles, and a pinch of adobo seasoning.","Fold tortillas in half.","Heat 1 tsp avocado oil in a skillet over medium heat.","Cook quesadillas 2-3 minutes per side until golden and cheese melts.","Cut into wedges. Serve with Salsa Boss for dipping."] },
+    sides: ["Refried Pinto Beans","Cherry Tomato salad"], extraIngredients: [], steps: ["Spread 3 tbsp refried black beans on one half of each tortilla.","Sprinkle with shredded mozzarella, 1 tbsp green chiles, and a pinch of adobo seasoning.","Fold tortillas in half.","Heat 1 tsp avocado oil in a skillet over medium heat.","Cook quesadillas 2-3 minutes per side until golden and cheese melts.","Cut into wedges. Serve with Salsa Boss for dipping."] },
 
   { title: "Fettuccine Marinara with Parmesan", desc: "Simple pasta night — fettuccine tossed in Carbone marinara with garlic, parmesan, and Italian seasoning.", time: "18 min", servings: 3, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Organic Fettuccine (x2)",amount:3},{item:"Marinara Sauce",amount:2},{item:"Grated Parmesan",amount:3},{item:"Extra Virgin Olive Oil",amount:2},{item:"Garlic Powder",amount:2},{item:"Italian Seasoning",amount:2},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
-    extraIngredients: [], steps: ["Bring a large pot of salted water to a boil. Cook fettuccine per package directions (about 10 min). Reserve 1/2 cup pasta water.","Meanwhile, warm 1 cup Carbone marinara in a pan with 1 tbsp olive oil, 1/2 tsp garlic powder, and 1/2 tsp Italian seasoning.","Drain pasta and toss directly into the sauce. Add a splash of pasta water to loosen.","Toss with 2 tbsp parmesan. Plate and top with more parmesan and red pepper flakes.","Finish with a drizzle of good olive oil."] },
+    sides: ["Olive & Mozz Antipasto","Dijon Parmesan Crisps"], extraIngredients: [], steps: ["Bring a large pot of salted water to a boil. Cook fettuccine per package directions (about 10 min). Reserve 1/2 cup pasta water.","Meanwhile, warm 1 cup Carbone marinara in a pan with 1 tbsp olive oil, 1/2 tsp garlic powder, and 1/2 tsp Italian seasoning.","Drain pasta and toss directly into the sauce. Add a splash of pasta water to loosen.","Toss with 2 tbsp parmesan. Plate and top with more parmesan and red pepper flakes.","Finish with a drizzle of good olive oil."] },
 
   { title: "Fishwife Tuna Toast", desc: "Spicy Fishwife tinned tuna on crispy whole wheat toast with Kewpie, capers, and lemon.", time: "8 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
     ingredients: [{item:"Spicy Albacore Tuna in Olive Oil",amount:1},{item:"Whole Wheat Bread",amount:2},{item:"Kewpie Mayonnaise",amount:1},{item:"Organic Capers",amount:1},{item:"Limes",amount:1},{item:"Red Pepper Flakes",amount:1},{item:"Black Pepper",amount:1}],
@@ -1294,7 +1353,7 @@ const RECIPES = [
 
   { title: "Annie's Mac & Cheese Upgrade", desc: "Annie's mac elevated with bacon, green chiles, and smoked paprika. Comfort food, leveled up.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Annie's Mac & Cheese (x2)",amount:1},{item:"Applewood Smoked Bacon",amount:2},{item:"Diced Green Chiles (x2)",amount:1},{item:"Unsalted Organic Butter",amount:1},{item:"A2 Organic Whole Milk",amount:0.25},{item:"Smoked Paprika",amount:1},{item:"Cholula Original",amount:1}],
-    extraIngredients: [], steps: ["Cook mac and cheese per box directions with butter and milk.","While pasta boils, cook 4 slices bacon until crispy. Crumble.","Stir 2 tbsp green chiles and half the crumbled bacon into the finished mac.","Add 1/4 tsp smoked paprika and stir to combine.","Serve topped with remaining bacon crumbles.","Drizzle with Cholula and enjoy."] },
+    sides: ["Organic Peas","Cherry Tomato salad"], extraIngredients: [], steps: ["Cook mac and cheese per box directions with butter and milk.","While pasta boils, cook 4 slices bacon until crispy. Crumble.","Stir 2 tbsp green chiles and half the crumbled bacon into the finished mac.","Add 1/4 tsp smoked paprika and stir to combine.","Serve topped with remaining bacon crumbles.","Drizzle with Cholula and enjoy."] },
 
   { title: "Peanut Butter Banana Oats", desc: "Warm oatmeal with peanuts, honey, cinnamon, and flaxseed. A hearty protein-packed breakfast.", time: "8 min", servings: 1, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Rolled Oats",amount:1},{item:"A2 Organic Whole Milk",amount:0.5},{item:"Dry Roasted Peanuts",amount:1},{item:"Organic Honey",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Saigon Cinnamon",amount:1},{item:"Kosher Salt",amount:1}],
@@ -1302,7 +1361,7 @@ const RECIPES = [
 
   { title: "Chicken Herb Rice Bowl", desc: "Lundberg chicken & herb rice topped with cherry tomatoes, olives, feta, and a tahini drizzle.", time: "25 min", servings: 2, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Chicken & Herb Rice Mix",amount:2},{item:"Cherry Tomatoes",amount:1},{item:"Castelvetrano Olives",amount:2},{item:"Tahini",amount:1},{item:"Limes",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Extra Virgin Olive Oil",amount:1}],
-    extraIngredients: [], steps: ["Cook Lundberg rice per package directions (about 20 min).","While rice cooks, halve cherry tomatoes and quarter olives.","Whisk 1 tbsp tahini with juice of 1/2 lime and 1 tbsp water.","Fluff rice and divide into bowls.","Top with tomatoes and olives.","Drizzle tahini sauce and olive oil. Season with salt and pepper."] },
+    sides: ["Tahini Lime Veggie Bowl","Pita Chips"], extraIngredients: [], steps: ["Cook Lundberg rice per package directions (about 20 min).","While rice cooks, halve cherry tomatoes and quarter olives.","Whisk 1 tbsp tahini with juice of 1/2 lime and 1 tbsp water.","Fluff rice and divide into bowls.","Top with tomatoes and olives.","Drizzle tahini sauce and olive oil. Season with salt and pepper."] },
 
   { title: "Biscuits & Country Gravy", desc: "Annie's flaky biscuits smothered in Pioneer country sausage gravy. Southern comfort.", time: "20 min", servings: 4, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Country Sausage Gravy Mix",amount:2},{item:"A2 Organic Whole Milk",amount:1},{item:"Black Pepper",amount:2},{item:"Kosher Salt",amount:1}],
@@ -1318,7 +1377,7 @@ const RECIPES = [
 
   { title: "Bean & Cheese Burrito", desc: "Big flour tortilla stuffed with refried pinto beans, melted cheese, salsa, and hot sauce.", time: "10 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"HEB Flour Tortillas (20 ct)",amount:2},{item:"Refried Pinto Beans",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"The Salsa Boss (Medium)",amount:2},{item:"Cholula Original",amount:2},{item:"Avocado Oil",amount:1},{item:"Cumin",amount:1},{item:"Garlic Powder",amount:1}],
-    extraIngredients: [], steps: ["Warm refried beans in a small pot with 1/4 tsp cumin and 1/4 tsp garlic powder.","Warm tortillas in a dry skillet until pliable.","Spread 1/3 cup warm beans down the center of each tortilla.","Add 2 tbsp shredded mozzarella to each.","Microwave 20 seconds to melt cheese, or fold and toast in the skillet.","Top with Salsa Boss and Cholula. Roll up and eat."] },
+    sides: ["Spicy Mexican Riced Cauliflower","Refried Black Beans"], extraIngredients: [], steps: ["Warm refried beans in a small pot with 1/4 tsp cumin and 1/4 tsp garlic powder.","Warm tortillas in a dry skillet until pliable.","Spread 1/3 cup warm beans down the center of each tortilla.","Add 2 tbsp shredded mozzarella to each.","Microwave 20 seconds to melt cheese, or fold and toast in the skillet.","Top with Salsa Boss and Cholula. Roll up and eat."] },
 
   { title: "Granola Yogurt Crunch Bowl", desc: "Thick Greek yogurt with Purely Elizabeth granola, honey, almonds, and freeze-dried strawberries.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Greek Yogurt (Plain)",amount:1},{item:"Salty-Sweet Granola",amount:1},{item:"Freeze Dried Strawberries",amount:1},{item:"Marcona Almonds (Fried & Salted)",amount:1},{item:"Organic Honey",amount:1}],
@@ -1331,27 +1390,27 @@ const RECIPES = [
   // ===== FREEZER PROTEIN RECIPES =====
   { title: "Garlic Butter Salmon", desc: "Pan-seared Atlantic salmon with garlic, butter, lemon, and fresh herbs. Restaurant quality in 15 minutes.", time: "15 min", servings: 2, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Atlantic Salmon Fillet",amount:2},{item:"Unsalted Organic Butter",amount:3},{item:"Dorot Crushed Garlic Cubes",amount:3},{item:"Limes",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Organic Parsley",amount:1},{item:"Avocado Oil",amount:1}],
-    extraIngredients: [], steps: ["Thaw salmon if frozen. Pat very dry with paper towels. Season both sides generously with salt and pepper.","Heat 1 tbsp avocado oil in a skillet over medium-high heat until shimmering.","Place salmon skin-side up and sear 4 minutes without moving until a golden crust forms.","Flip salmon. Add 2 tbsp butter and 3 garlic cubes to the pan.","Baste the salmon with the melted garlic butter for 3-4 minutes until cooked through.","Squeeze lime juice over the top, sprinkle with parsley, and serve immediately with the pan sauce."] },
+    sides: ["Organic Jasmine Rice","Spicy Mexican Riced Cauliflower"], extraIngredients: [], steps: ["Thaw salmon if frozen. Pat very dry with paper towels. Season both sides generously with salt and pepper.","Heat 1 tbsp avocado oil in a skillet over medium-high heat until shimmering.","Place salmon skin-side up and sear 4 minutes without moving until a golden crust forms.","Flip salmon. Add 2 tbsp butter and 3 garlic cubes to the pan.","Baste the salmon with the melted garlic butter for 3-4 minutes until cooked through.","Squeeze lime juice over the top, sprinkle with parsley, and serve immediately with the pan sauce."] },
 
   { title: "Coconut Shrimp Stir-Fry", desc: "Argentinian red shrimp in a coconut-aminos glaze with peas and jasmine rice.", time: "20 min", servings: 2, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Argentinian Red Shrimp",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Coconut Aminos",amount:2},{item:"Organic Peas",amount:1},{item:"Dorot Crushed Garlic Cubes",amount:2},{item:"Dorot Crushed Ginger Cubes",amount:2},{item:"Avocado Oil",amount:1},{item:"Limes",amount:1},{item:"White Sesame Seeds",amount:1}],
-    extraIngredients: [], steps: ["Thaw shrimp under cold running water 5 minutes. Pat dry.","Microwave frozen jasmine rice per package directions.","Heat 1 tbsp avocado oil in a large skillet over high heat.","Sear shrimp 2 minutes per side until pink and curled. Remove from pan.","Add 2 garlic cubes, 2 ginger cubes, and 1/2 cup frozen peas. Stir-fry 2 minutes.","Add 3 tbsp coconut aminos. Return shrimp, toss to coat.","Serve over jasmine rice. Squeeze lime and sprinkle sesame seeds."] },
+    sides: ["Organic Edamame","Organic Riced Cauliflower"], extraIngredients: [], steps: ["Thaw shrimp under cold running water 5 minutes. Pat dry.","Microwave frozen jasmine rice per package directions.","Heat 1 tbsp avocado oil in a large skillet over high heat.","Sear shrimp 2 minutes per side until pink and curled. Remove from pan.","Add 2 garlic cubes, 2 ginger cubes, and 1/2 cup frozen peas. Stir-fry 2 minutes.","Add 3 tbsp coconut aminos. Return shrimp, toss to coat.","Serve over jasmine rice. Squeeze lime and sprinkle sesame seeds."] },
 
   { title: "Smash Burgers", desc: "Thin, crispy-edged grass-fed beef smash burgers on brioche buns with all the fixings.", time: "15 min", servings: 2, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Grass-Fed Beef Patties (1/3 lb)",amount:2},{item:"Brioche Burger Buns",amount:2},{item:"Sliced Cheese",amount:2},{item:"Organic Ketchup",amount:2},{item:"Duke's Real Mayonnaise",amount:1},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:1},{item:"Avocado Oil",amount:1}],
-    extraIngredients: [], steps: ["Thaw beef patties. Divide each into 2 balls (4 total for 2 double burgers).","Heat a cast iron skillet over high heat until smoking. Add a thin layer of avocado oil.","Place 2 balls on the skillet. Immediately smash flat with a spatula. Season heavily with salt and pepper.","Cook 2-3 minutes until edges are deeply browned and crispy. Flip.","Add a slice of cheese to each patty. Cook 1 more minute.","Toast bun cut-sides in the beef fat. Stack 2 patties per bun with ketchup and Duke's mayo."] },
+    sides: ["Shredded Hash Browns","Frozen Diced Potatoes"], extraIngredients: [], steps: ["Thaw beef patties. Divide each into 2 balls (4 total for 2 double burgers).","Heat a cast iron skillet over high heat until smoking. Add a thin layer of avocado oil.","Place 2 balls on the skillet. Immediately smash flat with a spatula. Season heavily with salt and pepper.","Cook 2-3 minutes until edges are deeply browned and crispy. Flip.","Add a slice of cheese to each patty. Cook 1 more minute.","Toast bun cut-sides in the beef fat. Stack 2 patties per bun with ketchup and Duke's mayo."] },
 
   { title: "Bachan's Chicken Wings", desc: "Crispy baked chicken wings glazed with Bachan's Japanese BBQ and sesame seeds.", time: "45 min", servings: 4, difficulty: "medium", meal: ["dinner","snack"],
     ingredients: [{item:"Organic Chicken Wings",amount:4},{item:"Japanese BBQ Sauce",amount:4},{item:"Avocado Oil",amount:2},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:1},{item:"Garlic Powder",amount:2},{item:"White Sesame Seeds",amount:2},{item:"Yellowbird Serrano Hot Sauce",amount:2}],
-    extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil and place a wire rack on top.","Thaw wings. Pat very dry. Toss with 1 tbsp avocado oil, salt, pepper, and garlic powder.","Spread wings in a single layer on the rack. Bake 25 minutes.","Flip wings. Bake 15 more minutes until skin is crispy and golden.","Toss hot wings in a bowl with 4 tbsp Bachan's Japanese BBQ sauce until coated.","Plate, sprinkle with sesame seeds, and drizzle serrano hot sauce. Serve immediately."] },
+    sides: ["Organic Jasmine Rice","Organic Peas"], extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil and place a wire rack on top.","Thaw wings. Pat very dry. Toss with 1 tbsp avocado oil, salt, pepper, and garlic powder.","Spread wings in a single layer on the rack. Bake 25 minutes.","Flip wings. Bake 15 more minutes until skin is crispy and golden.","Toss hot wings in a bowl with 4 tbsp Bachan's Japanese BBQ sauce until coated.","Plate, sprinkle with sesame seeds, and drizzle serrano hot sauce. Serve immediately."] },
 
   { title: "Sausage & Peppers Pasta", desc: "Italian sausage crumbled with peppers and marinara over fettuccine. A hearty weeknight dinner.", time: "25 min", servings: 3, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Mild Italian Sausage",amount:2},{item:"Organic Fettuccine (x2)",amount:3},{item:"Marinara Sauce",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Grated Parmesan",amount:3},{item:"Extra Virgin Olive Oil",amount:1},{item:"Italian Seasoning",amount:2},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
-    extraIngredients: [], steps: ["Cook fettuccine in salted boiling water per package directions. Reserve 1/2 cup pasta water.","While pasta cooks, remove sausage from casings and crumble into a hot skillet with 1 tsp olive oil.","Brown sausage 6-7 minutes, breaking into small pieces. Add sliced peppers, cook 3 more minutes.","Add 1 cup marinara, Italian seasoning, and red pepper flakes. Simmer 5 minutes.","Toss drained pasta into the sauce with a splash of pasta water.","Plate and top with generous parmesan and a drizzle of olive oil."] },
+    sides: ["Dijon Parmesan Crisps","Caprese with Olives & Capers"], extraIngredients: [], steps: ["Cook fettuccine in salted boiling water per package directions. Reserve 1/2 cup pasta water.","While pasta cooks, remove sausage from casings and crumble into a hot skillet with 1 tsp olive oil.","Brown sausage 6-7 minutes, breaking into small pieces. Add sliced peppers, cook 3 more minutes.","Add 1 cup marinara, Italian seasoning, and red pepper flakes. Simmer 5 minutes.","Toss drained pasta into the sauce with a splash of pasta water.","Plate and top with generous parmesan and a drizzle of olive oil."] },
 
   { title: "Meatball Marinara Subs", desc: "Angus beef meatballs in Carbone marinara on toasted brioche buns with melted mozzarella.", time: "20 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Angus Beef Meatballs",amount:2},{item:"Marinara Sauce",amount:1},{item:"Brioche Burger Buns",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Grated Parmesan",amount:1},{item:"Italian Seasoning",amount:1},{item:"Garlic Powder",amount:1}],
-    extraIngredients: [], steps: ["Heat 6-8 meatballs in a saucepan with 1 cup marinara sauce over medium heat, covered, for 12-15 minutes until heated through.","Preheat broiler. Split brioche buns and toast cut-side up under broiler 1 minute.","Spoon meatballs and sauce onto the bottom buns.","Top with shredded mozzarella, parmesan, and a pinch of Italian seasoning.","Broil open-faced 2 minutes until cheese is bubbly.","Close with the top bun. These are messy — embrace it."] },
+    sides: ["Dijon Parmesan Crisps","Caesar Pita Chip Salad"], extraIngredients: [], steps: ["Heat 6-8 meatballs in a saucepan with 1 cup marinara sauce over medium heat, covered, for 12-15 minutes until heated through.","Preheat broiler. Split brioche buns and toast cut-side up under broiler 1 minute.","Spoon meatballs and sauce onto the bottom buns.","Top with shredded mozzarella, parmesan, and a pinch of Italian seasoning.","Broil open-faced 2 minutes until cheese is bubbly.","Close with the top bun. These are messy — embrace it."] },
 
   { title: "Hash Brown Breakfast Skillet", desc: "Crispy hash browns with breakfast sausage, eggs, and cheese. The ultimate morning fuel.", time: "20 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Shredded Hash Browns",amount:2},{item:"Chicken & Maple Breakfast Sausage (Box)",amount:2},{item:"Eggs",amount:2},{item:"Shredded Mozzarella",amount:1},{item:"Avocado Oil",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Smoked Paprika",amount:1}],
@@ -1359,7 +1418,7 @@ const RECIPES = [
 
   { title: "Teriyaki Chicken Rice Bowl", desc: "Applegate grilled chicken in Soyaki teriyaki with jasmine rice, edamame, and sesame.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Grilled Chicken Breast Strips",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Soyaki Teriyaki",amount:3},{item:"Organic Edamame",amount:1},{item:"White Sesame Seeds",amount:1},{item:"Dorot Crushed Ginger Cubes",amount:1},{item:"Limes",amount:1}],
-    extraIngredients: [], steps: ["Microwave jasmine rice and edamame per package directions.","Heat chicken strips in a skillet over medium heat with 2 tbsp Soyaki and 1 ginger cube, 3-4 minutes.","Slice chicken into bite-sized pieces.","Divide rice into bowls. Top with chicken and edamame.","Drizzle remaining Soyaki over everything. Sprinkle sesame seeds.","Squeeze lime and serve."] },
+    sides: ["Organic Edamame","Green Onion Pancakes"], extraIngredients: [], steps: ["Microwave jasmine rice and edamame per package directions.","Heat chicken strips in a skillet over medium heat with 2 tbsp Soyaki and 1 ginger cube, 3-4 minutes.","Slice chicken into bite-sized pieces.","Divide rice into bowls. Top with chicken and edamame.","Drizzle remaining Soyaki over everything. Sprinkle sesame seeds.","Squeeze lime and serve."] },
 
   { title: "Acai Smoothie Bowl", desc: "Thick frozen acai blended with fruit and topped with granola, honey, and coconut.", time: "8 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Acai Packs (Unsweetened)",amount:1},{item:"Organic Frozen Blueberries",amount:1},{item:"Daybreak Fruit Blend",amount:1},{item:"Salty-Sweet Granola",amount:1},{item:"Organic Honey",amount:1},{item:"Almond Butter",amount:0.5}],
@@ -1371,7 +1430,7 @@ const RECIPES = [
 
   { title: "Green Onion Pancake Wraps", desc: "Crispy TJ's scallion pancakes wrapped around grilled chicken with Soyaki and sriracha mayo.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
     ingredients: [{item:"Green Onion Pancakes",amount:2},{item:"Grilled Chicken Breast Strips",amount:1},{item:"Soyaki Teriyaki",amount:2},{item:"Kewpie Mayonnaise",amount:1},{item:"Blue Agave Sriracha",amount:1},{item:"White Sesame Seeds",amount:1},{item:"Limes",amount:1}],
-    extraIngredients: [], steps: ["Cook green onion pancakes in a dry skillet or per package directions until crispy, about 3 minutes per side.","Heat chicken strips with 1 tbsp Soyaki in a separate pan.","Mix 1 tbsp Kewpie with 1 tsp sriracha for spicy mayo.","Lay pancakes flat. Add chicken strips down the center.","Drizzle with Soyaki, spicy mayo, and squeeze of lime. Sprinkle sesame seeds.","Roll up and eat like a wrap. The crispy pancake texture is the star."] },
+    sides: ["Organic Peas","Organic Jasmine Rice"], extraIngredients: [], steps: ["Cook green onion pancakes in a dry skillet or per package directions until crispy, about 3 minutes per side.","Heat chicken strips with 1 tbsp Soyaki in a separate pan.","Mix 1 tbsp Kewpie with 1 tsp sriracha for spicy mayo.","Lay pancakes flat. Add chicken strips down the center.","Drizzle with Soyaki, spicy mayo, and squeeze of lime. Sprinkle sesame seeds.","Roll up and eat like a wrap. The crispy pancake texture is the star."] },
 
   { title: "Frozen Fruit Smoothie", desc: "A thick creamy smoothie with mixed frozen fruit, Greek yogurt, honey, and flax.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Daybreak Fruit Blend",amount:2},{item:"Organic Frozen Blueberries",amount:1},{item:"Greek Yogurt (Plain)",amount:1},{item:"A2 Organic Whole Milk",amount:0.5},{item:"Organic Honey",amount:1},{item:"Ground Flaxseed",amount:1}],
@@ -1379,11 +1438,11 @@ const RECIPES = [
 
   { title: "Chicken Drumstick Dinner", desc: "Baked chicken drumsticks rubbed with adobo, paprika, and garlic. Juicy and simple.", time: "40 min", servings: 3, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Chicken Drumsticks",amount:3},{item:"Avocado Oil",amount:2},{item:"Adobo Seasoning",amount:3},{item:"Organic Paprika",amount:2},{item:"Garlic Powder",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Organic Honey",amount:1}],
-    extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil.","Thaw drumsticks. Pat dry. Toss with 1 tbsp avocado oil.","Mix 1 tsp adobo, 1 tsp paprika, 1/2 tsp garlic powder, salt and pepper in a bowl.","Rub the seasoning all over the drumsticks.","Arrange on the baking sheet. Bake 20 minutes.","Flip, drizzle with 1 tbsp honey, and bake 15 more minutes until skin is crispy and internal temp hits 165F."] },
+    sides: ["Root Vegetable Hash Browns","Organic Peas"], extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil.","Thaw drumsticks. Pat dry. Toss with 1 tbsp avocado oil.","Mix 1 tsp adobo, 1 tsp paprika, 1/2 tsp garlic powder, salt and pepper in a bowl.","Rub the seasoning all over the drumsticks.","Arrange on the baking sheet. Bake 20 minutes.","Flip, drizzle with 1 tbsp honey, and bake 15 more minutes until skin is crispy and internal temp hits 165F."] },
 
   { title: "Shrimp Fajita Rice Bowl", desc: "Gulf shrimp with fajita seasoning over jasmine rice with salsa, cheese, and lime.", time: "18 min", servings: 2, difficulty: "easy", meal: ["dinner"],
     ingredients: [{item:"Wild Gulf White Shrimp",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Chicken Fajita Seasoning",amount:2},{item:"The Salsa Boss (Medium)",amount:2},{item:"Shredded Mozzarella",amount:1},{item:"Limes",amount:1},{item:"Avocado Oil",amount:1},{item:"Mini Sweet Peppers",amount:1}],
-    extraIngredients: [], steps: ["Thaw shrimp under cold water. Pat dry and toss with 2 tsp fajita seasoning.","Microwave jasmine rice per package directions.","Heat 1 tbsp avocado oil in a skillet over high heat. Add sliced peppers, cook 3 minutes.","Add shrimp, cook 2-3 minutes per side until pink and slightly charred.","Divide rice into bowls. Top with shrimp and peppers.","Add salsa, shredded cheese, and a squeeze of lime."] },
+    sides: ["Refried Black Beans","Spicy Mexican Riced Cauliflower"], extraIngredients: [], steps: ["Thaw shrimp under cold water. Pat dry and toss with 2 tsp fajita seasoning.","Microwave jasmine rice per package directions.","Heat 1 tbsp avocado oil in a skillet over high heat. Add sliced peppers, cook 3 minutes.","Add shrimp, cook 2-3 minutes per side until pink and slightly charred.","Divide rice into bowls. Top with shrimp and peppers.","Add salsa, shredded cheese, and a squeeze of lime."] },
 
   { title: "Kolache Breakfast Plate", desc: "HEB cheese kolaches with breakfast sausage, hash browns, and hot sauce. Texas mornings.", time: "15 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Cheese Kolaches",amount:2},{item:"Chicken & Maple Breakfast Sausage (Box)",amount:1},{item:"Shredded Hash Browns",amount:1},{item:"Avocado Oil",amount:1},{item:"Cholula Original",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
@@ -1392,6 +1451,69 @@ const RECIPES = [
   { title: "Peach Cobbler Yogurt Bowl", desc: "Warm cinnamon peaches over cold Greek yogurt with granola. Quick dessert or breakfast.", time: "8 min", servings: 2, difficulty: "easy", meal: ["breakfast","snack"],
     ingredients: [{item:"Organic Peach Slices",amount:2},{item:"Greek Yogurt (Plain)",amount:2},{item:"Salty-Sweet Granola",amount:1},{item:"Organic Honey",amount:1},{item:"Saigon Cinnamon",amount:2},{item:"Unsalted Organic Butter",amount:1},{item:"Organic Maple Syrup",amount:0.15}],
     extraIngredients: [], steps: ["Melt 1 tbsp butter in a small skillet over medium heat.","Add 1 cup frozen peach slices. Cook 4-5 minutes until warm and slightly caramelized.","Sprinkle with 1/2 tsp cinnamon and 1 tsp maple syrup. Toss gently.","Divide Greek yogurt into two bowls.","Spoon the warm cinnamon peaches over the cold yogurt.","Top with granola and a drizzle of honey. The warm-cold contrast is the whole point."] },
+
+  // ===== DESSERT RECIPES =====
+  { title: "Chocolate Peanut Butter Mug Cake", desc: "Rich cacao mug cake with peanut butter swirl, maple syrup, and vanilla. Ready in 3 minutes.", time: "5 min", servings: 1, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"Organic Cacao Powder",amount:3},{item:"Eggs",amount:1},{item:"Organic Maple Syrup",amount:0.5},{item:"Dry Roasted Peanuts",amount:1},{item:"Pure Vanilla Extract",amount:2},{item:"Unsalted Organic Butter",amount:1},{item:"Kosher Salt",amount:1},{item:"Baking Powder",amount:1}],
+    extraIngredients: [], steps: ["In a large mug, melt 1 tbsp butter in the microwave (15 seconds).","Add 3 tbsp cacao powder, 1 egg, 2 tbsp maple syrup, 1 tsp vanilla, a pinch of baking powder and salt. Whisk well.","Drop 1 tbsp crushed peanuts into the center.","Microwave on high for 90 seconds. The top should look just set (it'll keep cooking).","Let cool 1 minute. Drizzle with a tiny bit of maple syrup.","Eat straight from the mug with a spoon."] },
+
+  { title: "Cherry Jell-O Parfait", desc: "Layered cherry Jell-O with whipped cream cheese and granola crumble. Retro diner dessert.", time: "10 min + 4hr chill", servings: 4, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"Cherry Jell-O (Family Size)",amount:1},{item:"Philadelphia Cream Cheese",amount:2},{item:"Salty-Sweet Granola",amount:1},{item:"Organic Honey",amount:1},{item:"Pure Vanilla Extract",amount:1}],
+    extraIngredients: [], steps: ["Make Jell-O per package directions. Pour into a shallow dish and refrigerate 4 hours until set.","Beat 4 oz cream cheese with 1 tbsp honey and 1/2 tsp vanilla until fluffy.","Cube the set Jell-O into small pieces.","Layer in glasses: Jell-O cubes, cream cheese dollops, crushed granola.","Repeat layers. Top with a final sprinkle of granola.","Serve cold. This is peak retro diner energy."] },
+
+  { title: "Coconut Milk Panna Cotta", desc: "Silky coconut panna cotta with passion fruit and honey. Elegant and dairy-free.", time: "15 min + 4hr chill", servings: 4, difficulty: "medium", meal: ["dessert"],
+    ingredients: [{item:"Coconut Milk (Unsweetened)",amount:1},{item:"Unflavored Gelatin Powder",amount:1},{item:"Organic Honey",amount:2},{item:"Pure Vanilla Extract",amount:2},{item:"Frozen Passion Fruit Pieces",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Bloom 1 tbsp gelatin in 2 tbsp cold water for 5 minutes.","Heat 1 can coconut milk with 3 tbsp honey and a pinch of salt until simmering (don't boil).","Remove from heat. Stir in the bloomed gelatin until fully dissolved. Add 1 tsp vanilla.","Pour into 4 ramekins or glasses. Refrigerate at least 4 hours until set.","Thaw a handful of passion fruit pieces. Spoon over the set panna cotta.","Drizzle with honey and serve cold."] },
+
+  { title: "Frozen Fruit Ice Cream", desc: "Creamy blended frozen fruit soft-serve with no added sugar. Just fruit, blended until magic.", time: "5 min", servings: 2, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"Organic Frozen Blueberries",amount:2},{item:"Frozen Strawberries",amount:2},{item:"Frozen Pineapple",amount:1},{item:"A2 Organic Whole Milk",amount:0.25},{item:"Organic Honey",amount:1}],
+    extraIngredients: [], steps: ["Add 1 cup frozen blueberries, 1 cup frozen strawberries, and 1/2 cup frozen pineapple to a blender or food processor.","Add just 2-3 tbsp milk — barely enough to get it moving.","Blend on high, pushing down with a tamper, until thick like soft-serve ice cream.","Scoop into bowls. Drizzle with honey.","Eat IMMEDIATELY — this melts fast.","Top with granola or crushed almonds if you want crunch."] },
+
+  { title: "Maple Butter Ice Cream Sundae", desc: "HEB vanilla ice cream with warm maple butter sauce, crushed almonds, and cinnamon.", time: "5 min", servings: 2, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"1905 Vanilla Ice Cream",amount:2},{item:"Organic Maple Syrup",amount:1},{item:"Unsalted Organic Butter",amount:2},{item:"Marcona Almonds (Fried & Salted)",amount:1},{item:"Saigon Cinnamon",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Make maple butter sauce: melt 2 tbsp butter in a small pan. Add 3 tbsp maple syrup and a pinch of salt. Stir until bubbling and slightly thickened, about 2 minutes.","Scoop ice cream into bowls (2-3 scoops each).","Pour the warm maple butter sauce over the ice cream.","Crush 6-8 Marcona almonds and scatter on top.","Dust with a pinch of cinnamon.","Eat fast while the sauce is still warm against the cold ice cream."] },
+
+  { title: "Straus Vanilla Affogato", desc: "Straus vanilla bean ice cream drowned in hot espresso. Two ingredients, infinite class.", time: "3 min", servings: 1, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"Straus Vanilla Bean Ice Cream",amount:2},{item:"Organic Cacao Powder",amount:1}],
+    extraIngredients: ["espresso or strong coffee (1 shot)"], steps: ["Scoop 2 generous scoops of Straus vanilla bean ice cream into a small bowl or espresso cup.","Brew 1 shot of espresso (or 1/4 cup very strong coffee).","Pour the hot espresso directly over the ice cream.","Dust with a tiny pinch of cacao powder.","Eat immediately with a spoon — the contrast of hot and cold is everything."] },
+
+  { title: "Pineapple Passion Fruit Sorbet", desc: "Tropical frozen blend of pineapple and passion fruit. No cream, no sugar, just sunshine.", time: "5 min", servings: 2, difficulty: "easy", meal: ["dessert"],
+    ingredients: [{item:"Frozen Pineapple",amount:2},{item:"Frozen Passion Fruit Pieces",amount:2},{item:"Limes",amount:1},{item:"Organic Honey",amount:1}],
+    extraIngredients: [], steps: ["Add 1 cup frozen pineapple and 1/2 cup frozen passion fruit to a food processor.","Squeeze in the juice of 1/2 lime.","Add 1 tbsp honey.","Process until smooth and sorbet-like, scraping sides as needed.","Scoop into bowls and serve immediately.","Garnish with a lime zest if you're feeling fancy."] },
+
+  // ===== MORE RECIPES FOR UNUSED ITEMS =====
+  { title: "Ribeye Steak with Garlic Butter", desc: "Pan-seared ribeye with garlic, rosemary, and butter baste. Date night at home.", time: "20 min", servings: 2, difficulty: "medium", meal: ["dinner"],
+    sides: ["Frozen Diced Potatoes","Frozen Broccoli"],
+    ingredients: [{item:"Ribeye Steaks (Vacuum Sealed)",amount:2},{item:"Unsalted Organic Butter",amount:3},{item:"Fresh Garlic",amount:3},{item:"Rosemary",amount:2},{item:"Avocado Oil",amount:1},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:2}],
+    extraIngredients: [], steps: ["Thaw steaks and bring to room temperature 30 minutes before cooking. Pat very dry.","Season generously on all sides with salt and pepper.","Heat a cast iron skillet over high heat until smoking. Add 1 tbsp avocado oil.","Place steaks in pan. Don't touch for 4 minutes to build a crust.","Flip. Add 2 tbsp butter, 3 smashed garlic cloves, and a sprig of rosemary to the pan.","Tilt the pan and baste the steaks with the garlic butter for 3-4 minutes (medium-rare = 130F internal).","Rest 5 minutes before slicing. Spoon the pan butter over the top."] },
+
+  { title: "Chicken Nugget Dinner Plate", desc: "Golden chicken nuggets with ranch, honey mustard, and diced potatoes. Kid-approved, adult-enjoyed.", time: "25 min", servings: 3, difficulty: "easy", meal: ["dinner"],
+    sides: ["Frozen Diced Potatoes","Buttermilk Ranch Dressing"],
+    ingredients: [{item:"Breaded Chicken Nuggets",amount:3},{item:"Frozen Diced Potatoes",amount:2},{item:"Buttermilk Ranch Dressing",amount:2},{item:"Organic Honey",amount:1},{item:"Organic Dijon Mustard",amount:1},{item:"Avocado Oil",amount:1},{item:"Kosher Salt",amount:1},{item:"Smoked Paprika",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 425F. Spread chicken nuggets and diced potatoes on separate baking sheets.","Toss potatoes with 1 tbsp avocado oil, salt, and paprika.","Bake nuggets and potatoes 18-20 minutes, flipping halfway.","Make honey mustard: mix 2 tbsp honey with 1 tbsp Dijon.","Plate nuggets with crispy potatoes. Serve with ranch and honey mustard for dipping.","This is comfort food. No shame."] },
+
+  { title: "Turkey Cutlet Piccata", desc: "Thin turkey cutlets pan-fried with a bright lemon-caper butter sauce. Light and elegant.", time: "18 min", servings: 2, difficulty: "medium", meal: ["dinner"],
+    sides: ["Organic Fettuccine (x2)","Frozen Broccoli"],
+    ingredients: [{item:"Turkey Cutlets",amount:2},{item:"Unsalted Organic Butter",amount:3},{item:"Organic Capers",amount:2},{item:"Limes",amount:1},{item:"Low Sodium Chicken Broth",amount:1},{item:"All-Purpose Flour",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Avocado Oil",amount:1},{item:"Organic Parsley",amount:1}],
+    extraIngredients: [], steps: ["Thaw turkey cutlets. Pat dry and season with salt and pepper. Lightly dredge in flour, shaking off excess.","Heat 1 tbsp avocado oil and 1 tbsp butter in a skillet over medium-high heat.","Cook cutlets 3 minutes per side until golden. Remove to a plate.","In the same pan, add 1/2 cup chicken broth, juice of 1 lime, and 2 tbsp capers. Simmer 3 minutes, scraping up the browned bits.","Swirl in 1 tbsp cold butter to thicken the sauce.","Return cutlets to the pan, spoon sauce over. Sprinkle with parsley and serve."] },
+
+  { title: "Dinner Roll Sliders", desc: "Mini sliders on warm Rhodes dinner rolls with beef patties, cheese, and pickles. Party food.", time: "25 min", servings: 4, difficulty: "easy", meal: ["dinner","snack"],
+    ingredients: [{item:"Frozen Dinner Rolls",amount:3},{item:"Grass-Fed Beef Patties (1/3 lb)",amount:1},{item:"Sliced Cheese",amount:2},{item:"Grillo's Pickle Spears",amount:2},{item:"Organic Ketchup",amount:2},{item:"Duke's Real Mayonnaise",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
+    extraIngredients: [], steps: ["Thaw and bake dinner rolls per package (or thaw overnight in fridge and bake at 375F for 12 min).","Form the beef patty into 4 smaller slider-sized patties. Season with salt and pepper.","Cook patties in a hot skillet 2-3 min per side. Add a piece of cheese to each in the last minute.","Slice warm rolls in half. Spread mayo on bottoms, ketchup on tops.","Place a patty on each roll. Add a sliced pickle spear.","Close and serve. These disappear fast."] },
+
+  { title: "Beef Tenderloin with Chimichurri", desc: "Seared beef tenderloin steaks with a quick parsley-garlic chimichurri. Special occasion dinner.", time: "20 min", servings: 2, difficulty: "medium", meal: ["dinner"],
+    sides: ["Organic Jasmine Rice","Frozen Broccoli"],
+    ingredients: [{item:"Beef Tenderloin Steaks",amount:2},{item:"Extra Virgin Olive Oil",amount:3},{item:"Fresh Garlic",amount:3},{item:"Organic Parsley",amount:3},{item:"Red Pepper Flakes",amount:1},{item:"Limes",amount:1},{item:"Avocado Oil",amount:1},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:2}],
+    extraIngredients: [], steps: ["Make chimichurri: mix 3 tbsp olive oil, 2 minced garlic cloves, 2 tbsp dried parsley, pinch of red pepper flakes, juice of 1/2 lime, and salt. Set aside.","Thaw steaks. Pat dry and season generously with salt and pepper.","Heat 1 tbsp avocado oil in a cast iron skillet over high heat until smoking.","Sear steaks 4 minutes per side for medium-rare (130F internal).","Rest 5 minutes. Spoon chimichurri generously over the steaks.","Serve with jasmine rice and steamed broccoli."] },
+
+  { title: "BBQ Chicken Strips & Ranch", desc: "GF breaded chicken strips tossed in Texas BBQ sauce with ranch for dipping.", time: "20 min", servings: 2, difficulty: "easy", meal: ["dinner","snack"],
+    sides: ["Shredded Hash Browns","Frozen Broccoli"],
+    ingredients: [{item:"Breaded Chicken Strips (GF)",amount:2},{item:"Texas True BBQ Sauce",amount:2},{item:"Buttermilk Ranch Dressing",amount:2},{item:"Kosher Salt",amount:1},{item:"Smoked Paprika",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 400F. Arrange chicken strips on a parchment-lined baking sheet.","Bake 15-18 minutes until golden and crispy.","Warm 4 tbsp BBQ sauce in a small bowl. Toss half the chicken strips in BBQ sauce.","Leave the other half naked and crispy.","Serve both styles with a generous cup of ranch dressing for dipping.","Dust with smoked paprika. Devour."] },
+
+  { title: "Silver Dollar Pancake Stack", desc: "Quick frozen silver dollar pancakes with maple, butter, and breakfast sausage.", time: "8 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"Silver Dollar Pancakes",amount:2},{item:"Chicken & Maple Sausage (Bag)",amount:1},{item:"Organic Maple Syrup",amount:0.5},{item:"Unsalted Organic Butter",amount:1},{item:"Saigon Cinnamon",amount:1}],
+    extraIngredients: [], steps: ["Heat silver dollar pancakes per package directions (microwave 1 min or toaster).","Cook breakfast sausage links in a skillet, 4-5 minutes turning occasionally.","Stack 5-6 warm pancakes on each plate. Top with a pat of butter.","Drizzle generously with maple syrup and a pinch of cinnamon.","Serve sausage links alongside.","This is a 5-minute breakfast that tastes like you tried."] },
 ];
 
 // ============================================
@@ -1401,11 +1523,11 @@ let inventory = [];
 let currentFilter = 'all';
 
 function loadInventory() {
-  const saved = localStorage.getItem('kitchenInventoryV9');
+  const saved = localStorage.getItem('kitchenInventoryV12');
   inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
   if (!saved) saveInventory();
 }
-function saveInventory() { localStorage.setItem('kitchenInventoryV9', JSON.stringify(inventory)); }
+function saveInventory() { localStorage.setItem('kitchenInventoryV12', JSON.stringify(inventory)); }
 function getCategories() {
   const cats = {};
   inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
@@ -1485,6 +1607,25 @@ function openItemModal(idx) {
     document.getElementById('modalServing').textContent = 'Nutrition data not available';
     document.getElementById('modalNutrition').innerHTML = '';
   }
+  // Show "Used In" recipes
+  const usedIn = RECIPES.filter(r => r.ingredients.some(i => i.item === item.name));
+  const usedInEl = document.getElementById('modalUsedIn');
+  if (usedIn.length > 0) {
+    usedInEl.innerHTML = `<h3 style="font-family:'Oswald',sans-serif;font-size:0.85rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-top:1rem;padding-top:0.75rem;border-top:1px dashed var(--border);">Used In ${usedIn.length} Recipe${usedIn.length>1?'s':''}</h3>
+      ${usedIn.map(r => {
+        const slug = RECIPE_PHOTOS[r.title];
+        const img = slug ? `photos/recipes/${slug}.jpg` : '';
+        return `<div style="display:flex;gap:0.6rem;align-items:center;padding:0.4rem 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="closeModal();showRecipeFromWeek('${r.title.replace(/'/g,"\\'")}')">
+          ${img ? `<img src="${img}" style="width:50px;height:38px;object-fit:cover;border:1px solid var(--border);border-radius:3px;">` : ''}
+          <div>
+            <div style="font-family:'Oswald',sans-serif;font-size:0.8rem;color:var(--brown);">${r.title}</div>
+            <div style="font-family:'Courier Prime',monospace;font-size:0.6rem;color:var(--text-light);">${(r.meal||[]).join(', ')} &bull; ${r.time}</div>
+          </div>
+        </div>`;
+      }).join('')}`;
+  } else {
+    usedInEl.innerHTML = `<div style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--text-light);margin-top:1rem;padding-top:0.75rem;border-top:1px dashed var(--border);text-align:center;">Not used in any recipes yet</div>`;
+  }
   document.getElementById('itemModal').classList.add('open');
 }
 function closeModal() { document.getElementById('itemModal').classList.remove('open'); }
@@ -1549,6 +1690,20 @@ const RECIPE_PHOTOS = {
   "Shrimp Fajita Rice Bowl": "shrimp-fajita-rice-bowl",
   "Kolache Breakfast Plate": "kolache-breakfast-plate",
   "Peach Cobbler Yogurt Bowl": "peach-cobbler-yogurt",
+  "Chocolate Peanut Butter Mug Cake": "chocolate-pb-mug-cake",
+  "Cherry Jell-O Parfait": "cherry-jello-parfait",
+  "Coconut Milk Panna Cotta": "coconut-panna-cotta",
+  "Frozen Fruit Ice Cream": "frozen-fruit-ice-cream",
+  "Maple Butter Ice Cream Sundae": "maple-butter-sundae",
+  "Straus Vanilla Affogato": "straus-affogato",
+  "Pineapple Passion Fruit Sorbet": "pineapple-passion-sorbet",
+  "Ribeye Steak with Garlic Butter": "ribeye-garlic-butter",
+  "Chicken Nugget Dinner Plate": "chicken-nugget-plate",
+  "Turkey Cutlet Piccata": "turkey-piccata",
+  "Dinner Roll Sliders": "dinner-roll-sliders",
+  "Beef Tenderloin with Chimichurri": "beef-tenderloin-chimichurri",
+  "BBQ Chicken Strips & Ranch": "bbq-chicken-strips",
+  "Silver Dollar Pancake Stack": "silver-dollar-stack",
 };
 
 function getItemByName(name) { return inventory.find(i => i.name === name); }
@@ -1570,9 +1725,9 @@ function renderRecipes(filter, search) {
   if (search) recipes = recipes.filter(r => r.title.toLowerCase().includes(sl) || r.ingredients.some(i => i.item.toLowerCase().includes(sl)));
 
   // Group by meal category for menu-style display
-  const MEAL_ORDER = ["breakfast","lunch","dinner","snack"];
-  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Small Bites & Appetizers"};
-  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ just a little somethin' ~"};
+  const MEAL_ORDER = ["breakfast","lunch","dinner","snack","dessert"];
+  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Small Bites & Appetizers",dessert:"Dessert"};
+  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ just a little somethin' ~",dessert:"~ save room ~"};
 
   let html = '';
   if (mealFilter === 'all' && !search) {
@@ -1644,6 +1799,12 @@ function renderRecipeCard(r, names) {
       </ul>
       ${thumbsHtml ? `<div class="ingredient-thumbs">${thumbsHtml}</div>` : ''}
     </div>
+    ${r.sides ? `<div style="padding:0.6rem 1.25rem;border-top:1px dashed var(--border);background:var(--cream);">
+      <div style="font-family:'Oswald',sans-serif;font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--text-light);margin-bottom:0.3rem;">Pairs Well With</div>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+        ${r.sides.map(s => `<span style="font-family:'Courier Prime',monospace;font-size:0.75rem;padding:0.15rem 0.5rem;border:1px solid var(--gold);color:var(--brown);background:var(--paper);">${s}</span>`).join('')}
+      </div>
+    </div>` : ''}
     <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
     <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
   </div>`;
@@ -2098,7 +2259,7 @@ function openDailyView(dayKey) {
           <div class="daily-steps"><ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
       }
     } else {
-      html += `<div class="daily-empty">No meal planned. <a href="#" onclick="event.preventDefault();closeDailyView();pickMealForSlot('${dayKey}','${m}');" style="color:var(--gold);font-weight:bold;">Choose one</a></div>`;
+      html += `<div class="daily-empty">No meal planned. <a href="#" onclick="event.preventDefault();pickMealForSlot('${dayKey}','${m}');" style="color:var(--gold);font-weight:bold;">Choose one</a></div>`;
     }
     html += '</div>';
   }
@@ -2161,8 +2322,13 @@ function selectMealForSlot(title) {
   if (!plan[pickerTarget.dayKey]) plan[pickerTarget.dayKey] = {};
   plan[pickerTarget.dayKey][pickerTarget.meal] = { title };
   saveWeekPlan(plan);
+  const dayKey = pickerTarget.dayKey;
   pickerTarget = null;
   renderWeek();
+  // Re-open daily view if it was open
+  if (document.getElementById('dailyOverlay').classList.contains('open')) {
+    openDailyView(dayKey);
+  }
 }
 
 function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
