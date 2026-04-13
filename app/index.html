@@ -568,6 +568,93 @@
     color: var(--brown); margin-top: 0.3rem;
   }
 
+  /* ============ THE WEEK (Meal Planner) ============ */
+  .week-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .week-day {
+    background: var(--paper); border: 2px solid var(--border);
+    min-height: 320px; display: flex; flex-direction: column;
+  }
+  .week-day-header {
+    background: var(--brown); color: var(--gold-light);
+    padding: 0.5rem; text-align: center;
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+  .week-day-header .day-date {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    font-weight: 700; color: var(--cream); display: block;
+  }
+  .week-day-header.today { background: var(--red); }
+  .week-meals { flex: 1; padding: 0.35rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  .week-meal-slot {
+    border: 1.5px dashed var(--border); border-radius: 4px;
+    padding: 0.4rem; min-height: 70px; cursor: pointer;
+    transition: all 0.15s; position: relative;
+  }
+  .week-meal-slot:hover { border-color: var(--brown); background: var(--cream); }
+  .week-meal-slot.filled { border-style: solid; border-color: var(--border); cursor: grab; }
+  .week-meal-slot.filled:active { cursor: grabbing; opacity: 0.7; }
+  .week-meal-slot.drag-over { border-color: var(--gold); background: var(--gold-light); border-width: 2px; }
+  .meal-slot-label {
+    font-family: 'Oswald', sans-serif; font-size: 0.5rem;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-light); margin-bottom: 0.2rem;
+  }
+  .meal-slot-label.breakfast { color: var(--gold); }
+  .meal-slot-label.lunch { color: var(--green); }
+  .meal-slot-label.dinner { color: var(--red); }
+  .meal-slot-title {
+    font-family: 'Courier Prime', monospace; font-size: 0.7rem;
+    font-weight: 700; color: var(--brown); line-height: 1.3;
+  }
+  .meal-slot-img {
+    width: 100%; height: 40px; object-fit: cover; border-radius: 3px;
+    margin-top: 0.2rem;
+  }
+  .meal-slot-remove {
+    position: absolute; top: 2px; right: 2px; background: var(--dark);
+    color: var(--cream); border: none; font-size: 0.5rem; cursor: pointer;
+    width: 14px; height: 14px; display: flex; align-items: center;
+    justify-content: center; border-radius: 2px; opacity: 0;
+    font-family: 'Oswald', sans-serif;
+  }
+  .week-meal-slot:hover .meal-slot-remove { opacity: 0.7; }
+  .meal-slot-remove:hover { opacity: 1 !important; background: var(--red); }
+  .week-actions {
+    display: flex; gap: 0.75rem; justify-content: center;
+    margin-bottom: 1.5rem; flex-wrap: wrap;
+  }
+  .week-nav {
+    display: flex; align-items: center; gap: 1rem;
+    justify-content: center; margin-bottom: 1.5rem;
+  }
+  .week-nav h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem;
+    color: var(--brown); min-width: 200px; text-align: center;
+  }
+  .week-nav button {
+    background: none; border: 2px solid var(--brown); cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+    padding: 0.4rem 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--brown); transition: all 0.2s;
+  }
+  .week-nav button:hover { background: var(--brown); color: var(--cream); }
+  .week-daily-totals {
+    text-align: center; padding: 0.3rem;
+    font-family: 'Courier Prime', monospace; font-size: 0.55rem;
+    color: var(--text-light); border-top: 1px dashed var(--border);
+  }
+  @media (max-width: 900px) {
+    .week-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .week-grid { grid-template-columns: 1fr; }
+    .week-day { min-height: auto; }
+  }
+
   /* ============ RESPONSIVE ============ */
   @media (max-width: 600px) {
     main { padding: 1rem; }
@@ -615,6 +702,7 @@
   <div class="tabs">
     <button class="tab active" data-page="inventory">The Pantry</button>
     <button class="tab" data-page="recipes">The Menu</button>
+    <button class="tab" data-page="week">The Week</button>
     <button class="tab" data-page="grocery">Grocery List</button>
     <button class="tab" data-page="manage">Stock Room</button>
   </div>
@@ -686,6 +774,24 @@
     <div class="recipe-grid" id="recipeList"></div>
   </div>
 
+  <!-- THE WEEK PAGE -->
+  <div class="page" id="page-week">
+    <div class="menu-header">
+      <h2>The Week</h2>
+      <div class="flourish">~ your meal plan, sorted ~</div>
+    </div>
+    <div class="week-nav">
+      <button onclick="changeWeek(-1)">&larr; Prev</button>
+      <h3 id="weekTitle"></h3>
+      <button onclick="changeWeek(1)">Next &rarr;</button>
+    </div>
+    <div class="week-actions">
+      <button class="btn btn-primary" onclick="autoFillWeek()">Auto-Fill Week</button>
+      <button class="btn btn-outline" onclick="clearWeek()">Clear Week</button>
+    </div>
+    <div class="week-grid" id="weekGrid"></div>
+  </div>
+
   <!-- GROCERY LIST PAGE -->
   <div class="page" id="page-grocery">
     <div class="menu-header">
@@ -739,7 +845,7 @@
         <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
-        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV5');location.reload();}">Fresh Start</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV7');location.reload();}">Fresh Start</button>
       </div>
     </div>
   </div>
@@ -807,27 +913,28 @@ const INITIAL_INVENTORY = [
   { name: "Chai Latte Concentrate", brand: "Tazo", category: "Beverages", location: "Fridge", image: "photos/IMG_9918.jpg", nutrition: { servingSize: "3/4 cup (180ml)", calories: 90, totalFat: 0, saturatedFat: 0, sodium: 35, totalCarbs: 21, fiber: 0, sugars: 20, protein: 0 }},
 
   // Pantry Staples (assumed always on hand)
-  { name: "Extra Virgin Olive Oil", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "", nutrition: { servingSize: "1 tbsp (14g)", calories: 120, totalFat: 14, saturatedFat: 2, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Avocado Oil", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "", nutrition: { servingSize: "1 tbsp (14g)", calories: 120, totalFat: 14, saturatedFat: 1.5, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Kosher Salt", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (1.5g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 590, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Black Pepper", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Garlic Powder", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.7g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Onion Powder", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.6g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Smoked Paprika", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Cumin", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 1, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Red Pepper Flakes", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.4g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Italian Seasoning", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "", nutrition: { servingSize: "1/4 tsp (0.3g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "All-Purpose Flour", brand: "", category: "Baking", location: "Pantry", image: "", nutrition: { servingSize: "1/4 cup (30g)", calories: 110, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 23, fiber: 1, sugars: 0, protein: 3 }},
-  { name: "Baking Soda", brand: "", category: "Baking", location: "Pantry", image: "", nutrition: { servingSize: "1/8 tsp (0.6g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 150, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Baking Powder", brand: "", category: "Baking", location: "Pantry", image: "", nutrition: { servingSize: "1/8 tsp (0.6g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 60, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Granulated Sugar", brand: "", category: "Baking", location: "Pantry", image: "", nutrition: { servingSize: "1 tsp (4g)", calories: 15, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 4, fiber: 0, sugars: 4, protein: 0 }},
-  { name: "Apple Cider Vinegar", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "", nutrition: { servingSize: "1 tbsp (15ml)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
-  { name: "Rolled Oats", brand: "", category: "Grains & Pasta", location: "Pantry", image: "", nutrition: { servingSize: "1/2 cup (40g)", calories: 150, totalFat: 3, saturatedFat: 0.5, sodium: 0, totalCarbs: 27, fiber: 4, sugars: 1, protein: 5 }},
-  { name: "Rice", brand: "", category: "Grains & Pasta", location: "Pantry", image: "", nutrition: { servingSize: "1/4 cup dry (45g)", calories: 160, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 36, fiber: 0, sugars: 0, protein: 3 }},
-  { name: "Eggs", brand: "", category: "Dairy & Eggs", location: "Fridge", image: "", nutrition: { servingSize: "1 large (50g)", calories: 70, totalFat: 5, saturatedFat: 1.5, sodium: 65, totalCarbs: 0, fiber: 0, sugars: 0, protein: 6 }},
+  { name: "Extra Virgin Olive Oil", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "photos/products/olive-oil.jpg", nutrition: { servingSize: "1 tbsp (14g)", calories: 120, totalFat: 14, saturatedFat: 2, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Avocado Oil", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "photos/products/avocado-oil.jpg", nutrition: { servingSize: "1 tbsp (14g)", calories: 120, totalFat: 14, saturatedFat: 1.5, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Kosher Salt", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/kosher-salt.jpg", nutrition: { servingSize: "1/4 tsp (1.5g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 590, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Black Pepper", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/black-pepper.jpg", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Garlic Powder", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/garlic-powder.jpg", nutrition: { servingSize: "1/4 tsp (0.7g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Onion Powder", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/onion-powder.jpg", nutrition: { servingSize: "1/4 tsp (0.6g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Smoked Paprika", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/smoked-paprika.jpg", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Cumin", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/cumin.jpg", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 2, totalFat: 0, saturatedFat: 0, sodium: 1, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Red Pepper Flakes", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/red-pepper-flakes.jpg", nutrition: { servingSize: "1/4 tsp (0.4g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Italian Seasoning", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/products/italian-seasoning.jpg", nutrition: { servingSize: "1/4 tsp (0.3g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "All-Purpose Flour", brand: "", category: "Baking", location: "Pantry", image: "photos/products/flour.jpg", nutrition: { servingSize: "1/4 cup (30g)", calories: 110, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 23, fiber: 1, sugars: 0, protein: 3 }},
+  { name: "Baking Soda", brand: "", category: "Baking", location: "Pantry", image: "photos/products/baking-soda.jpg", nutrition: { servingSize: "1/8 tsp (0.6g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 150, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Baking Powder", brand: "", category: "Baking", location: "Pantry", image: "photos/products/baking-powder.jpg", nutrition: { servingSize: "1/8 tsp (0.6g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 60, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Granulated Sugar", brand: "", category: "Baking", location: "Pantry", image: "photos/products/sugar.jpg", nutrition: { servingSize: "1 tsp (4g)", calories: 15, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 4, fiber: 0, sugars: 4, protein: 0 }},
+  { name: "Apple Cider Vinegar", brand: "", category: "Oils & Vinegars", location: "Pantry", image: "photos/products/apple-cider-vinegar.jpg", nutrition: { servingSize: "1 tbsp (15ml)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Rolled Oats", brand: "", category: "Grains & Pasta", location: "Pantry", image: "photos/products/rolled-oats.jpg", nutrition: { servingSize: "1/2 cup (40g)", calories: 150, totalFat: 3, saturatedFat: 0.5, sodium: 0, totalCarbs: 27, fiber: 4, sugars: 1, protein: 5 }},
+  { name: "Rice", brand: "", category: "Grains & Pasta", location: "Pantry", image: "photos/products/rice.jpg", nutrition: { servingSize: "1/4 cup dry (45g)", calories: 160, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 36, fiber: 0, sugars: 0, protein: 3 }},
+  { name: "Eggs", brand: "", category: "Dairy & Eggs", location: "Fridge", image: "photos/products/eggs.jpg", nutrition: { servingSize: "1 large (50g)", calories: 70, totalFat: 5, saturatedFat: 1.5, sodium: 65, totalCarbs: 0, fiber: 0, sugars: 0, protein: 6 }},
 
   // ===== NEW PANTRY & FREEZER ITEMS (93 photos) =====
   // Grains & Pasta
+  { name: "Annie's Mac & Cheese (x2)", brand: "Annie's", category: "Grains & Pasta", location: "Pantry", image: "photos/products/annies-mac-cheese.jpg", nutrition: { servingSize: "1 cup prepared (70g dry)", calories: 270, totalFat: 5, saturatedFat: 2.5, sodium: 550, totalCarbs: 47, fiber: 2, sugars: 5, protein: 9 }},
   { name: "Chicken & Herb Rice Mix", brand: "Lundberg", category: "Grains & Pasta", location: "Pantry", image: "photos/IMG_9933.jpg", nutrition: { servingSize: "1/4 pkg (39g)", calories: 140, totalFat: 0.5, saturatedFat: 0, sodium: 540, totalCarbs: 31, fiber: 1, sugars: 1, protein: 3 }},
   { name: "Organic Fettuccine (x2)", brand: "H-E-B Organics", category: "Grains & Pasta", location: "Pantry", image: "photos/IMG_9938.jpg", nutrition: { servingSize: "2 oz dry (56g)", calories: 200, totalFat: 1, saturatedFat: 0, sodium: 0, totalCarbs: 42, fiber: 2, sugars: 2, protein: 7 }},
   { name: "Organic Jasmine Rice", brand: "Lundberg", category: "Grains & Pasta", location: "Pantry", image: "photos/IMG_9958.jpg", nutrition: { servingSize: "1/4 cup dry (45g)", calories: 160, totalFat: 0.5, saturatedFat: 0, sodium: 0, totalCarbs: 36, fiber: 0, sugars: 0, protein: 3 }},
@@ -991,6 +1098,67 @@ const RECIPES = [
   { title: "Olive & Mozz Antipasto", desc: "An elegant Italian antipasto plate with buttery olives, two styles of fresh mozzarella, capers, and tomatoes.", time: "5 min", servings: 3, difficulty: "easy", meal: ["snack","lunch"],
     ingredients: [{item:"Castelvetrano Olives",amount:4},{item:"Fresh Mozzarella Ciliegine",amount:3},{item:"Fresh Mozzarella Pearls",amount:2},{item:"Organic Capers",amount:1},{item:"Cherry Tomatoes",amount:2},{item:"Extra Virgin Olive Oil",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Red Pepper Flakes",amount:1}],
     extraIngredients: [], steps: ["Drain and arrange 1/2 cup Castelvetrano olives on a large plate or board.","Add mozzarella ciliegine and pearls in clusters around the olives.","Halve 8-10 cherry tomatoes and scatter them around the plate.","Sprinkle 1 tbsp drained capers over everything.","Drizzle generously with 2-3 tbsp good olive oil.","Season with flaky salt, cracked black pepper, and a pinch of red pepper flakes.","Serve with crusty bread or the Dijon Parmesan Crisps from this menu."] },
+
+  // ===== NEW RECIPES (using expanded pantry) =====
+  { title: "GF Pancakes with Maple & Berries", desc: "Fluffy gluten-free pancakes from Bob's Red Mill mix, topped with maple syrup and freeze-dried strawberries.", time: "15 min", servings: 3, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"GF Pancake & Waffle Mix",amount:2},{item:"Eggs",amount:1},{item:"A2 Organic Whole Milk",amount:0.5},{item:"Unsalted Organic Butter",amount:2},{item:"Organic Maple Syrup",amount:0.5},{item:"Freeze Dried Strawberries",amount:2},{item:"Saigon Cinnamon",amount:1}],
+    extraIngredients: [], steps: ["Mix 1-1/3 cups pancake mix with 1 egg and 1 cup milk until just combined (lumps are OK).","Heat a skillet over medium heat. Melt 1 tsp butter per batch.","Pour 1/4 cup batter per pancake. Cook until bubbles form and edges set, about 2 minutes.","Flip and cook 1-2 more minutes until golden.","Stack pancakes, top with a pat of butter, drizzle maple syrup, and crush freeze-dried strawberries over the top.","Dust with a pinch of cinnamon."] },
+
+  { title: "Tuna Melt on Brioche", desc: "Classic diner-style tuna melt with Duke's mayo, Dijon, and melted mozzarella on toasted brioche buns.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch"],
+    ingredients: [{item:"Albacore Wild Tuna (No Salt)",amount:2},{item:"Duke's Real Mayonnaise",amount:2},{item:"Organic Dijon Mustard",amount:2},{item:"Brioche Burger Buns",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Dill Weed",amount:1}],
+    extraIngredients: [], steps: ["Drain 2 cans tuna and flake into a bowl.","Mix with 2 tbsp Duke's mayo, 1 tsp Dijon, a pinch of dill, salt and pepper.","Split 2 brioche buns and toast cut-side down in a buttered skillet.","Pile tuna salad on each bun bottom. Top with shredded mozzarella.","Broil open-faced 2-3 minutes until cheese is bubbly and golden.","Close with the toasted top bun and serve immediately."] },
+
+  { title: "Coconut Curry Ramen", desc: "Creamy coconut milk broth with ramen noodles, turmeric, garam masala, and lime.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Chicken Ramen Noodles",amount:2},{item:"Coconut Milk (Unsweetened)",amount:1},{item:"Better Than Bouillon",amount:2},{item:"Limes",amount:1},{item:"Ground Turmeric",amount:2},{item:"Garam Masala",amount:2},{item:"Garlic Powder",amount:1},{item:"Yellowbird Serrano Hot Sauce",amount:2}],
+    extraIngredients: [], steps: ["Bring 2 cups water to a boil. Stir in 2 tsp Better Than Bouillon.","Add 1 can coconut milk, 1/2 tsp turmeric, and 1/2 tsp garam masala. Stir well.","Add ramen noodles (discard the flavor packets). Cook 3 minutes.","Season with garlic powder, salt, and a squeeze of lime.","Ladle into bowls. Drizzle serrano hot sauce on top.","Serve with a lime wedge."] },
+
+  { title: "Black Bean & Cheese Quesadillas", desc: "Flour tortillas stuffed with refried black beans, shredded mozzarella, green chiles, and adobo seasoning.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"HEB Flour Tortillas (20 ct)",amount:2},{item:"Refried Black Beans",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"Diced Green Chiles (x2)",amount:2},{item:"Adobo Seasoning",amount:1},{item:"Avocado Oil",amount:1},{item:"The Salsa Boss (Medium)",amount:2}],
+    extraIngredients: [], steps: ["Spread 3 tbsp refried black beans on one half of each tortilla.","Sprinkle with shredded mozzarella, 1 tbsp green chiles, and a pinch of adobo seasoning.","Fold tortillas in half.","Heat 1 tsp avocado oil in a skillet over medium heat.","Cook quesadillas 2-3 minutes per side until golden and cheese melts.","Cut into wedges. Serve with Salsa Boss for dipping."] },
+
+  { title: "Fettuccine Marinara with Parmesan", desc: "Simple pasta night — fettuccine tossed in Carbone marinara with garlic, parmesan, and Italian seasoning.", time: "18 min", servings: 3, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Organic Fettuccine (x2)",amount:3},{item:"Marinara Sauce",amount:2},{item:"Grated Parmesan",amount:3},{item:"Extra Virgin Olive Oil",amount:2},{item:"Garlic Powder",amount:2},{item:"Italian Seasoning",amount:2},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Bring a large pot of salted water to a boil. Cook fettuccine per package directions (about 10 min). Reserve 1/2 cup pasta water.","Meanwhile, warm 1 cup Carbone marinara in a pan with 1 tbsp olive oil, 1/2 tsp garlic powder, and 1/2 tsp Italian seasoning.","Drain pasta and toss directly into the sauce. Add a splash of pasta water to loosen.","Toss with 2 tbsp parmesan. Plate and top with more parmesan and red pepper flakes.","Finish with a drizzle of good olive oil."] },
+
+  { title: "Fishwife Tuna Toast", desc: "Spicy Fishwife tinned tuna on crispy whole wheat toast with Kewpie, capers, and lemon.", time: "8 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
+    ingredients: [{item:"Spicy Albacore Tuna in Olive Oil",amount:1},{item:"Whole Wheat Bread",amount:2},{item:"Kewpie Mayonnaise",amount:1},{item:"Organic Capers",amount:1},{item:"Limes",amount:1},{item:"Red Pepper Flakes",amount:1},{item:"Black Pepper",amount:1}],
+    extraIngredients: [], steps: ["Toast 2 slices whole wheat bread until crispy.","Squeeze a thin line of Kewpie mayo on each slice.","Open the Fishwife tin and divide the spicy tuna between the toasts, keeping it chunky.","Spoon some of the spicy olive oil from the tin over each.","Top with drained capers, a squeeze of lime, red pepper flakes, and cracked pepper.","Eat immediately while the toast is still crunchy."] },
+
+  { title: "Annie's Mac & Cheese Upgrade", desc: "Annie's mac elevated with bacon, green chiles, and smoked paprika. Comfort food, leveled up.", time: "15 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Annie's Mac & Cheese (x2)",amount:1},{item:"Applewood Smoked Bacon",amount:2},{item:"Diced Green Chiles (x2)",amount:1},{item:"Unsalted Organic Butter",amount:1},{item:"A2 Organic Whole Milk",amount:0.25},{item:"Smoked Paprika",amount:1},{item:"Cholula Original",amount:1}],
+    extraIngredients: [], steps: ["Cook mac and cheese per box directions with butter and milk.","While pasta boils, cook 4 slices bacon until crispy. Crumble.","Stir 2 tbsp green chiles and half the crumbled bacon into the finished mac.","Add 1/4 tsp smoked paprika and stir to combine.","Serve topped with remaining bacon crumbles.","Drizzle with Cholula and enjoy."] },
+
+  { title: "Peanut Butter Banana Oats", desc: "Warm oatmeal with peanuts, honey, cinnamon, and flaxseed. A hearty protein-packed breakfast.", time: "8 min", servings: 1, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"Rolled Oats",amount:1},{item:"A2 Organic Whole Milk",amount:0.5},{item:"Dry Roasted Peanuts",amount:1},{item:"Organic Honey",amount:1},{item:"Ground Flaxseed",amount:1},{item:"Saigon Cinnamon",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: ["banana (1)"], steps: ["Combine 1/2 cup oats, 1 cup milk, and a pinch of salt in a pot over medium heat.","Cook 5 minutes, stirring occasionally, until thick and creamy.","Transfer to a bowl. Slice banana on top.","Sprinkle with 2 tbsp crushed peanuts and 1 tbsp flaxseed.","Drizzle with 1 tbsp honey and a generous pinch of cinnamon.","Stir gently and eat while hot."] },
+
+  { title: "Chicken Herb Rice Bowl", desc: "Lundberg chicken & herb rice topped with cherry tomatoes, olives, feta, and a tahini drizzle.", time: "25 min", servings: 2, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Chicken & Herb Rice Mix",amount:2},{item:"Cherry Tomatoes",amount:1},{item:"Castelvetrano Olives",amount:2},{item:"Tahini",amount:1},{item:"Limes",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Extra Virgin Olive Oil",amount:1}],
+    extraIngredients: [], steps: ["Cook Lundberg rice per package directions (about 20 min).","While rice cooks, halve cherry tomatoes and quarter olives.","Whisk 1 tbsp tahini with juice of 1/2 lime and 1 tbsp water.","Fluff rice and divide into bowls.","Top with tomatoes and olives.","Drizzle tahini sauce and olive oil. Season with salt and pepper."] },
+
+  { title: "Biscuits & Country Gravy", desc: "Annie's flaky biscuits smothered in Pioneer country sausage gravy. Southern comfort.", time: "20 min", servings: 4, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"Organic Flaky Biscuits",amount:4},{item:"Country Sausage Gravy Mix",amount:2},{item:"A2 Organic Whole Milk",amount:1},{item:"Black Pepper",amount:2},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 375F and bake biscuits 12-14 minutes until golden.","While biscuits bake, whisk gravy mix with 1-1/2 cups milk in a saucepan over medium heat.","Stir constantly until gravy thickens, about 5 minutes. Season generously with black pepper.","Split warm biscuits on plates.","Ladle gravy generously over the biscuits.","Serve immediately. Add hot sauce if you're feeling it."] },
+
+  { title: "Coconut Milk Chia Pudding", desc: "Creamy coconut chia pudding with granola, honey, and cinnamon. Make it the night before.", time: "5 min + overnight", servings: 2, difficulty: "easy", meal: ["breakfast","snack"],
+    ingredients: [{item:"Coconut Milk (Unsweetened)",amount:0.5},{item:"Organic Honey",amount:1},{item:"Salty-Sweet Granola",amount:1},{item:"Saigon Cinnamon",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: ["chia seeds (3 tbsp)"], steps: ["Shake the coconut milk can well. Pour 1 cup into a bowl.","Whisk in 3 tbsp chia seeds, 1 tbsp honey, a pinch of cinnamon, and a pinch of salt.","Divide into 2 jars or bowls. Cover and refrigerate at least 4 hours or overnight.","The chia will absorb the liquid and become thick and pudding-like.","Top with granola, an extra drizzle of honey, and a pinch of cinnamon.","Eat cold."] },
+
+  { title: "Spicy Tuna Rice Bowl", desc: "Jasmine rice bowl with Fishwife spicy tuna, Kewpie, sriracha, sesame seeds, and cucumber.", time: "20 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Organic Jasmine Rice",amount:2},{item:"Spicy Albacore Tuna in Olive Oil",amount:1},{item:"Kewpie Mayonnaise",amount:2},{item:"Blue Agave Sriracha",amount:2},{item:"Coconut Aminos",amount:1},{item:"White Sesame Seeds",amount:2},{item:"Limes",amount:1}],
+    extraIngredients: ["cucumber (1/2)"], steps: ["Cook 1 cup jasmine rice per package directions (about 15 min).","Mix 2 tbsp Kewpie with 1 tsp sriracha to make spicy mayo.","Fluff rice and divide into bowls.","Top each with half the Fishwife tuna (with its oil).","Drizzle spicy mayo and a splash of coconut aminos.","Slice cucumber thin and fan alongside. Sprinkle sesame seeds and squeeze lime."] },
+
+  { title: "Bean & Cheese Burrito", desc: "Big flour tortilla stuffed with refried pinto beans, melted cheese, salsa, and hot sauce.", time: "10 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"HEB Flour Tortillas (20 ct)",amount:2},{item:"Refried Pinto Beans",amount:1},{item:"Shredded Mozzarella",amount:2},{item:"The Salsa Boss (Medium)",amount:2},{item:"Cholula Original",amount:2},{item:"Avocado Oil",amount:1},{item:"Cumin",amount:1},{item:"Garlic Powder",amount:1}],
+    extraIngredients: [], steps: ["Warm refried beans in a small pot with 1/4 tsp cumin and 1/4 tsp garlic powder.","Warm tortillas in a dry skillet until pliable.","Spread 1/3 cup warm beans down the center of each tortilla.","Add 2 tbsp shredded mozzarella to each.","Microwave 20 seconds to melt cheese, or fold and toast in the skillet.","Top with Salsa Boss and Cholula. Roll up and eat."] },
+
+  { title: "Granola Yogurt Crunch Bowl", desc: "Thick Greek yogurt with Purely Elizabeth granola, honey, almonds, and freeze-dried strawberries.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
+    ingredients: [{item:"Greek Yogurt (Plain)",amount:1},{item:"Salty-Sweet Granola",amount:1},{item:"Freeze Dried Strawberries",amount:1},{item:"Marcona Almonds (Fried & Salted)",amount:1},{item:"Organic Honey",amount:1}],
+    extraIngredients: [], steps: ["Spoon 3/4 cup Greek yogurt into a bowl.","Top with 1/3 cup granola and a handful of freeze-dried strawberries.","Crush a few Marcona almonds and scatter on top.","Drizzle with 1 tsp honey.","Eat immediately while the granola is crunchy."] },
+
+  { title: "Caesar Pita Chip Salad", desc: "Crunchy pita chips, cherry tomatoes, parmesan, and olives tossed in Primal Kitchen Caesar.", time: "8 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
+    ingredients: [{item:"Pita Chips (Sea Salt)",amount:2},{item:"Caesar Dressing",amount:2},{item:"Cherry Tomatoes",amount:1},{item:"Grated Parmesan",amount:2},{item:"Pitted Black Olives",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
+    extraIngredients: ["romaine lettuce (1 head)"], steps: ["Chop romaine lettuce and place in a large bowl.","Halve cherry tomatoes and slice black olives. Add to bowl.","Crush a handful of pita chips and toss in.","Drizzle generously with Caesar dressing and toss.","Top with grated parmesan, more whole pita chips for crunch.","Season with pepper and serve immediately."] },
 ];
 
 // ============================================
@@ -1000,11 +1168,11 @@ let inventory = [];
 let currentFilter = 'all';
 
 function loadInventory() {
-  const saved = localStorage.getItem('kitchenInventoryV5');
+  const saved = localStorage.getItem('kitchenInventoryV7');
   inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
   if (!saved) saveInventory();
 }
-function saveInventory() { localStorage.setItem('kitchenInventoryV5', JSON.stringify(inventory)); }
+function saveInventory() { localStorage.setItem('kitchenInventoryV7', JSON.stringify(inventory)); }
 function getCategories() {
   const cats = {};
   inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
@@ -1328,6 +1496,223 @@ function renderGroceryList() {
   el.innerHTML = html;
 }
 
+// ============================================
+// THE WEEK - Meal Planner
+// ============================================
+let weekOffset = 0;
+
+function getWeekDates(offset) {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay() + (offset * 7)); // Sunday
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    days.push(d);
+  }
+  return days;
+}
+
+function getWeekKey(offset) {
+  const days = getWeekDates(offset);
+  return `week_${days[0].toISOString().split('T')[0]}`;
+}
+
+function loadWeekPlan() {
+  const key = getWeekKey(weekOffset);
+  const saved = localStorage.getItem(key);
+  return saved ? JSON.parse(saved) : {};
+}
+
+function saveWeekPlan(plan) {
+  const key = getWeekKey(weekOffset);
+  localStorage.setItem(key, JSON.stringify(plan));
+}
+
+function autoFillWeek() {
+  const plan = {};
+  const days = getWeekDates(weekOffset);
+  const names = inventory.map(i => i.name);
+  const meals = ['breakfast', 'lunch', 'dinner'];
+
+  // Get recipes grouped by meal type, prefer 100% match
+  const byMeal = {};
+  for (const m of meals) byMeal[m] = [];
+  for (const r of RECIPES) {
+    if (!r.meal) continue;
+    const have = r.ingredients.filter(i => names.includes(i.item)).length;
+    const total = r.ingredients.length + r.extraIngredients.length;
+    const pct = Math.round(have / total * 100);
+    for (const m of r.meal) {
+      if (byMeal[m]) byMeal[m].push({ ...r, matchPct: pct });
+    }
+  }
+  // Sort each by match % descending
+  for (const m of meals) byMeal[m].sort((a, b) => b.matchPct - a.matchPct);
+
+  for (let d = 0; d < 7; d++) {
+    const dayKey = days[d].toISOString().split('T')[0];
+    plan[dayKey] = {};
+    for (const m of meals) {
+      const pool = byMeal[m];
+      if (pool.length > 0) {
+        // Pick semi-randomly from top matches, avoid repeats within the week
+        const used = Object.values(plan).map(p => Object.values(p).map(v => v?.title)).flat();
+        const available = pool.filter(r => !used.includes(r.title));
+        const pick = available.length > 0 ? available[Math.floor(Math.random() * Math.min(5, available.length))] : pool[Math.floor(Math.random() * pool.length)];
+        plan[dayKey][m] = { title: pick.title };
+      }
+    }
+  }
+  saveWeekPlan(plan);
+  renderWeek();
+}
+
+function clearWeek() {
+  if (confirm('Clear all meals this week?')) {
+    saveWeekPlan({});
+    renderWeek();
+  }
+}
+
+function changeWeek(dir) {
+  weekOffset += dir;
+  renderWeek();
+}
+
+function removeMealFromWeek(dayKey, meal) {
+  const plan = loadWeekPlan();
+  if (plan[dayKey]) { delete plan[dayKey][meal]; }
+  saveWeekPlan(plan);
+  renderWeek();
+}
+
+function moveToNextWeek(dayKey, meal) {
+  const plan = loadWeekPlan();
+  const mealData = plan[dayKey]?.[meal];
+  if (!mealData) return;
+  // Remove from this week
+  delete plan[dayKey][meal];
+  saveWeekPlan(plan);
+  // Add to next week's same day-of-week
+  const nextWeekOffset = weekOffset + 1;
+  const nextDays = getWeekDates(nextWeekOffset);
+  const currentDay = new Date(dayKey);
+  const dow = currentDay.getDay();
+  const targetDay = nextDays[dow].toISOString().split('T')[0];
+  const nextKey = `week_${nextDays[0].toISOString().split('T')[0]}`;
+  const nextPlan = JSON.parse(localStorage.getItem(nextKey) || '{}');
+  if (!nextPlan[targetDay]) nextPlan[targetDay] = {};
+  nextPlan[targetDay][meal] = mealData;
+  localStorage.setItem(nextKey, JSON.stringify(nextPlan));
+  renderWeek();
+}
+
+// Drag & drop state
+let dragData = null;
+
+function renderWeek() {
+  const grid = document.getElementById('weekGrid');
+  const days = getWeekDates(weekOffset);
+  const plan = loadWeekPlan();
+  const today = new Date().toISOString().split('T')[0];
+  const meals = ['breakfast', 'lunch', 'dinner'];
+  const mealLabels = { breakfast: 'Brkfst', lunch: 'Lunch', dinner: 'Dinner' };
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // Update title
+  const startStr = days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endStr = days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  document.getElementById('weekTitle').textContent = `${startStr} - ${endStr}`;
+
+  let html = '';
+  for (let d = 0; d < 7; d++) {
+    const date = days[d];
+    const dayKey = date.toISOString().split('T')[0];
+    const isToday = dayKey === today;
+    const dayPlan = plan[dayKey] || {};
+
+    // Calc daily calories
+    let dayCals = 0;
+    for (const m of meals) {
+      if (dayPlan[m]) {
+        const r = RECIPES.find(x => x.title === dayPlan[m].title);
+        if (r) {
+          const n = calcRecipeNutrition(r);
+          dayCals += Math.round(n.calories / r.servings);
+        }
+      }
+    }
+
+    html += `<div class="week-day">
+      <div class="week-day-header${isToday ? ' today' : ''}">
+        ${dayNames[date.getDay()]}
+        <span class="day-date">${date.getDate()}</span>
+      </div>
+      <div class="week-meals">`;
+
+    for (const m of meals) {
+      const slot = dayPlan[m];
+      const photoSlug = slot ? RECIPE_PHOTOS[slot.title] : null;
+      const imgSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
+
+      if (slot) {
+        html += `<div class="week-meal-slot filled" draggable="true"
+          ondragstart="dragData={day:'${dayKey}',meal:'${m}',title:'${slot.title.replace(/'/g,"\\'")}'};"
+          ondragover="event.preventDefault();this.classList.add('drag-over');"
+          ondragleave="this.classList.remove('drag-over');"
+          ondrop="event.preventDefault();this.classList.remove('drag-over');dropMeal('${dayKey}','${m}');"
+          onclick="showRecipeFromWeek('${slot.title.replace(/'/g,"\\'")}')">
+          <button class="meal-slot-remove" onclick="event.stopPropagation();removeMealFromWeek('${dayKey}','${m}')" title="Remove">&times;</button>
+          <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
+          <div class="meal-slot-title">${slot.title}</div>
+          ${imgSrc ? `<img class="meal-slot-img" src="${imgSrc}" loading="lazy">` : ''}
+        </div>`;
+      } else {
+        html += `<div class="week-meal-slot"
+          ondragover="event.preventDefault();this.classList.add('drag-over');"
+          ondragleave="this.classList.remove('drag-over');"
+          ondrop="event.preventDefault();this.classList.remove('drag-over');dropMeal('${dayKey}','${m}');">
+          <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
+        </div>`;
+      }
+    }
+
+    html += `</div>
+      ${dayCals > 0 ? `<div class="week-daily-totals">${dayCals} cal/day</div>` : ''}
+    </div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function dropMeal(targetDay, targetMeal) {
+  if (!dragData) return;
+  const plan = loadWeekPlan();
+  // Remove from source
+  if (plan[dragData.day]?.[dragData.meal]) {
+    delete plan[dragData.day][dragData.meal];
+  }
+  // Place at target
+  if (!plan[targetDay]) plan[targetDay] = {};
+  plan[targetDay][targetMeal] = { title: dragData.title };
+  saveWeekPlan(plan);
+  dragData = null;
+  renderWeek();
+}
+
+function showRecipeFromWeek(title) {
+  // Switch to menu tab and scroll to recipe
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  document.getElementById('page-recipes').classList.add('active');
+  // Search for the recipe
+  document.getElementById('recipeSearch').value = title;
+  document.getElementById('recipeSearch').dispatchEvent(new Event('input'));
+  window.scrollTo(0, 400);
+}
+
 function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
 function addItem() {
   const nm=document.getElementById('newName').value.trim(),br=document.getElementById('newBrand').value.trim(),
@@ -1366,7 +1751,7 @@ document.getElementById('recipeSearch').addEventListener('input',e=>{
 });
 
 document.getElementById('dateStamp')&&(document.getElementById('dateStamp').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
-loadInventory();renderInventory();renderRecipes();renderGroceryList();
+loadInventory();renderInventory();renderRecipes();renderGroceryList();renderWeek();
 </script>
 </body>
 </html>
