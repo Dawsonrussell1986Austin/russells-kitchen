@@ -647,12 +647,113 @@
     font-family: 'Courier Prime', monospace; font-size: 0.55rem;
     color: var(--text-light); border-top: 1px dashed var(--border);
   }
+  /* ============ DAILY DETAIL VIEW ============ */
+  .daily-overlay {
+    display: none; position: fixed; inset: 0; background: var(--cream);
+    z-index: 9999; overflow-y: auto;
+  }
+  .daily-overlay.open { display: block; }
+  .daily-header {
+    background: var(--dark); color: var(--cream);
+    padding: 1.25rem 2rem; display: flex; align-items: center;
+    justify-content: space-between; position: sticky; top: 0; z-index: 1;
+  }
+  .daily-header h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem;
+    color: var(--gold);
+  }
+  .daily-header .daily-date {
+    font-family: 'Special Elite', cursive; color: var(--gold-light);
+    font-size: 0.9rem;
+  }
+  .daily-back {
+    background: none; border: 2px solid var(--gold); color: var(--gold);
+    padding: 0.4rem 1rem; cursor: pointer; font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+    transition: all 0.2s;
+  }
+  .daily-back:hover { background: var(--gold); color: var(--dark); }
+  .daily-content { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .daily-meal-section { margin-bottom: 3rem; }
+  .daily-meal-label {
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 4px;
+    color: var(--text-light); margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem; border-bottom: 1px dashed var(--border);
+  }
+  .daily-meal-label.breakfast { color: var(--gold); }
+  .daily-meal-label.lunch { color: var(--green); }
+  .daily-meal-label.dinner { color: var(--red); }
+  .daily-hero {
+    width: 100%; height: 300px; object-fit: cover;
+    border: 3px solid var(--brown); margin-bottom: 1rem;
+    cursor: zoom-in; filter: sepia(0.05);
+  }
+  .daily-recipe-title {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    font-weight: 900; color: var(--brown); margin-bottom: 0.3rem;
+  }
+  .daily-recipe-desc {
+    font-family: 'Special Elite', cursive; font-size: 0.9rem;
+    color: var(--text-light); line-height: 1.5; margin-bottom: 1rem;
+  }
+  .daily-recipe-meta {
+    display: flex; gap: 1.5rem; font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem; color: var(--text-light); margin-bottom: 1rem;
+    padding-bottom: 0.5rem; border-bottom: 1px dashed var(--border);
+  }
+  .daily-steps ol {
+    padding-left: 1.5rem; font-family: 'Special Elite', cursive;
+  }
+  .daily-steps li {
+    font-size: 0.9rem; line-height: 1.7; margin-bottom: 0.5rem;
+    color: var(--brown);
+  }
+  .daily-ingredients-strip {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;
+  }
+  .daily-ingredients-strip img {
+    width: 56px; height: 56px; border-radius: 4px; object-fit: cover;
+    border: 1.5px solid var(--border); cursor: pointer;
+  }
+  .daily-ingredients-strip img:hover { border-color: var(--brown); transform: scale(1.1); }
+  .daily-nutri-row {
+    display: flex; gap: 0.75rem; margin-bottom: 1rem;
+  }
+  .daily-nutri-box {
+    flex: 1; text-align: center; padding: 0.5rem;
+    border: 1.5px solid var(--border); background: var(--paper);
+  }
+  .daily-nutri-box .val {
+    font-family: 'Playfair Display', serif; font-size: 1.3rem;
+    font-weight: 900; color: var(--red);
+  }
+  .daily-nutri-box .lbl {
+    font-family: 'Oswald', sans-serif; font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--text-light);
+  }
+  .daily-cals-total {
+    text-align: center; font-family: 'Oswald', sans-serif;
+    font-size: 1rem; color: var(--brown); margin-bottom: 2rem;
+    padding: 0.75rem; border: 2px solid var(--brown); background: var(--paper);
+    text-transform: uppercase; letter-spacing: 3px;
+  }
+  .daily-cals-total span {
+    font-family: 'Playfair Display', serif; font-size: 1.8rem;
+    font-weight: 900; color: var(--red); display: block;
+  }
+  .daily-empty {
+    text-align: center; padding: 2rem;
+    font-family: 'Special Elite', cursive; color: var(--text-light);
+  }
+
   @media (max-width: 900px) {
     .week-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 500px) {
     .week-grid { grid-template-columns: 1fr; }
     .week-day { min-height: auto; }
+    .daily-hero { height: 200px; }
   }
 
   /* ============ RESPONSIVE ============ */
@@ -707,6 +808,18 @@
     <button class="tab" data-page="manage">Stock Room</button>
   </div>
 </header>
+
+<!-- Daily Detail View -->
+<div class="daily-overlay" id="dailyOverlay">
+  <div class="daily-header">
+    <div>
+      <h2 id="dailyTitle">Today's Plan</h2>
+      <div class="daily-date" id="dailyDate"></div>
+    </div>
+    <button class="daily-back" onclick="closeDailyView()">&larr; Back to Week</button>
+  </div>
+  <div class="daily-content" id="dailyContent"></div>
+</div>
 
 <!-- Recipe Photo Modal -->
 <div class="photo-modal-overlay" id="photoModal" onclick="closePhotoModal()">
@@ -845,7 +958,7 @@
         <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
-        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV8');location.reload();}">Fresh Start</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV9');location.reload();}">Fresh Start</button>
       </div>
     </div>
   </div>
@@ -1214,6 +1327,71 @@ const RECIPES = [
   { title: "Caesar Pita Chip Salad", desc: "Crunchy pita chips, cherry tomatoes, parmesan, and olives tossed in Primal Kitchen Caesar.", time: "8 min", servings: 2, difficulty: "easy", meal: ["lunch","snack"],
     ingredients: [{item:"Pita Chips (Sea Salt)",amount:2},{item:"Caesar Dressing",amount:2},{item:"Cherry Tomatoes",amount:1},{item:"Grated Parmesan",amount:2},{item:"Pitted Black Olives",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
     extraIngredients: ["romaine lettuce (1 head)"], steps: ["Chop romaine lettuce and place in a large bowl.","Halve cherry tomatoes and slice black olives. Add to bowl.","Crush a handful of pita chips and toss in.","Drizzle generously with Caesar dressing and toss.","Top with grated parmesan, more whole pita chips for crunch.","Season with pepper and serve immediately."] },
+
+  // ===== FREEZER PROTEIN RECIPES =====
+  { title: "Garlic Butter Salmon", desc: "Pan-seared Atlantic salmon with garlic, butter, lemon, and fresh herbs. Restaurant quality in 15 minutes.", time: "15 min", servings: 2, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Atlantic Salmon Fillet",amount:2},{item:"Unsalted Organic Butter",amount:3},{item:"Dorot Crushed Garlic Cubes",amount:3},{item:"Limes",amount:1},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Organic Parsley",amount:1},{item:"Avocado Oil",amount:1}],
+    extraIngredients: [], steps: ["Thaw salmon if frozen. Pat very dry with paper towels. Season both sides generously with salt and pepper.","Heat 1 tbsp avocado oil in a skillet over medium-high heat until shimmering.","Place salmon skin-side up and sear 4 minutes without moving until a golden crust forms.","Flip salmon. Add 2 tbsp butter and 3 garlic cubes to the pan.","Baste the salmon with the melted garlic butter for 3-4 minutes until cooked through.","Squeeze lime juice over the top, sprinkle with parsley, and serve immediately with the pan sauce."] },
+
+  { title: "Coconut Shrimp Stir-Fry", desc: "Argentinian red shrimp in a coconut-aminos glaze with peas and jasmine rice.", time: "20 min", servings: 2, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Argentinian Red Shrimp",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Coconut Aminos",amount:2},{item:"Organic Peas",amount:1},{item:"Dorot Crushed Garlic Cubes",amount:2},{item:"Dorot Crushed Ginger Cubes",amount:2},{item:"Avocado Oil",amount:1},{item:"Limes",amount:1},{item:"White Sesame Seeds",amount:1}],
+    extraIngredients: [], steps: ["Thaw shrimp under cold running water 5 minutes. Pat dry.","Microwave frozen jasmine rice per package directions.","Heat 1 tbsp avocado oil in a large skillet over high heat.","Sear shrimp 2 minutes per side until pink and curled. Remove from pan.","Add 2 garlic cubes, 2 ginger cubes, and 1/2 cup frozen peas. Stir-fry 2 minutes.","Add 3 tbsp coconut aminos. Return shrimp, toss to coat.","Serve over jasmine rice. Squeeze lime and sprinkle sesame seeds."] },
+
+  { title: "Smash Burgers", desc: "Thin, crispy-edged grass-fed beef smash burgers on brioche buns with all the fixings.", time: "15 min", servings: 2, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Grass-Fed Beef Patties (1/3 lb)",amount:2},{item:"Brioche Burger Buns",amount:2},{item:"Sliced Cheese",amount:2},{item:"Organic Ketchup",amount:2},{item:"Duke's Real Mayonnaise",amount:1},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:1},{item:"Avocado Oil",amount:1}],
+    extraIngredients: [], steps: ["Thaw beef patties. Divide each into 2 balls (4 total for 2 double burgers).","Heat a cast iron skillet over high heat until smoking. Add a thin layer of avocado oil.","Place 2 balls on the skillet. Immediately smash flat with a spatula. Season heavily with salt and pepper.","Cook 2-3 minutes until edges are deeply browned and crispy. Flip.","Add a slice of cheese to each patty. Cook 1 more minute.","Toast bun cut-sides in the beef fat. Stack 2 patties per bun with ketchup and Duke's mayo."] },
+
+  { title: "Bachan's Chicken Wings", desc: "Crispy baked chicken wings glazed with Bachan's Japanese BBQ and sesame seeds.", time: "45 min", servings: 4, difficulty: "medium", meal: ["dinner","snack"],
+    ingredients: [{item:"Organic Chicken Wings",amount:4},{item:"Japanese BBQ Sauce",amount:4},{item:"Avocado Oil",amount:2},{item:"Kosher Salt",amount:2},{item:"Black Pepper",amount:1},{item:"Garlic Powder",amount:2},{item:"White Sesame Seeds",amount:2},{item:"Yellowbird Serrano Hot Sauce",amount:2}],
+    extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil and place a wire rack on top.","Thaw wings. Pat very dry. Toss with 1 tbsp avocado oil, salt, pepper, and garlic powder.","Spread wings in a single layer on the rack. Bake 25 minutes.","Flip wings. Bake 15 more minutes until skin is crispy and golden.","Toss hot wings in a bowl with 4 tbsp Bachan's Japanese BBQ sauce until coated.","Plate, sprinkle with sesame seeds, and drizzle serrano hot sauce. Serve immediately."] },
+
+  { title: "Sausage & Peppers Pasta", desc: "Italian sausage crumbled with peppers and marinara over fettuccine. A hearty weeknight dinner.", time: "25 min", servings: 3, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Mild Italian Sausage",amount:2},{item:"Organic Fettuccine (x2)",amount:3},{item:"Marinara Sauce",amount:2},{item:"Mini Sweet Peppers",amount:2},{item:"Grated Parmesan",amount:3},{item:"Extra Virgin Olive Oil",amount:1},{item:"Italian Seasoning",amount:2},{item:"Red Pepper Flakes",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Cook fettuccine in salted boiling water per package directions. Reserve 1/2 cup pasta water.","While pasta cooks, remove sausage from casings and crumble into a hot skillet with 1 tsp olive oil.","Brown sausage 6-7 minutes, breaking into small pieces. Add sliced peppers, cook 3 more minutes.","Add 1 cup marinara, Italian seasoning, and red pepper flakes. Simmer 5 minutes.","Toss drained pasta into the sauce with a splash of pasta water.","Plate and top with generous parmesan and a drizzle of olive oil."] },
+
+  { title: "Meatball Marinara Subs", desc: "Angus beef meatballs in Carbone marinara on toasted brioche buns with melted mozzarella.", time: "20 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Angus Beef Meatballs",amount:2},{item:"Marinara Sauce",amount:1},{item:"Brioche Burger Buns",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Grated Parmesan",amount:1},{item:"Italian Seasoning",amount:1},{item:"Garlic Powder",amount:1}],
+    extraIngredients: [], steps: ["Heat 6-8 meatballs in a saucepan with 1 cup marinara sauce over medium heat, covered, for 12-15 minutes until heated through.","Preheat broiler. Split brioche buns and toast cut-side up under broiler 1 minute.","Spoon meatballs and sauce onto the bottom buns.","Top with shredded mozzarella, parmesan, and a pinch of Italian seasoning.","Broil open-faced 2 minutes until cheese is bubbly.","Close with the top bun. These are messy — embrace it."] },
+
+  { title: "Hash Brown Breakfast Skillet", desc: "Crispy hash browns with breakfast sausage, eggs, and cheese. The ultimate morning fuel.", time: "20 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"Shredded Hash Browns",amount:2},{item:"Chicken & Maple Breakfast Sausage (Box)",amount:2},{item:"Eggs",amount:2},{item:"Shredded Mozzarella",amount:1},{item:"Avocado Oil",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Smoked Paprika",amount:1}],
+    extraIngredients: [], steps: ["Heat 1 tbsp avocado oil in a large skillet over medium-high heat.","Spread 2 cups frozen hash browns in an even layer. Don't stir for 5 minutes until bottom is golden.","Flip hash browns. Push to the sides of the pan.","Add breakfast sausage links to the center. Cook 4-5 minutes, turning once.","Make 2 wells in the hash browns. Crack an egg into each. Season everything with salt, pepper, and paprika.","Cover and cook 3-4 minutes until eggs set. Top with mozzarella, cover 1 more minute to melt. Serve from the skillet."] },
+
+  { title: "Teriyaki Chicken Rice Bowl", desc: "Applegate grilled chicken in Soyaki teriyaki with jasmine rice, edamame, and sesame.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Grilled Chicken Breast Strips",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Soyaki Teriyaki",amount:3},{item:"Organic Edamame",amount:1},{item:"White Sesame Seeds",amount:1},{item:"Dorot Crushed Ginger Cubes",amount:1},{item:"Limes",amount:1}],
+    extraIngredients: [], steps: ["Microwave jasmine rice and edamame per package directions.","Heat chicken strips in a skillet over medium heat with 2 tbsp Soyaki and 1 ginger cube, 3-4 minutes.","Slice chicken into bite-sized pieces.","Divide rice into bowls. Top with chicken and edamame.","Drizzle remaining Soyaki over everything. Sprinkle sesame seeds.","Squeeze lime and serve."] },
+
+  { title: "Acai Smoothie Bowl", desc: "Thick frozen acai blended with fruit and topped with granola, honey, and coconut.", time: "8 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
+    ingredients: [{item:"Acai Packs (Unsweetened)",amount:1},{item:"Organic Frozen Blueberries",amount:1},{item:"Daybreak Fruit Blend",amount:1},{item:"Salty-Sweet Granola",amount:1},{item:"Organic Honey",amount:1},{item:"Almond Butter",amount:0.5}],
+    extraIngredients: [], steps: ["Break frozen acai pack into chunks and add to a blender.","Add 1/2 cup frozen blueberries and 1/2 cup daybreak fruit blend.","Add a tiny splash of milk or water — just enough to blend. Blend until thick like soft serve.","Pour into a bowl. The consistency should be THICK — eat with a spoon, not a straw.","Top with 1/3 cup granola, a drizzle of honey, and a small scoop of almond butter.","Eat immediately before it melts."] },
+
+  { title: "Samosa Appetizer Plate", desc: "Crispy potato & pea samosas with yogurt dip, chutney vibes, and chile lime seasoning.", time: "20 min", servings: 3, difficulty: "easy", meal: ["snack","dinner"],
+    ingredients: [{item:"Potato & Pea Samosas",amount:2},{item:"Greek Yogurt (Plain)",amount:1},{item:"Chile Lime Seasoning",amount:2},{item:"Organic Honey",amount:1},{item:"Limes",amount:1},{item:"Garam Masala",amount:1},{item:"Kosher Salt",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 400F. Place frozen samosas on a parchment-lined baking sheet.","Bake 15-18 minutes, flipping halfway, until golden and crispy.","While samosas bake, make the dip: mix 1/4 cup Greek yogurt with a squeeze of lime, 1/4 tsp garam masala, a pinch of salt, and 1 tsp honey.","Arrange hot samosas on a plate. Dust with chile lime seasoning.","Serve with the yogurt dip on the side.","These are also great with Cholula or the serrano hot sauce."] },
+
+  { title: "Green Onion Pancake Wraps", desc: "Crispy TJ's scallion pancakes wrapped around grilled chicken with Soyaki and sriracha mayo.", time: "12 min", servings: 2, difficulty: "easy", meal: ["lunch","dinner"],
+    ingredients: [{item:"Green Onion Pancakes",amount:2},{item:"Grilled Chicken Breast Strips",amount:1},{item:"Soyaki Teriyaki",amount:2},{item:"Kewpie Mayonnaise",amount:1},{item:"Blue Agave Sriracha",amount:1},{item:"White Sesame Seeds",amount:1},{item:"Limes",amount:1}],
+    extraIngredients: [], steps: ["Cook green onion pancakes in a dry skillet or per package directions until crispy, about 3 minutes per side.","Heat chicken strips with 1 tbsp Soyaki in a separate pan.","Mix 1 tbsp Kewpie with 1 tsp sriracha for spicy mayo.","Lay pancakes flat. Add chicken strips down the center.","Drizzle with Soyaki, spicy mayo, and squeeze of lime. Sprinkle sesame seeds.","Roll up and eat like a wrap. The crispy pancake texture is the star."] },
+
+  { title: "Frozen Fruit Smoothie", desc: "A thick creamy smoothie with mixed frozen fruit, Greek yogurt, honey, and flax.", time: "5 min", servings: 1, difficulty: "easy", meal: ["breakfast","snack"],
+    ingredients: [{item:"Daybreak Fruit Blend",amount:2},{item:"Organic Frozen Blueberries",amount:1},{item:"Greek Yogurt (Plain)",amount:1},{item:"A2 Organic Whole Milk",amount:0.5},{item:"Organic Honey",amount:1},{item:"Ground Flaxseed",amount:1}],
+    extraIngredients: [], steps: ["Add 1 cup daybreak fruit blend and 1/2 cup frozen blueberries to a blender.","Add 1/2 cup Greek yogurt and 1/2 cup milk.","Add 1 tbsp honey and 1 tbsp flaxseed.","Blend on high until completely smooth, about 1 minute.","Pour into a glass. Should be thick but drinkable.","Drink immediately."] },
+
+  { title: "Chicken Drumstick Dinner", desc: "Baked chicken drumsticks rubbed with adobo, paprika, and garlic. Juicy and simple.", time: "40 min", servings: 3, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Chicken Drumsticks",amount:3},{item:"Avocado Oil",amount:2},{item:"Adobo Seasoning",amount:3},{item:"Organic Paprika",amount:2},{item:"Garlic Powder",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1},{item:"Organic Honey",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 425F. Line a baking sheet with foil.","Thaw drumsticks. Pat dry. Toss with 1 tbsp avocado oil.","Mix 1 tsp adobo, 1 tsp paprika, 1/2 tsp garlic powder, salt and pepper in a bowl.","Rub the seasoning all over the drumsticks.","Arrange on the baking sheet. Bake 20 minutes.","Flip, drizzle with 1 tbsp honey, and bake 15 more minutes until skin is crispy and internal temp hits 165F."] },
+
+  { title: "Shrimp Fajita Rice Bowl", desc: "Gulf shrimp with fajita seasoning over jasmine rice with salsa, cheese, and lime.", time: "18 min", servings: 2, difficulty: "easy", meal: ["dinner"],
+    ingredients: [{item:"Wild Gulf White Shrimp",amount:2},{item:"Frozen Jasmine Rice",amount:1},{item:"Chicken Fajita Seasoning",amount:2},{item:"The Salsa Boss (Medium)",amount:2},{item:"Shredded Mozzarella",amount:1},{item:"Limes",amount:1},{item:"Avocado Oil",amount:1},{item:"Mini Sweet Peppers",amount:1}],
+    extraIngredients: [], steps: ["Thaw shrimp under cold water. Pat dry and toss with 2 tsp fajita seasoning.","Microwave jasmine rice per package directions.","Heat 1 tbsp avocado oil in a skillet over high heat. Add sliced peppers, cook 3 minutes.","Add shrimp, cook 2-3 minutes per side until pink and slightly charred.","Divide rice into bowls. Top with shrimp and peppers.","Add salsa, shredded cheese, and a squeeze of lime."] },
+
+  { title: "Kolache Breakfast Plate", desc: "HEB cheese kolaches with breakfast sausage, hash browns, and hot sauce. Texas mornings.", time: "15 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
+    ingredients: [{item:"Cheese Kolaches",amount:2},{item:"Chicken & Maple Breakfast Sausage (Box)",amount:1},{item:"Shredded Hash Browns",amount:1},{item:"Avocado Oil",amount:1},{item:"Cholula Original",amount:2},{item:"Kosher Salt",amount:1},{item:"Black Pepper",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 350F. Place 4 kolaches on a baking sheet and heat 8-10 minutes.","While kolaches heat, cook hash browns: heat 1 tbsp oil in a skillet, spread 1 cup hash browns flat, cook 4 min per side until crispy.","Cook breakfast sausage links alongside the hash browns.","Plate: 2 kolaches, a pile of crispy hash browns, and sausage links per person.","Hit everything with Cholula hot sauce.","This is how Texas does breakfast."] },
+
+  { title: "Peach Cobbler Yogurt Bowl", desc: "Warm cinnamon peaches over cold Greek yogurt with granola. Quick dessert or breakfast.", time: "8 min", servings: 2, difficulty: "easy", meal: ["breakfast","snack"],
+    ingredients: [{item:"Organic Peach Slices",amount:2},{item:"Greek Yogurt (Plain)",amount:2},{item:"Salty-Sweet Granola",amount:1},{item:"Organic Honey",amount:1},{item:"Saigon Cinnamon",amount:2},{item:"Unsalted Organic Butter",amount:1},{item:"Organic Maple Syrup",amount:0.15}],
+    extraIngredients: [], steps: ["Melt 1 tbsp butter in a small skillet over medium heat.","Add 1 cup frozen peach slices. Cook 4-5 minutes until warm and slightly caramelized.","Sprinkle with 1/2 tsp cinnamon and 1 tsp maple syrup. Toss gently.","Divide Greek yogurt into two bowls.","Spoon the warm cinnamon peaches over the cold yogurt.","Top with granola and a drizzle of honey. The warm-cold contrast is the whole point."] },
 ];
 
 // ============================================
@@ -1223,11 +1401,11 @@ let inventory = [];
 let currentFilter = 'all';
 
 function loadInventory() {
-  const saved = localStorage.getItem('kitchenInventoryV8');
+  const saved = localStorage.getItem('kitchenInventoryV9');
   inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
   if (!saved) saveInventory();
 }
-function saveInventory() { localStorage.setItem('kitchenInventoryV8', JSON.stringify(inventory)); }
+function saveInventory() { localStorage.setItem('kitchenInventoryV9', JSON.stringify(inventory)); }
 function getCategories() {
   const cats = {};
   inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
@@ -1355,6 +1533,22 @@ const RECIPE_PHOTOS = {
   "Bean & Cheese Burrito": "bean-cheese-burrito",
   "Granola Yogurt Crunch Bowl": "granola-yogurt-bowl",
   "Caesar Pita Chip Salad": "caesar-pita-salad",
+  "Garlic Butter Salmon": "garlic-butter-salmon",
+  "Coconut Shrimp Stir-Fry": "coconut-shrimp-stir-fry",
+  "Smash Burgers": "smash-burgers",
+  "Bachan's Chicken Wings": "bachans-chicken-wings",
+  "Sausage & Peppers Pasta": "sausage-peppers-pasta",
+  "Meatball Marinara Subs": "meatball-marinara-subs",
+  "Hash Brown Breakfast Skillet": "hash-brown-skillet",
+  "Teriyaki Chicken Rice Bowl": "teriyaki-chicken-bowl",
+  "Acai Smoothie Bowl": "acai-smoothie-bowl",
+  "Samosa Appetizer Plate": "samosa-plate",
+  "Green Onion Pancake Wraps": "green-onion-pancake-wraps",
+  "Frozen Fruit Smoothie": "frozen-fruit-smoothie",
+  "Chicken Drumstick Dinner": "chicken-drumstick-dinner",
+  "Shrimp Fajita Rice Bowl": "shrimp-fajita-rice-bowl",
+  "Kolache Breakfast Plate": "kolache-breakfast-plate",
+  "Peach Cobbler Yogurt Bowl": "peach-cobbler-yogurt",
 };
 
 function getItemByName(name) { return inventory.find(i => i.name === name); }
@@ -1778,7 +1972,7 @@ function renderWeek() {
     }
 
     html += `<div class="week-day">
-      <div class="week-day-header${isToday ? ' today' : ''}">
+      <div class="week-day-header${isToday ? ' today' : ''}" onclick="openDailyView('${dayKey}')" style="cursor:pointer;" title="Click to see full day">
         ${dayNames[date.getDay()]}
         <span class="day-date">${date.getDate()}</span>
       </div>
@@ -1802,11 +1996,12 @@ function renderWeek() {
           ${imgSrc ? `<img class="meal-slot-img" src="${imgSrc}" loading="lazy">` : ''}
         </div>`;
       } else {
-        html += `<div class="week-meal-slot"
+        html += `<div class="week-meal-slot" onclick="pickMealForSlot('${dayKey}','${m}')"
           ondragover="event.preventDefault();this.classList.add('drag-over');"
           ondragleave="this.classList.remove('drag-over');"
           ondrop="event.preventDefault();this.classList.remove('drag-over');dropMeal('${dayKey}','${m}');">
           <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
+          <div style="font-family:'Special Elite',cursive;font-size:0.6rem;color:var(--text-light);text-align:center;margin-top:0.3rem;">+ tap to choose</div>
         </div>`;
       }
     }
@@ -1843,6 +2038,131 @@ function showRecipeFromWeek(title) {
   document.getElementById('recipeSearch').value = title;
   document.getElementById('recipeSearch').dispatchEvent(new Event('input'));
   window.scrollTo(0, 400);
+}
+
+// ============================================
+// DAILY DETAIL VIEW
+// ============================================
+function openDailyView(dayKey) {
+  const plan = loadWeekPlan();
+  const dayPlan = plan[dayKey] || {};
+  const date = new Date(dayKey + 'T12:00:00');
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  document.getElementById('dailyTitle').textContent = dayNames[date.getDay()] + "'s Menu";
+  document.getElementById('dailyDate').textContent = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const meals = ['breakfast','lunch','dinner'];
+  const mealNames = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
+  const names = inventory.map(i => i.name);
+  let html = '';
+  let totalDayCals = 0;
+
+  for (const m of meals) {
+    const slot = dayPlan[m];
+    html += `<div class="daily-meal-section">
+      <div class="daily-meal-label ${m}">${mealNames[m]}</div>`;
+
+    if (slot) {
+      const r = RECIPES.find(x => x.title === slot.title);
+      if (r) {
+        const photoSlug = RECIPE_PHOTOS[r.title];
+        const photoSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
+        const n = calcRecipeNutrition(r);
+        const ps = { cal: Math.round(n.calories/r.servings), pro: Math.round(n.protein/r.servings), carb: Math.round(n.totalCarbs/r.servings), fat: Math.round(n.totalFat/r.servings) };
+        totalDayCals += ps.cal;
+
+        // Ingredient thumbnails
+        const thumbs = r.ingredients.map(ing => {
+          const item = getItemByName(ing.item);
+          if (!item || !item.image) return '';
+          const idx = inventory.indexOf(item);
+          return `<img src="${item.image}" alt="${ing.item}" title="${ing.item}" onclick="closeDailyView();openItemModal(${idx})" loading="lazy">`;
+        }).filter(Boolean).join('');
+
+        html += `${photoSrc ? `<img class="daily-hero" src="${photoSrc}" alt="${r.title}" onclick="openPhotoModal('${photoSrc}','${r.title.replace(/'/g,"\\'")}')">` : ''}
+          <div class="daily-recipe-title">${r.title}</div>
+          <div class="daily-recipe-desc">${r.desc}</div>
+          <div class="daily-recipe-meta">
+            <span>\u23F1 ${r.time}</span>
+            <span>\uD83C\uDF7D ${r.servings} servings</span>
+            <span>\uD83E\uDD58 ${r.ingredients.length} ingredients</span>
+          </div>
+          <div class="daily-nutri-row">
+            <div class="daily-nutri-box"><div class="val">${ps.cal}</div><div class="lbl">Calories</div></div>
+            <div class="daily-nutri-box"><div class="val">${ps.pro}g</div><div class="lbl">Protein</div></div>
+            <div class="daily-nutri-box"><div class="val">${ps.carb}g</div><div class="lbl">Carbs</div></div>
+            <div class="daily-nutri-box"><div class="val">${ps.fat}g</div><div class="lbl">Fat</div></div>
+          </div>
+          ${thumbs ? `<div class="daily-ingredients-strip">${thumbs}</div>` : ''}
+          <div class="daily-steps"><ol>${r.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
+      }
+    } else {
+      html += `<div class="daily-empty">No meal planned. <a href="#" onclick="event.preventDefault();closeDailyView();pickMealForSlot('${dayKey}','${m}');" style="color:var(--gold);font-weight:bold;">Choose one</a></div>`;
+    }
+    html += '</div>';
+  }
+
+  // Daily total
+  html = `<div class="daily-cals-total">Today's Total<span>${totalDayCals} calories</span></div>` + html;
+
+  document.getElementById('dailyContent').innerHTML = html;
+  document.getElementById('dailyOverlay').classList.add('open');
+  document.getElementById('dailyOverlay').scrollTop = 0;
+}
+
+function closeDailyView() {
+  document.getElementById('dailyOverlay').classList.remove('open');
+}
+
+// ============================================
+// MEAL PICKER (click empty slot to choose a recipe)
+// ============================================
+let pickerTarget = null;
+
+function pickMealForSlot(dayKey, meal) {
+  pickerTarget = { dayKey, meal };
+  const names = inventory.map(i => i.name);
+  // Filter recipes that match this meal type
+  const matching = RECIPES.filter(r => r.meal && r.meal.includes(meal));
+  const sorted = matching.map(r => {
+    const have = r.ingredients.filter(i => names.includes(i.item)).length;
+    const total = r.ingredients.length + r.extraIngredients.length;
+    return { ...r, matchPct: Math.round(have/total*100) };
+  }).sort((a,b) => b.matchPct - a.matchPct);
+
+  let html = `<div style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;display:flex;align-items:center;justify-content:center;" onclick="if(event.target===this)this.remove()">
+    <div style="background:var(--paper);max-width:500px;width:92%;max-height:80vh;overflow-y:auto;border:3px solid var(--brown);">
+      <div style="background:var(--brown);color:var(--gold-light);padding:1rem;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:3px;text-align:center;">
+        Pick ${meal}
+      </div>
+      <div style="padding:0.5rem;">`;
+
+  for (const r of sorted) {
+    const photoSlug = RECIPE_PHOTOS[r.title];
+    const imgSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
+    const mc = r.matchPct===100?'var(--green)':r.matchPct>=70?'var(--gold)':'var(--red)';
+    html += `<div style="display:flex;gap:0.75rem;align-items:center;padding:0.6rem;border-bottom:1px solid var(--border);cursor:pointer;" onclick="selectMealForSlot('${r.title.replace(/'/g,"\\'")}');this.closest('[style*=fixed]').remove();" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='none'">
+      ${imgSrc ? `<img src="${imgSrc}" style="width:60px;height:45px;object-fit:cover;border:1px solid var(--border);border-radius:3px;" loading="lazy">` : '<div style="width:60px;height:45px;background:var(--cream);border:1px solid var(--border);"></div>'}
+      <div style="flex:1;">
+        <div style="font-family:'Oswald',sans-serif;font-size:0.85rem;color:var(--brown);">${r.title}</div>
+        <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--text-light);">${r.time} &bull; ${r.servings} srv</div>
+      </div>
+      <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;color:${mc};font-weight:600;">${r.matchPct}%</div>
+    </div>`;
+  }
+  html += '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function selectMealForSlot(title) {
+  if (!pickerTarget) return;
+  const plan = loadWeekPlan();
+  if (!plan[pickerTarget.dayKey]) plan[pickerTarget.dayKey] = {};
+  plan[pickerTarget.dayKey][pickerTarget.meal] = { title };
+  saveWeekPlan(plan);
+  pickerTarget = null;
+  renderWeek();
 }
 
 function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
