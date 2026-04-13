@@ -436,6 +436,68 @@
   }
   .toggle-steps:hover { background: var(--gold-light); }
 
+  /* ============ RATINGS & NOTES ============ */
+  .recipe-rating {
+    padding: 0.5rem 1.25rem; border-top: 1px dashed var(--border);
+    display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  }
+  .star-rating { display: flex; gap: 0.15rem; }
+  .star-rating .star {
+    cursor: pointer; font-size: 1.2rem; color: var(--border);
+    transition: color 0.15s;
+  }
+  .star-rating .star.filled { color: var(--gold); }
+  .star-rating .star:hover { color: var(--gold); }
+  .rating-label {
+    font-family: 'Courier Prime', monospace; font-size: 0.7rem;
+    color: var(--text-light);
+  }
+  .recipe-note-btn {
+    background: none; border: 1px solid var(--border); cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 1px; padding: 0.2rem 0.5rem;
+    color: var(--text-light); transition: all 0.15s;
+  }
+  .recipe-note-btn:hover { border-color: var(--brown); color: var(--brown); }
+  .recipe-notes {
+    padding: 0.5rem 1.25rem; border-top: 1px dashed var(--border);
+    display: none;
+  }
+  .recipe-notes.open { display: block; }
+  .recipe-notes textarea {
+    width: 100%; padding: 0.5rem; border: 1.5px solid var(--border);
+    font-family: 'Special Elite', cursive; font-size: 0.8rem;
+    background: var(--cream); color: var(--brown); resize: vertical;
+    min-height: 60px;
+  }
+  .recipe-notes textarea:focus { border-color: var(--brown); outline: none; }
+  .recipe-notes .saved-note {
+    font-family: 'Special Elite', cursive; font-size: 0.8rem;
+    color: var(--brown); font-style: italic; line-height: 1.5;
+    padding: 0.4rem; background: var(--cream); border-left: 3px solid var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ============ ATE OUT BADGE ============ */
+  .ate-out-badge {
+    background: var(--red); color: var(--cream);
+    font-family: 'Oswald', sans-serif; font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 2px;
+    padding: 0.2rem 0.5rem; text-align: center;
+  }
+  .week-eat-out-summary {
+    text-align: center; margin-bottom: 1.5rem;
+    font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+    color: var(--text-light);
+  }
+  .eat-out-pct {
+    font-family: 'Playfair Display', serif; font-size: 1.5rem;
+    font-weight: 900; display: block;
+  }
+  .eat-out-low { color: var(--green); }
+  .eat-out-mid { color: var(--gold); }
+  .eat-out-high { color: var(--red); }
+
   /* ============ MANAGE PAGE ============ */
   .add-section {
     background: var(--paper); border: 2px solid var(--brown);
@@ -938,6 +1000,7 @@
       <button class="filter-btn" data-rfilter="dinner">Dinner</button>
       <button class="filter-btn" data-rfilter="snack">Small Bites</button>
       <button class="filter-btn" data-rfilter="dessert">Dessert</button>
+      <button class="filter-btn" data-rfilter="kids">Kids</button>
       <button class="filter-btn" data-rfilter="100">100% Match</button>
     </div>
     <div class="recipe-grid" id="recipeList"></div>
@@ -1014,7 +1077,7 @@
         <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
-        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV12');location.reload();}">Fresh Start</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV13');location.reload();}">Fresh Start</button>
       </div>
     </div>
   </div>
@@ -1514,6 +1577,47 @@ const RECIPES = [
   { title: "Silver Dollar Pancake Stack", desc: "Quick frozen silver dollar pancakes with maple, butter, and breakfast sausage.", time: "8 min", servings: 2, difficulty: "easy", meal: ["breakfast"],
     ingredients: [{item:"Silver Dollar Pancakes",amount:2},{item:"Chicken & Maple Sausage (Bag)",amount:1},{item:"Organic Maple Syrup",amount:0.5},{item:"Unsalted Organic Butter",amount:1},{item:"Saigon Cinnamon",amount:1}],
     extraIngredients: [], steps: ["Heat silver dollar pancakes per package directions (microwave 1 min or toaster).","Cook breakfast sausage links in a skillet, 4-5 minutes turning occasionally.","Stack 5-6 warm pancakes on each plate. Top with a pat of butter.","Drizzle generously with maple syrup and a pinch of cinnamon.","Serve sausage links alongside.","This is a 5-minute breakfast that tastes like you tried."] },
+
+  // ===== KIDS MENU =====
+  { title: "Chicken Nugget Dippers", desc: "Golden chicken nuggets with ketchup, ranch, and honey mustard. Always a winner.", time: "18 min", servings: 3, difficulty: "easy", meal: ["kids","dinner"],
+    ingredients: [{item:"Breaded Chicken Nuggets",amount:3},{item:"Organic Ketchup",amount:2},{item:"Buttermilk Ranch Dressing",amount:1},{item:"Organic Honey",amount:1},{item:"Organic Dijon Mustard",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 425F.","Spread chicken nuggets on a baking sheet in a single layer.","Bake 15-18 minutes, flipping halfway, until golden and crispy.","Make honey mustard: mix 1 tbsp honey with 1 tbsp Dijon.","Serve nuggets with 3 dipping cups: ketchup, ranch, and honey mustard.","Let the kids pick their favorite (they'll use all three)."] },
+
+  { title: "Kid's Mac & Cheese", desc: "Classic Annie's mac with butter and milk. Simple, cheesy, no complaints.", time: "12 min", servings: 2, difficulty: "easy", meal: ["kids","lunch"],
+    ingredients: [{item:"Annie's Mac & Cheese (x2)",amount:1},{item:"Unsalted Organic Butter",amount:1},{item:"A2 Organic Whole Milk",amount:0.25}],
+    extraIngredients: [], steps: ["Boil water and cook mac noodles per box directions (about 8 min).","Drain and return to pot.","Add 2 tbsp butter and a splash of milk.","Stir in the cheese packet until creamy and smooth.","Divide into kid bowls.","Serve immediately — it gets gloopy if it sits."] },
+
+  { title: "PB&J Uncrustables", desc: "Frozen crustless PB&J sandwiches. Thaw 30 min and they're perfect.", time: "30 min thaw", servings: 2, difficulty: "easy", meal: ["kids","lunch"],
+    ingredients: [{item:"Crustless PB&J Sandwiches",amount:2}],
+    extraIngredients: [], steps: ["Remove 2 frozen PB&J sandwiches from the package.","Place on a plate at room temperature.","Wait 30 minutes to thaw (or 15 min if you're in a hurry — still a little frozen in the middle but kids don't care).","Cut in half if needed for the 3-year-old.","Serve with a glass of milk.","Zero effort. Maximum kid happiness."] },
+
+  { title: "Mini Pancake Breakfast", desc: "Silver dollar pancakes with maple syrup, berries, and a glass of milk. Morning made easy.", time: "5 min", servings: 2, difficulty: "easy", meal: ["kids","breakfast"],
+    ingredients: [{item:"Silver Dollar Pancakes",amount:2},{item:"Organic Maple Syrup",amount:0.25},{item:"Organic Frozen Blueberries",amount:1},{item:"Unsalted Organic Butter",amount:1}],
+    extraIngredients: [], steps: ["Heat silver dollar pancakes in the microwave (1 min) or toaster.","Thaw a small handful of blueberries (microwave 20 seconds).","Arrange 5-6 pancakes on each kid plate.","Add a tiny pat of butter.","Drizzle maple syrup and scatter berries on top.","Serve with a glass of milk."] },
+
+  { title: "Cheese Quesadilla (Kid Size)", desc: "Simple cheese quesadilla cut into triangles. The 3-year-old's favorite.", time: "8 min", servings: 2, difficulty: "easy", meal: ["kids","lunch"],
+    ingredients: [{item:"HEB Flour Tortillas (20 ct)",amount:2},{item:"Shredded Mozzarella",amount:2},{item:"Unsalted Organic Butter",amount:1}],
+    extraIngredients: [], steps: ["Heat a skillet over medium heat with 1/2 tsp butter.","Place a tortilla in the skillet. Sprinkle 1/4 cup shredded mozzarella on one half.","Fold in half. Cook 2 minutes until bottom is golden.","Flip carefully. Cook 1-2 more minutes until cheese is fully melted.","Cut into 3-4 triangles.","Let cool 2 minutes before handing to kids — melted cheese is lava hot."] },
+
+  { title: "Kolache & Fruit Plate", desc: "Warm cheese kolaches with fruit on the side. Easy grab-and-go for busy mornings.", time: "10 min", servings: 2, difficulty: "easy", meal: ["kids","breakfast"],
+    ingredients: [{item:"Cheese Kolaches",amount:2},{item:"Daybreak Fruit Blend",amount:1},{item:"Organic Honey",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 350F.","Place 4 kolaches on a baking sheet. Heat 8-10 minutes.","Thaw 1/2 cup daybreak fruit blend in the microwave (30 seconds).","Place 2 warm kolaches on each kid plate.","Add a small pile of mixed fruit alongside.","Drizzle fruit with a tiny bit of honey if they need convincing."] },
+
+  { title: "Peanut Butter Toast Sticks", desc: "Whole wheat toast cut into sticks with almond butter and honey. Dippable and fun.", time: "5 min", servings: 2, difficulty: "easy", meal: ["kids","breakfast","snack"],
+    ingredients: [{item:"Whole Wheat Bread",amount:2},{item:"Almond Butter",amount:1},{item:"Organic Honey",amount:1},{item:"Saigon Cinnamon",amount:1}],
+    extraIngredients: [], steps: ["Toast 2 slices of whole wheat bread until golden.","Spread almond butter generously on each slice.","Drizzle with honey and a tiny dusting of cinnamon.","Cut each slice into 4 sticks (strips).","Arrange on kid plates like little soldiers.","The 3-year-old can dip them in extra honey if they want."] },
+
+  { title: "Dino Nuggets & Peas", desc: "Chicken nuggets with peas and ketchup smiley face. Classic kid plate.", time: "18 min", servings: 2, difficulty: "easy", meal: ["kids","dinner"],
+    ingredients: [{item:"Breaded Chicken Nuggets",amount:2},{item:"Organic Peas",amount:1},{item:"Organic Ketchup",amount:1},{item:"Kosher Salt",amount:1},{item:"Unsalted Organic Butter",amount:1}],
+    extraIngredients: [], steps: ["Preheat oven to 425F. Bake chicken nuggets 15-18 minutes.","Microwave 1/2 cup frozen peas with a splash of water, 2 minutes. Drain and add a tiny bit of butter and salt.","Plate nuggets on one side, peas on the other.","Squeeze ketchup in a smiley face or dipping pool.","The 9-year-old will roll their eyes. The 3-year-old will love it.","Serve with milk."] },
+
+  { title: "Fruit Smoothie Popsicle Bowl", desc: "Frozen fruit smoothie served in a bowl so thick they eat it like ice cream. Healthy dessert hack.", time: "5 min", servings: 2, difficulty: "easy", meal: ["kids","dessert","snack"],
+    ingredients: [{item:"Daybreak Fruit Blend",amount:2},{item:"Organic Frozen Blueberries",amount:1},{item:"Greek Yogurt (Plain)",amount:0.5},{item:"Organic Honey",amount:1},{item:"Salty-Sweet Granola",amount:0.5}],
+    extraIngredients: [], steps: ["Blend 1 cup daybreak fruit blend and 1/2 cup blueberries with 1/4 cup yogurt.","Add only enough liquid to barely blend — you want this THICK.","Scoop into small bowls like ice cream.","Drizzle with honey and a sprinkle of granola.","Hand to kids with spoons. They'll think it's ice cream.","It's fruit. You win."] },
+
+  { title: "Grilled Cheese Fingers", desc: "Classic grilled cheese cut into dippable fingers with tomato soup vibes (marinara).", time: "10 min", servings: 2, difficulty: "easy", meal: ["kids","lunch"],
+    ingredients: [{item:"Whole Wheat Bread",amount:2},{item:"Sliced Cheese",amount:2},{item:"Unsalted Organic Butter",amount:2},{item:"Marinara Sauce",amount:0.5}],
+    extraIngredients: [], steps: ["Butter one side of each bread slice.","Place 2 slices butter-side down in a skillet over medium heat.","Layer 2 slices of cheese on each.","Top with the remaining bread slices, butter-side up.","Cook 3 minutes until golden. Flip and cook 2 more minutes.","Cut each sandwich into 4 fingers. Warm 1/4 cup marinara for dipping."] },
 ];
 
 // ============================================
@@ -1523,11 +1627,11 @@ let inventory = [];
 let currentFilter = 'all';
 
 function loadInventory() {
-  const saved = localStorage.getItem('kitchenInventoryV12');
+  const saved = localStorage.getItem('kitchenInventoryV13');
   inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
   if (!saved) saveInventory();
 }
-function saveInventory() { localStorage.setItem('kitchenInventoryV12', JSON.stringify(inventory)); }
+function saveInventory() { localStorage.setItem('kitchenInventoryV13', JSON.stringify(inventory)); }
 function getCategories() {
   const cats = {};
   inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
@@ -1704,6 +1808,16 @@ const RECIPE_PHOTOS = {
   "Beef Tenderloin with Chimichurri": "beef-tenderloin-chimichurri",
   "BBQ Chicken Strips & Ranch": "bbq-chicken-strips",
   "Silver Dollar Pancake Stack": "silver-dollar-stack",
+  "Chicken Nugget Dippers": "kids-nugget-dippers",
+  "Kid's Mac & Cheese": "kids-mac-cheese",
+  "PB&J Uncrustables": "kids-pbj",
+  "Mini Pancake Breakfast": "kids-mini-pancakes",
+  "Cheese Quesadilla (Kid Size)": "kids-cheese-quesadilla",
+  "Kolache & Fruit Plate": "kids-kolache-fruit",
+  "Peanut Butter Toast Sticks": "kids-pb-toast-sticks",
+  "Dino Nuggets & Peas": "kids-dino-nuggets",
+  "Fruit Smoothie Popsicle Bowl": "kids-smoothie-bowl",
+  "Grilled Cheese Fingers": "kids-grilled-cheese",
 };
 
 function getItemByName(name) { return inventory.find(i => i.name === name); }
@@ -1725,9 +1839,9 @@ function renderRecipes(filter, search) {
   if (search) recipes = recipes.filter(r => r.title.toLowerCase().includes(sl) || r.ingredients.some(i => i.item.toLowerCase().includes(sl)));
 
   // Group by meal category for menu-style display
-  const MEAL_ORDER = ["breakfast","lunch","dinner","snack","dessert"];
-  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Small Bites & Appetizers",dessert:"Dessert"};
-  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ just a little somethin' ~",dessert:"~ save room ~"};
+  const MEAL_ORDER = ["breakfast","lunch","dinner","snack","kids","dessert"];
+  const MEAL_NAMES = {breakfast:"Breakfast",lunch:"Lunch",dinner:"Dinner",snack:"Small Bites & Appetizers",kids:"Kids Menu",dessert:"Dessert"};
+  const MEAL_FLOURISH = {breakfast:"~ rise & shine ~",lunch:"~ midday fuel ~",dinner:"~ the main event ~",snack:"~ just a little somethin' ~",kids:"~ for the little ones ~",dessert:"~ save room ~"};
 
   let html = '';
   if (mealFilter === 'all' && !search) {
@@ -1755,7 +1869,8 @@ function renderRecipes(filter, search) {
   if (!html) html = '<div class="empty-state"><div class="icon">\uD83C\uDF73</div><p>No specials today</p></div>';
   el.innerHTML = html;
 }
-function renderRecipeCard(r, names) {
+function renderRecipeCard(r, names, ratings) {
+  ratings = ratings || getRecipeRatings();
   const mc = r.matchPct===100?'match-high':r.matchPct>=70?'match-mid':'match-low';
   const tc = r.difficulty==='easy'?'tag-easy':'tag-medium';
   const id = r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase();
@@ -1805,6 +1920,17 @@ function renderRecipeCard(r, names) {
         ${r.sides.map(s => `<span style="font-family:'Courier Prime',monospace;font-size:0.75rem;padding:0.15rem 0.5rem;border:1px solid var(--gold);color:var(--brown);background:var(--paper);">${s}</span>`).join('')}
       </div>
     </div>` : ''}
+    <div class="recipe-rating">
+      <div class="star-rating" id="stars-${id}">
+        ${[1,2,3,4,5].map(s => `<span class="star${(ratings[r.title]?.stars||0)>=s?' filled':''}" onclick="event.stopPropagation();saveRecipeRating('${r.title.replace(/'/g,"\\'")}',${s})">&#9733;</span>`).join('')}
+      </div>
+      <span class="rating-label">${ratings[r.title]?.stars ? ratings[r.title].stars + '/5' : 'Rate this'}</span>
+      <button class="recipe-note-btn" onclick="toggleNotes('${id}')">${ratings[r.title]?.note ? 'View Note' : '+ Add Note'}</button>
+    </div>
+    <div class="recipe-notes" id="notes-${id}">
+      ${ratings[r.title]?.note ? `<div class="saved-note">"${ratings[r.title].note}"</div>` : ''}
+      <textarea placeholder="Add a note (e.g. 'better when roasted' or 'kids loved it')..." onblur="saveRecipeNote('${r.title.replace(/'/g,"\\'")}',this.value)">${ratings[r.title]?.note||''}</textarea>
+    </div>
     <button class="toggle-steps" onclick="toggleSteps('${id}')">Show Directions</button>
     <div class="recipe-steps" id="steps-${id}"><ol>${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
   </div>`;
@@ -2113,7 +2239,15 @@ function renderWeek() {
   const endStr = days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   document.getElementById('weekTitle').textContent = `${startStr} - ${endStr}`;
 
-  let html = '';
+  // Ate-out summary
+  const eoStats = getWeekEatOutStats();
+  const eoPctClass = eoStats.pct <= 15 ? 'eat-out-low' : eoStats.pct <= 40 ? 'eat-out-mid' : 'eat-out-high';
+  const eoSummary = eoStats.totalMeals > 0 ? `<div class="week-eat-out-summary">
+    Eating Out This Week: <span class="eat-out-pct ${eoPctClass}">${eoStats.pct}%</span>
+    ${eoStats.ateOutCount} of ${eoStats.totalMeals} meals eaten out
+  </div>` : '';
+
+  let html = eoSummary;
   for (let d = 0; d < 7; d++) {
     const date = days[d];
     const dayKey = date.toISOString().split('T')[0];
@@ -2144,7 +2278,15 @@ function renderWeek() {
       const photoSlug = slot ? RECIPE_PHOTOS[slot.title] : null;
       const imgSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
 
-      if (slot) {
+      if (slot && slot.ateOut) {
+        // Ate out meal
+        html += `<div class="week-meal-slot filled" style="border-color:var(--red);">
+          <button class="meal-slot-remove" onclick="event.stopPropagation();removeMealFromWeek('${dayKey}','${m}')" title="Remove">&times;</button>
+          <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
+          <div class="ate-out-badge">ATE OUT</div>
+          <div class="meal-slot-title">${slot.restaurant || 'Restaurant'}</div>
+        </div>`;
+      } else if (slot) {
         html += `<div class="week-meal-slot filled" draggable="true"
           ondragstart="dragData={day:'${dayKey}',meal:'${m}',title:'${slot.title.replace(/'/g,"\\'")}'};"
           ondragover="event.preventDefault();this.classList.add('drag-over');"
@@ -2162,7 +2304,10 @@ function renderWeek() {
           ondragleave="this.classList.remove('drag-over');"
           ondrop="event.preventDefault();this.classList.remove('drag-over');dropMeal('${dayKey}','${m}');">
           <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
-          <div style="font-family:'Special Elite',cursive;font-size:0.6rem;color:var(--text-light);text-align:center;margin-top:0.3rem;">+ tap to choose</div>
+          <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.3rem;">
+            <span style="font-family:'Special Elite',cursive;font-size:0.55rem;color:var(--text-light);cursor:pointer;">+ cook</span>
+            <span style="font-family:'Special Elite',cursive;font-size:0.55rem;color:var(--red);cursor:pointer;" onclick="event.stopPropagation();var r=prompt('Where did you eat?');if(r)markAteOut('${dayKey}','${m}',r);">+ ate out</span>
+          </div>
         </div>`;
       }
     }
@@ -2331,6 +2476,60 @@ function selectMealForSlot(title) {
   }
 }
 
+// ============================================
+// RATINGS & NOTES (persisted in localStorage)
+// ============================================
+function getRecipeRatings() {
+  return JSON.parse(localStorage.getItem('recipeRatings') || '{}');
+}
+function saveRecipeRating(title, stars) {
+  const ratings = getRecipeRatings();
+  if (!ratings[title]) ratings[title] = {};
+  ratings[title].stars = stars;
+  localStorage.setItem('recipeRatings', JSON.stringify(ratings));
+  renderRecipes();
+}
+function getRecipeNote(title) {
+  const ratings = getRecipeRatings();
+  return ratings[title]?.note || '';
+}
+function saveRecipeNote(title, note) {
+  const ratings = getRecipeRatings();
+  if (!ratings[title]) ratings[title] = {};
+  ratings[title].note = note;
+  localStorage.setItem('recipeRatings', JSON.stringify(ratings));
+}
+function toggleNotes(id) {
+  const el = document.getElementById('notes-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+// ============================================
+// ATE OUT TRACKING
+// ============================================
+function markAteOut(dayKey, meal, restaurant) {
+  const plan = loadWeekPlan();
+  if (!plan[dayKey]) plan[dayKey] = {};
+  plan[dayKey][meal] = { title: '🍔 ' + restaurant, ateOut: true, restaurant };
+  saveWeekPlan(plan);
+  renderWeek();
+}
+
+function getWeekEatOutStats() {
+  const plan = loadWeekPlan();
+  let totalMeals = 0;
+  let ateOutCount = 0;
+  for (const day of Object.values(plan)) {
+    for (const meal of Object.values(day)) {
+      if (meal && meal.title) {
+        totalMeals++;
+        if (meal.ateOut) ateOutCount++;
+      }
+    }
+  }
+  return { totalMeals, ateOutCount, pct: totalMeals > 0 ? Math.round(ateOutCount / totalMeals * 100) : 0 };
+}
+
 function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
 function addItem() {
   const nm=document.getElementById('newName').value.trim(),br=document.getElementById('newBrand').value.trim(),
@@ -2354,6 +2553,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');
+  window.scrollTo(0, 0);
 }));
 document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));
