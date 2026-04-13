@@ -845,7 +845,7 @@
         <button class="btn btn-outline" onclick="exportInventory()">Export Ledger</button>
         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Ledger</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importInventory(event)">
-        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV7');location.reload();}">Fresh Start</button>
+        <button class="btn btn-outline" style="color:var(--red);border-color:var(--red);" onclick="if(confirm('Reset to original inventory from photos?')){localStorage.removeItem('kitchenInventoryV8');location.reload();}">Fresh Start</button>
       </div>
     </div>
   </div>
@@ -1035,6 +1035,61 @@ const INITIAL_INVENTORY = [
   { name: "Garden Ranch Seasoning Mix", brand: "Primal Palate", category: "Spices & Seasonings", location: "Pantry", image: "photos/IMG_0017.jpg", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 0, totalFat: 0, saturatedFat: 0, sodium: 35, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
   { name: "Sun Dried Chile Guajillo", brand: "Vivido", category: "Spices & Seasonings", location: "Pantry", image: "photos/IMG_0018.jpg", nutrition: { servingSize: "1 chile (5g)", calories: 10, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 2, fiber: 1, sugars: 0, protein: 0 }},
   { name: "Smoked Paprika (Tin)", brand: "", category: "Spices & Seasonings", location: "Pantry", image: "photos/IMG_0013.jpg", nutrition: { servingSize: "1/4 tsp (0.5g)", calories: 1, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 0, fiber: 0, sugars: 0, protein: 0 }},
+
+  // ===== FREEZER ITEMS (53 photos) =====
+  { name: "Breaded Chicken Nuggets", brand: "Golden Platter", category: "Frozen", location: "Freezer", image: "photos/IMG_0027.jpg", nutrition: { servingSize: "5 pieces (85g)", calories: 190, totalFat: 10, saturatedFat: 2, sodium: 400, totalCarbs: 14, fiber: 1, sugars: 0, protein: 12 }},
+  { name: "Frozen Dinner Rolls", brand: "Rhodes", category: "Frozen", location: "Freezer", image: "photos/IMG_0028.jpg", nutrition: { servingSize: "1 roll (43g)", calories: 120, totalFat: 2, saturatedFat: 0.5, sodium: 190, totalCarbs: 22, fiber: 1, sugars: 3, protein: 4 }},
+  { name: "Frozen Jasmine Rice", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0029.jpg", nutrition: { servingSize: "1 cup (200g)", calories: 240, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 54, fiber: 0, sugars: 0, protein: 4 }},
+  { name: "Shredded Hash Browns", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0030.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 15, totalCarbs: 15, fiber: 1, sugars: 0, protein: 2 }},
+  { name: "Organic Riced Cauliflower", brand: "365", category: "Frozen", location: "Freezer", image: "photos/IMG_0031.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 4, fiber: 2, sugars: 2, protein: 2 }},
+  { name: "Unknown Frozen Item 1", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0032.jpg", nutrition: null },
+  { name: "Unknown Frozen Item 2", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0033.jpg", nutrition: null },
+  { name: "1905 Vanilla Ice Cream", brand: "H-E-B Creamy Creations", category: "Frozen", location: "Freezer", image: "photos/IMG_0034.jpg", nutrition: { servingSize: "2/3 cup (97g)", calories: 250, totalFat: 14, saturatedFat: 9, sodium: 80, totalCarbs: 28, fiber: 0, sugars: 24, protein: 4 }},
+  { name: "Wild Gulf White Shrimp", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0035.jpg", nutrition: { servingSize: "4 oz (112g)", calories: 120, totalFat: 2, saturatedFat: 0.5, sodium: 120, totalCarbs: 0, fiber: 0, sugars: 0, protein: 23 }},
+  { name: "Frozen Passion Fruit Pieces", brand: "Pitaya Foods", category: "Frozen", location: "Freezer", image: "photos/IMG_0036.jpg", nutrition: { servingSize: "1/2 cup (100g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 13, fiber: 7, sugars: 4, protein: 1 }},
+  { name: "Spicy Mexican Riced Cauliflower", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0037.jpg", nutrition: { servingSize: "1 cup (155g)", calories: 50, totalFat: 1.5, saturatedFat: 0, sodium: 340, totalCarbs: 8, fiber: 3, sugars: 3, protein: 2 }},
+  { name: "Beef Tenderloin Steaks", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0038.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 8, saturatedFat: 3, sodium: 55, totalCarbs: 0, fiber: 0, sugars: 0, protein: 26 }},
+  { name: "Mild Italian Sausage", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0039.jpg", nutrition: { servingSize: "1 link (84g)", calories: 230, totalFat: 18, saturatedFat: 6, sodium: 550, totalCarbs: 2, fiber: 0, sugars: 1, protein: 14 }},
+  { name: "Unknown Frozen Item 3", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0040.jpg", nutrition: null },
+  { name: "Organic Chicken Wings", brand: "Pine Manor", category: "Frozen", location: "Freezer", image: "photos/IMG_0041.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 190, totalFat: 13, saturatedFat: 3.5, sodium: 85, totalCarbs: 0, fiber: 0, sugars: 0, protein: 17 }},
+  { name: "Cheese Kolaches", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0042.jpg", nutrition: { servingSize: "1 kolache (71g)", calories: 200, totalFat: 8, saturatedFat: 3.5, sodium: 350, totalCarbs: 25, fiber: 1, sugars: 5, protein: 7 }},
+  { name: "Chicken Drumsticks", brand: "Sprouts", category: "Frozen", location: "Freezer", image: "photos/IMG_0043.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 10, saturatedFat: 3, sodium: 80, totalCarbs: 0, fiber: 0, sugars: 0, protein: 21 }},
+  { name: "Green Onion Pancakes", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0044.jpg", nutrition: { servingSize: "1 pancake (70g)", calories: 160, totalFat: 4, saturatedFat: 0.5, sodium: 380, totalCarbs: 28, fiber: 1, sugars: 1, protein: 3 }},
+  { name: "Grass-Fed Beef Patties (1/3 lb)", brand: "Kirkland", category: "Frozen", location: "Freezer", image: "photos/IMG_0045.jpg", nutrition: { servingSize: "1 patty (151g)", calories: 370, totalFat: 28, saturatedFat: 12, sodium: 100, totalCarbs: 0, fiber: 0, sugars: 0, protein: 28 }},
+  { name: "Breaded Chicken Strips (GF)", brand: "Real Good Foods", category: "Frozen", location: "Freezer", image: "photos/IMG_0046.jpg", nutrition: { servingSize: "3 oz (85g)", calories: 170, totalFat: 9, saturatedFat: 2, sodium: 380, totalCarbs: 4, fiber: 0, sugars: 0, protein: 23 }},
+  { name: "Argentinian Red Shrimp", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0047.jpg", nutrition: { servingSize: "4 oz (112g)", calories: 110, totalFat: 1.5, saturatedFat: 0.5, sodium: 480, totalCarbs: 0, fiber: 0, sugars: 0, protein: 23 }},
+  { name: "Unknown Frozen Item 4 (Popsicles)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0048.jpg", nutrition: null },
+  { name: "Rao's Veggie Pizza", brand: "Rao's", category: "Frozen", location: "Freezer", image: "photos/IMG_0049.jpg", nutrition: { servingSize: "1/3 pizza (143g)", calories: 310, totalFat: 15, saturatedFat: 7, sodium: 620, totalCarbs: 33, fiber: 2, sugars: 5, protein: 13 }},
+  { name: "Daybreak Fruit Blend", brand: "Wawona", category: "Frozen", location: "Freezer", image: "photos/IMG_0050.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 15, fiber: 2, sugars: 12, protein: 1 }},
+  { name: "Organic Peas", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0051.jpg", nutrition: { servingSize: "2/3 cup (89g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 10, fiber: 4, sugars: 4, protein: 4 }},
+  { name: "Spicy Mexican Riced Cauliflower (2nd)", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0052.jpg", nutrition: { servingSize: "1 cup (155g)", calories: 50, totalFat: 1.5, saturatedFat: 0, sodium: 340, totalCarbs: 8, fiber: 3, sugars: 3, protein: 2 }},
+  { name: "Angus Beef Meatballs", brand: "Nature's Rancher", category: "Frozen", location: "Freezer", image: "photos/IMG_0053.jpg", nutrition: { servingSize: "3 meatballs (85g)", calories: 200, totalFat: 14, saturatedFat: 6, sodium: 470, totalCarbs: 4, fiber: 0, sugars: 1, protein: 14 }},
+  { name: "Unknown Frozen Item 5 (Broccoli)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0054.jpg", nutrition: null },
+  { name: "Organic Peach Slices", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0055.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 13, fiber: 2, sugars: 10, protein: 1 }},
+  { name: "Silver Dollar Pancakes", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0056.jpg", nutrition: { servingSize: "11 pancakes (55g)", calories: 170, totalFat: 4, saturatedFat: 1, sodium: 370, totalCarbs: 29, fiber: 1, sugars: 5, protein: 4 }},
+  { name: "Atlantic Salmon Fillet", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0057.jpg", nutrition: { servingSize: "4 oz (113g)", calories: 180, totalFat: 10, saturatedFat: 2.5, sodium: 50, totalCarbs: 0, fiber: 0, sugars: 0, protein: 22 }},
+  { name: "Chicken & Maple Breakfast Sausage (Box)", brand: "Applegate", category: "Frozen", location: "Freezer", image: "photos/IMG_0058.jpg", nutrition: { servingSize: "3 links (55g)", calories: 120, totalFat: 7, saturatedFat: 2, sodium: 390, totalCarbs: 4, fiber: 0, sugars: 3, protein: 10 }},
+  { name: "Organic Edamame", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0059.jpg", nutrition: { servingSize: "1/2 cup shelled (75g)", calories: 90, totalFat: 4, saturatedFat: 0, sodium: 5, totalCarbs: 7, fiber: 4, sugars: 1, protein: 9 }},
+  { name: "Grilled Chicken Breast Strips", brand: "Applegate", category: "Frozen", location: "Freezer", image: "photos/IMG_0060.jpg", nutrition: { servingSize: "3 oz (85g)", calories: 110, totalFat: 2.5, saturatedFat: 0.5, sodium: 430, totalCarbs: 0, fiber: 0, sugars: 0, protein: 21 }},
+  { name: "Root Vegetable Hash Browns", brand: "Cascadian Farm", category: "Frozen", location: "Freezer", image: "photos/IMG_0061.jpg", nutrition: { servingSize: "1 patty (64g)", calories: 70, totalFat: 0, saturatedFat: 0, sodium: 170, totalCarbs: 15, fiber: 2, sugars: 1, protein: 1 }},
+  { name: "Chicken & Maple Sausage (Bag)", brand: "Applegate", category: "Frozen", location: "Freezer", image: "photos/IMG_0062.jpg", nutrition: { servingSize: "3 links (55g)", calories: 120, totalFat: 7, saturatedFat: 2, sodium: 390, totalCarbs: 4, fiber: 0, sugars: 3, protein: 10 }},
+  { name: "Siete Cassava Flour Tortillas", brand: "Siete", category: "Frozen", location: "Freezer", image: "photos/IMG_0063.jpg", nutrition: { servingSize: "1 tortilla (40g)", calories: 100, totalFat: 3, saturatedFat: 2.5, sodium: 230, totalCarbs: 17, fiber: 1, sugars: 0, protein: 0 }},
+  { name: "Potato & Pea Samosas", brand: "Truly Indian", category: "Frozen", location: "Freezer", image: "photos/IMG_0064.jpg", nutrition: { servingSize: "2 samosas (100g)", calories: 210, totalFat: 7, saturatedFat: 3, sodium: 380, totalCarbs: 33, fiber: 3, sugars: 2, protein: 5 }},
+  { name: "Frozen Diced Potatoes", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0065.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 15, totalCarbs: 15, fiber: 1, sugars: 0, protein: 2 }},
+  { name: "Oven Roasted Turkey Breast", brand: "Applegate", category: "Frozen", location: "Freezer", image: "photos/IMG_0066.jpg", nutrition: { servingSize: "2 oz (56g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 360, totalCarbs: 0, fiber: 0, sugars: 0, protein: 12 }},
+  { name: "Cinnamon Raisin Bread", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0067.jpg", nutrition: { servingSize: "1 slice (32g)", calories: 90, totalFat: 1, saturatedFat: 0, sodium: 100, totalCarbs: 18, fiber: 1, sugars: 5, protein: 3 }},
+  { name: "Crustless PB&J Sandwiches", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0068.jpg", nutrition: { servingSize: "1 sandwich (57g)", calories: 200, totalFat: 8, saturatedFat: 2, sodium: 190, totalCarbs: 27, fiber: 1, sugars: 9, protein: 5 }},
+  { name: "Unknown Frozen Item 6 (Fish/Meat)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0069.jpg", nutrition: null },
+  { name: "Frozen Strawberries", brand: "Trader Joe's", category: "Frozen", location: "Freezer", image: "photos/IMG_0070.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 50, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 12, fiber: 3, sugars: 8, protein: 1 }},
+  { name: "Unknown Frozen Item 7 (Popsicles 2)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0071.jpg", nutrition: null },
+  { name: "Dorot Crushed Garlic Cubes", brand: "Dorot Gardens", category: "Frozen", location: "Freezer", image: "photos/IMG_0072.jpg", nutrition: { servingSize: "1 cube (4g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Dorot Crushed Ginger Cubes", brand: "Dorot Gardens", category: "Frozen", location: "Freezer", image: "photos/IMG_0073.jpg", nutrition: { servingSize: "1 cube (4g)", calories: 5, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 1, fiber: 0, sugars: 0, protein: 0 }},
+  { name: "Acai Packs (Unsweetened)", brand: "Sambazon", category: "Frozen", location: "Freezer", image: "photos/IMG_0074.jpg", nutrition: { servingSize: "1 pack (100g)", calories: 70, totalFat: 5, saturatedFat: 1.5, sodium: 5, totalCarbs: 4, fiber: 3, sugars: 0, protein: 1 }},
+  { name: "Unknown Frozen Item 8 (Turkey/Meat)", brand: "Unknown", category: "Frozen", location: "Freezer", image: "photos/IMG_0075.jpg", nutrition: null },
+  { name: "Straus Vanilla Bean Ice Cream", brand: "Straus Family Creamery", category: "Frozen", location: "Freezer", image: "photos/IMG_0076.jpg", nutrition: { servingSize: "2/3 cup (96g)", calories: 250, totalFat: 16, saturatedFat: 10, sodium: 55, totalCarbs: 22, fiber: 0, sugars: 21, protein: 4 }},
+  { name: "Organic Green Peas (2nd bag)", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0077.jpg", nutrition: { servingSize: "2/3 cup (89g)", calories: 60, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 10, fiber: 4, sugars: 4, protein: 4 }},
+  { name: "Organic Frozen Blueberries", brand: "H-E-B", category: "Frozen", location: "Freezer", image: "photos/IMG_0078.jpg", nutrition: { servingSize: "1 cup (140g)", calories: 80, totalFat: 0, saturatedFat: 0, sodium: 0, totalCarbs: 20, fiber: 4, sugars: 14, protein: 1 }},
+  { name: "Organic Riced Cauliflower (2nd)", brand: "", category: "Frozen", location: "Freezer", image: "photos/IMG_0079.jpg", nutrition: { servingSize: "3/4 cup (85g)", calories: 20, totalFat: 0, saturatedFat: 0, sodium: 20, totalCarbs: 4, fiber: 2, sugars: 2, protein: 2 }},
 ];
 
 const RECIPES = [
@@ -1168,11 +1223,11 @@ let inventory = [];
 let currentFilter = 'all';
 
 function loadInventory() {
-  const saved = localStorage.getItem('kitchenInventoryV7');
+  const saved = localStorage.getItem('kitchenInventoryV8');
   inventory = saved ? JSON.parse(saved) : INITIAL_INVENTORY.map(i => ({...i}));
   if (!saved) saveInventory();
 }
-function saveInventory() { localStorage.setItem('kitchenInventoryV7', JSON.stringify(inventory)); }
+function saveInventory() { localStorage.setItem('kitchenInventoryV8', JSON.stringify(inventory)); }
 function getCategories() {
   const cats = {};
   inventory.forEach(i => { if (!cats[i.category]) cats[i.category] = []; cats[i.category].push(i); });
@@ -1285,6 +1340,21 @@ const RECIPE_PHOTOS = {
   "Salsa Cream Cheese Dip": "salsa-cream-cheese-dip",
   "Kewpie Bacon Tomato Bites": "kewpie-bacon-tomato-bites",
   "Olive & Mozz Antipasto": "olive-mozz-antipasto",
+  "GF Pancakes with Maple & Berries": "gf-pancakes",
+  "Tuna Melt on Brioche": "tuna-melt-brioche",
+  "Coconut Curry Ramen": "coconut-curry-ramen",
+  "Black Bean & Cheese Quesadillas": "black-bean-quesadillas",
+  "Fettuccine Marinara with Parmesan": "fettuccine-marinara",
+  "Fishwife Tuna Toast": "fishwife-tuna-toast",
+  "Annie's Mac & Cheese Upgrade": "annies-mac-upgrade",
+  "Peanut Butter Banana Oats": "pb-banana-oats",
+  "Chicken Herb Rice Bowl": "chicken-herb-rice-bowl",
+  "Biscuits & Country Gravy": "biscuits-country-gravy",
+  "Coconut Milk Chia Pudding": "coconut-chia-pudding",
+  "Spicy Tuna Rice Bowl": "spicy-tuna-rice-bowl",
+  "Bean & Cheese Burrito": "bean-cheese-burrito",
+  "Granola Yogurt Crunch Bowl": "granola-yogurt-bowl",
+  "Caesar Pita Chip Salad": "caesar-pita-salad",
 };
 
 function getItemByName(name) { return inventory.find(i => i.name === name); }
@@ -1530,11 +1600,40 @@ function saveWeekPlan(plan) {
   localStorage.setItem(key, JSON.stringify(plan));
 }
 
+// Ingredient budget system — tracks how many times each ingredient can be used per week
+// Perishable/limited items get a max usage count based on package size
+const INGREDIENT_WEEKLY_BUDGET = {
+  "Organic Flaky Biscuits": 2,       // 8-pack, 2 recipes max
+  "Applewood Smoked Bacon": 3,       // 1 pack, ~3 recipes
+  "Hot Dog Buns (8 ct)": 1,          // 1 pack
+  "Brioche Burger Buns": 1,          // small pack
+  "Cherry Tomatoes": 3,              // 1 pint
+  "Mini Sweet Peppers": 3,           // 1 bag
+  "Fresh Mozzarella Ciliegine": 2,   // 1 container
+  "Fresh Mozzarella Pearls": 2,
+  "Philadelphia Cream Cheese": 2,    // 1 block
+  "Organic Cottage Cheese": 2,       // 1 tub
+  "Whole Milk Ricotta": 2,           // 1 tub
+  "Spicy Albacore Tuna in Olive Oil": 1, // 1 tin
+  "Albacore Wild Tuna (No Salt)": 2, // 2 cans
+  "Chicken Ramen Noodles": 1,        // 1 pack
+  "Annie's Mac & Cheese (x2)": 2,    // 2 boxes
+  "Blueberry Muffins (4 ct)": 1,     // 1 pack
+  "GF Pancake & Waffle Mix": 2,      // big bag, 2 batches
+  "Chicken & Herb Rice Mix": 1,      // 1 box
+  "Country Sausage Gravy Mix": 1,    // 1 packet
+  "Refried Pinto Beans": 2,
+  "Refried Black Beans": 2,
+  "Castelvetrano Olives": 2,
+  "Coconut Milk (Unsweetened)": 1,   // 1 can
+};
+
 function autoFillWeek() {
   const plan = {};
   const days = getWeekDates(weekOffset);
   const names = inventory.map(i => i.name);
   const meals = ['breakfast', 'lunch', 'dinner'];
+  const ingredientUsage = {}; // track how many times each ingredient is used this week
 
   // Get recipes grouped by meal type, prefer 100% match
   const byMeal = {};
@@ -1548,20 +1647,53 @@ function autoFillWeek() {
       if (byMeal[m]) byMeal[m].push({ ...r, matchPct: pct });
     }
   }
-  // Sort each by match % descending
   for (const m of meals) byMeal[m].sort((a, b) => b.matchPct - a.matchPct);
+
+  // Check if a recipe would exceed any ingredient's weekly budget
+  function wouldExceedBudget(recipe) {
+    for (const ing of recipe.ingredients) {
+      const budget = INGREDIENT_WEEKLY_BUDGET[ing.item];
+      if (budget !== undefined) {
+        const currentUse = ingredientUsage[ing.item] || 0;
+        if (currentUse >= budget) return true;
+      }
+    }
+    return false;
+  }
+
+  // Record ingredient usage for a recipe
+  function recordUsage(recipe) {
+    for (const ing of recipe.ingredients) {
+      if (INGREDIENT_WEEKLY_BUDGET[ing.item] !== undefined) {
+        ingredientUsage[ing.item] = (ingredientUsage[ing.item] || 0) + 1;
+      }
+    }
+  }
 
   for (let d = 0; d < 7; d++) {
     const dayKey = days[d].toISOString().split('T')[0];
     plan[dayKey] = {};
     for (const m of meals) {
       const pool = byMeal[m];
-      if (pool.length > 0) {
-        // Pick semi-randomly from top matches, avoid repeats within the week
-        const used = Object.values(plan).map(p => Object.values(p).map(v => v?.title)).flat();
-        const available = pool.filter(r => !used.includes(r.title));
-        const pick = available.length > 0 ? available[Math.floor(Math.random() * Math.min(5, available.length))] : pool[Math.floor(Math.random() * pool.length)];
+      if (pool.length === 0) continue;
+
+      // Filter: no title repeats this week AND doesn't exceed ingredient budgets
+      const usedTitles = Object.values(plan).map(p => Object.values(p).map(v => v?.title)).flat();
+      const available = pool.filter(r => !usedTitles.includes(r.title) && !wouldExceedBudget(r));
+
+      if (available.length > 0) {
+        // Pick from top 5 best matches with some randomness
+        const pick = available[Math.floor(Math.random() * Math.min(5, available.length))];
         plan[dayKey][m] = { title: pick.title };
+        recordUsage(pick);
+      } else {
+        // Fallback: allow repeats but still respect ingredient budget
+        const fallback = pool.filter(r => !wouldExceedBudget(r));
+        if (fallback.length > 0) {
+          const pick = fallback[Math.floor(Math.random() * Math.min(3, fallback.length))];
+          plan[dayKey][m] = { title: pick.title };
+          recordUsage(pick);
+        }
       }
     }
   }
