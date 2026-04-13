@@ -672,12 +672,13 @@
 
   /* ============ THE WEEK (Meal Planner) ============ */
   .week-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem;
+    margin-bottom: 1.5rem; width: 100%;
   }
   .week-day {
     background: var(--paper); border: 2px solid var(--border);
-    min-height: 320px; display: flex; flex-direction: column;
+    min-height: 300px; min-width: 0; display: flex; flex-direction: column;
+    overflow: hidden;
   }
   .week-day-header {
     background: var(--brown); color: var(--gold-light);
@@ -725,6 +726,27 @@
   }
   .week-meal-slot:hover .meal-slot-remove { opacity: 0.7; }
   .meal-slot-remove:hover { opacity: 1 !important; background: var(--red); }
+  .meal-add-btn {
+    display: flex; align-items: center; justify-content: center;
+    margin: 0.3rem auto 0; width: 28px; height: 28px;
+    border: 2px dashed var(--border); border-radius: 50%;
+    font-family: 'Oswald', sans-serif; font-size: 1rem; color: var(--text-light);
+    cursor: pointer; transition: all 0.15s; background: none;
+  }
+  .meal-add-btn:hover { border-color: var(--brown); color: var(--brown); background: var(--cream); }
+  .meal-choice-popup {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--paper); border: 2px solid var(--brown); z-index: 100;
+    display: flex; flex-direction: column; gap: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 100px;
+  }
+  .meal-choice-popup button {
+    background: none; border: none; padding: 0.6rem 0.8rem; cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--brown); text-align: left; transition: all 0.1s;
+  }
+  .meal-choice-popup button:hover { background: var(--brown); color: var(--cream); }
+  .meal-choice-popup button:first-child { border-bottom: 1px solid var(--border); }
   .week-actions {
     display: flex; gap: 0.75rem; justify-content: center;
     margin-bottom: 1.5rem; flex-wrap: wrap;
@@ -849,11 +871,19 @@
     font-family: 'Special Elite', cursive; color: var(--text-light);
   }
 
-  @media (max-width: 900px) {
-    .week-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 1100px) {
+    .week-grid { grid-template-columns: repeat(7, 1fr); gap: 0.25rem; }
+    .week-day-header { font-size: 0.6rem; padding: 0.35rem; }
+    .week-day-header .day-date { font-size: 0.95rem; }
+    .meal-slot-label { font-size: 0.45rem; }
+    .meal-slot-title { font-size: 0.6rem; }
+  }
+  @media (max-width: 768px) {
+    .week-grid { grid-template-columns: repeat(4, 1fr); }
+    .week-day { min-height: 200px; }
   }
   @media (max-width: 500px) {
-    .week-grid { grid-template-columns: 1fr; }
+    .week-grid { grid-template-columns: repeat(2, 1fr); }
     .week-day { min-height: auto; }
     .daily-hero { height: 200px; }
   }
@@ -1061,6 +1091,7 @@
       <button class="btn btn-primary" onclick="autoFillWeek()">Auto-Fill Week</button>
       <button class="btn btn-outline" onclick="clearWeek()">Clear Week</button>
     </div>
+    <div id="weekEatOutSummary"></div>
     <div class="week-grid" id="weekGrid"></div>
   </div>
 
@@ -2363,7 +2394,8 @@ function renderWeek() {
     ${eoStats.ateOutCount} of ${eoStats.totalMeals} meals eaten out
   </div>` : '';
 
-  let html = eoSummary;
+  document.getElementById('weekEatOutSummary').innerHTML = eoSummary;
+  let html = '';
   for (let d = 0; d < 7; d++) {
     const date = days[d];
     const dayKey = date.toISOString().split('T')[0];
@@ -2415,15 +2447,12 @@ function renderWeek() {
           ${imgSrc ? `<img class="meal-slot-img" src="${imgSrc}" loading="lazy">` : ''}
         </div>`;
       } else {
-        html += `<div class="week-meal-slot" onclick="pickMealForSlot('${dayKey}','${m}')"
+        html += `<div class="week-meal-slot" style="position:relative;"
           ondragover="event.preventDefault();this.classList.add('drag-over');"
           ondragleave="this.classList.remove('drag-over');"
           ondrop="event.preventDefault();this.classList.remove('drag-over');dropMeal('${dayKey}','${m}');">
           <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
-          <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.3rem;">
-            <span style="font-family:'Special Elite',cursive;font-size:0.55rem;color:var(--text-light);cursor:pointer;">+ cook</span>
-            <span style="font-family:'Special Elite',cursive;font-size:0.55rem;color:var(--red);cursor:pointer;" onclick="event.stopPropagation();var r=prompt('Where did you eat?');if(r)markAteOut('${dayKey}','${m}',r);">+ ate out</span>
-          </div>
+          <button class="meal-add-btn" onclick="event.stopPropagation();showMealChoice(this,'${dayKey}','${m}')" title="Add meal">+</button>
         </div>`;
       }
     }
@@ -2433,6 +2462,24 @@ function renderWeek() {
     </div>`;
   }
   grid.innerHTML = html;
+}
+
+function showMealChoice(btn, dayKey, meal) {
+  // Remove any existing popups
+  document.querySelectorAll('.meal-choice-popup').forEach(p => p.remove());
+  const slot = btn.closest('.week-meal-slot');
+  const popup = document.createElement('div');
+  popup.className = 'meal-choice-popup';
+  popup.innerHTML = `
+    <button onclick="event.stopPropagation();this.parentElement.remove();pickMealForSlot('${dayKey}','${meal}')">&#127860; Cook</button>
+    <button onclick="event.stopPropagation();this.parentElement.remove();var r=prompt('Where did you eat?');if(r)markAteOut('${dayKey}','${meal}',r);">&#127869; Ate Out</button>
+  `;
+  slot.appendChild(popup);
+  // Close on outside click
+  setTimeout(() => {
+    const handler = (e) => { if (!popup.contains(e.target) && e.target !== btn) { popup.remove(); document.removeEventListener('click', handler); } };
+    document.addEventListener('click', handler);
+  }, 10);
 }
 
 function dropMeal(targetDay, targetMeal) {
