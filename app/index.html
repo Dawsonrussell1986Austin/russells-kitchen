@@ -1085,6 +1085,26 @@
 
 <script>
 // ============================================
+// SUPABASE CONFIG
+// ============================================
+const SUPABASE_URL = 'https://dgkksuptsdclmzenuoma.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRna2tzdXB0c2RjbG16ZW51b21hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNTE3MDEsImV4cCI6MjA5MTYyNzcwMX0.539o7w0q89Qx8_PKIKKqQ9m9dyFxZUahAXyKoRIz8Hk';
+
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...options.headers
+    }
+  });
+  return res.json();
+}
+
+// ============================================
 // INVENTORY DATA
 // ============================================
 const INITIAL_INVENTORY = [
@@ -2079,6 +2099,43 @@ function loadWeekPlan() {
 function saveWeekPlan(plan) {
   const key = getWeekKey(weekOffset);
   localStorage.setItem(key, JSON.stringify(plan));
+  // Sync to Supabase in background
+  syncWeekToSupabase(key, plan);
+}
+
+async function syncWeekToSupabase(weekKey, plan) {
+  try {
+    // Delete existing entries for this week
+    await supaFetch(`meal_plans?week_key=eq.${weekKey}`, { method: 'DELETE' });
+    // Insert all meals
+    const rows = [];
+    for (const [dayKey, meals] of Object.entries(plan)) {
+      for (const [meal, data] of Object.entries(meals)) {
+        if (data && data.title) {
+          rows.push({ week_key: weekKey, day_key: dayKey, meal, title: data.title, ate_out: data.ateOut || false, restaurant: data.restaurant || null });
+        }
+      }
+    }
+    if (rows.length > 0) {
+      await supaFetch('meal_plans', { method: 'POST', body: JSON.stringify(rows) });
+    }
+  } catch (e) { console.log('Supabase sync error:', e); }
+}
+
+async function loadWeekFromSupabase() {
+  try {
+    const key = getWeekKey(weekOffset);
+    const data = await supaFetch(`meal_plans?week_key=eq.${key}&select=*`);
+    if (data && data.length > 0) {
+      const plan = {};
+      for (const row of data) {
+        if (!plan[row.day_key]) plan[row.day_key] = {};
+        plan[row.day_key][row.meal] = { title: row.title, ateOut: row.ate_out, restaurant: row.restaurant };
+      }
+      localStorage.setItem(key, JSON.stringify(plan));
+      renderWeek();
+    }
+  } catch (e) { console.log('Supabase load error:', e); }
 }
 
 // Ingredient budget system — tracks how many times each ingredient can be used per week
@@ -2488,6 +2545,8 @@ function saveRecipeRating(title, stars) {
   ratings[title].stars = stars;
   localStorage.setItem('recipeRatings', JSON.stringify(ratings));
   renderRecipes();
+  // Sync to Supabase
+  syncRatingToSupabase(title, stars, ratings[title].note || '');
 }
 function getRecipeNote(title) {
   const ratings = getRecipeRatings();
@@ -2498,6 +2557,29 @@ function saveRecipeNote(title, note) {
   if (!ratings[title]) ratings[title] = {};
   ratings[title].note = note;
   localStorage.setItem('recipeRatings', JSON.stringify(ratings));
+  // Sync to Supabase
+  syncRatingToSupabase(title, ratings[title].stars || 0, note);
+}
+
+async function syncRatingToSupabase(title, stars, note) {
+  try {
+    await supaFetch(`recipe_ratings?recipe_title=eq.${encodeURIComponent(title)}`, { method: 'DELETE' });
+    await supaFetch('recipe_ratings', { method: 'POST', body: JSON.stringify({ recipe_title: title, stars, note }) });
+  } catch (e) { console.log('Rating sync error:', e); }
+}
+
+async function loadRatingsFromSupabase() {
+  try {
+    const data = await supaFetch('recipe_ratings?select=*');
+    if (data && data.length > 0) {
+      const ratings = {};
+      for (const row of data) {
+        ratings[row.recipe_title] = { stars: row.stars, note: row.note };
+      }
+      localStorage.setItem('recipeRatings', JSON.stringify(ratings));
+      renderRecipes();
+    }
+  } catch (e) { console.log('Ratings load error:', e); }
 }
 function toggleNotes(id) {
   const el = document.getElementById('notes-' + id);
@@ -2570,6 +2652,9 @@ document.getElementById('recipeSearch').addEventListener('input',e=>{
 
 document.getElementById('dateStamp')&&(document.getElementById('dateStamp').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}));
 loadInventory();renderInventory();renderRecipes();renderGroceryList();renderWeek();
+// Sync from Supabase (loads cloud data in background, overrides localStorage if newer)
+loadWeekFromSupabase();
+loadRatingsFromSupabase();
 </script>
 </body>
 </html>
