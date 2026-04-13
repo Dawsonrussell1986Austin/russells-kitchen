@@ -607,6 +607,103 @@
   }
   .receipt-actions { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
 
+  /* ============ CUSTOM MEAL BUILDER ============ */
+  .meal-builder-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    z-index: 350; display: flex; align-items: center; justify-content: center;
+  }
+  .meal-builder {
+    background: var(--paper); max-width: 560px; width: 94%; max-height: 85vh;
+    display: flex; flex-direction: column; border: 3px solid var(--brown);
+  }
+  .meal-builder-header {
+    background: var(--brown); color: var(--gold-light); padding: 1rem 1.25rem;
+    font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 3px;
+    text-align: center; font-size: 0.85rem; position: relative;
+  }
+  .meal-builder-header .close-x {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--gold-light); font-size: 1.2rem;
+    cursor: pointer;
+  }
+  .meal-builder-body { flex: 1; overflow-y: auto; padding: 1rem; }
+  .mb-search {
+    width: 100%; padding: 0.6rem 0.8rem; border: 2px solid var(--border);
+    font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+    background: var(--cream); color: var(--brown); margin-bottom: 0.75rem;
+  }
+  .mb-search:focus { border-color: var(--brown); outline: none; }
+  .mb-item-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); margin-bottom: 1rem; }
+  .mb-item {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.8rem;
+    font-family: 'Courier Prime', monospace; transition: background 0.1s;
+  }
+  .mb-item:hover { background: var(--cream); }
+  .mb-item img { width: 36px; height: 28px; object-fit: cover; border-radius: 2px; border: 1px solid var(--border); }
+  .mb-item .mb-item-name { flex: 1; font-weight: 700; color: var(--brown); }
+  .mb-item .mb-item-loc {
+    font-size: 0.6rem; font-family: 'Oswald', sans-serif; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-light);
+  }
+  .mb-selected-label {
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--text-light); margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem; border-bottom: 1px dashed var(--border);
+  }
+  .mb-selected-item {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border); font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem;
+  }
+  .mb-selected-item .mb-remove {
+    background: var(--red); color: var(--cream); border: none; width: 18px; height: 18px;
+    border-radius: 50%; font-size: 0.6rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .mb-selected-item .mb-sel-name { flex: 1; color: var(--brown); font-weight: 700; }
+  .mb-selected-item .mb-need-buy {
+    font-size: 0.55rem; font-family: 'Oswald', sans-serif; text-transform: uppercase;
+    letter-spacing: 1px; background: var(--red); color: var(--cream);
+    padding: 0.1rem 0.4rem;
+  }
+  .mb-selected-item .mb-in-stock {
+    font-size: 0.55rem; font-family: 'Oswald', sans-serif; text-transform: uppercase;
+    letter-spacing: 1px; background: var(--green); color: var(--cream);
+    padding: 0.1rem 0.4rem;
+  }
+  .mb-custom-input {
+    display: flex; gap: 0.5rem; margin-bottom: 1rem;
+  }
+  .mb-custom-input input {
+    flex: 1; padding: 0.5rem 0.7rem; border: 2px solid var(--border);
+    font-family: 'Courier Prime', monospace; font-size: 0.8rem;
+    background: var(--cream);
+  }
+  .mb-custom-input input:focus { border-color: var(--brown); outline: none; }
+  .mb-custom-input button {
+    background: var(--brown); color: var(--cream); border: none;
+    padding: 0.5rem 0.8rem; font-family: 'Oswald', sans-serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+  }
+  .mb-name-row {
+    display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem;
+  }
+  .mb-name-row label {
+    font-family: 'Oswald', sans-serif; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-light); white-space: nowrap;
+  }
+  .mb-name-row input {
+    flex: 1; padding: 0.5rem 0.7rem; border: 2px solid var(--border);
+    font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+    color: var(--brown); background: var(--cream);
+  }
+  .mb-name-row input:focus { border-color: var(--brown); outline: none; }
+  .mb-footer {
+    padding: 0.75rem 1rem; border-top: 2px solid var(--brown);
+    display: flex; gap: 0.75rem; justify-content: flex-end;
+  }
+
   /* ============ GROCERY LIST ============ */
   .grocery-section { margin-bottom: 2rem; }
   .grocery-section h3 {
@@ -1028,6 +1125,7 @@
         <table class="nutrition-table" id="modalNutrition"></table>
       </div>
       <div id="modalUsedIn"></div>
+      <div id="modalAddToWeek" style="margin-top:1rem;padding-top:0.75rem;border-top:1px dashed var(--border);"></div>
     </div>
   </div>
 </div>
@@ -1849,8 +1947,52 @@ function openItemModal(idx) {
   } else {
     usedInEl.innerHTML = `<div style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--text-light);margin-top:1rem;padding-top:0.75rem;border-top:1px dashed var(--border);text-align:center;">Not used in any recipes yet</div>`;
   }
+  // Add to Week quick action
+  const addToWeekEl = document.getElementById('modalAddToWeek');
+  const weekDays = getWeekDates(weekOffset);
+  const dayNames2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const weekPlan = loadWeekPlan();
+  let addHtml = `<div style="font-family:'Oswald',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-bottom:0.5rem;">Quick Add to Week</div>`;
+  addHtml += `<div style="display:flex;gap:0.3rem;flex-wrap:wrap;">`;
+  for (const meal of ['breakfast','lunch','dinner']) {
+    addHtml += `<button class="btn btn-outline" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="closeModal();quickAddToWeek('${item.name.replace(/'/g,"\\'")}','${meal}')">${meal.charAt(0).toUpperCase()+meal.slice(1)}</button>`;
+  }
+  addHtml += `</div>`;
+  addToWeekEl.innerHTML = addHtml;
+
   document.getElementById('itemModal').classList.add('open');
 }
+
+function quickAddToWeek(itemName, meal) {
+  // Find next empty slot for this meal type this week
+  const days = getWeekDates(weekOffset);
+  const plan = loadWeekPlan();
+  const today = new Date().toISOString().split('T')[0];
+  let targetDay = null;
+  for (const d of days) {
+    const dk = d.toISOString().split('T')[0];
+    if (dk < today) continue;
+    if (!plan[dk]?.[meal]) { targetDay = dk; break; }
+    // If it's a custom meal, add to it
+    if (plan[dk][meal].custom) { targetDay = dk; break; }
+  }
+  if (!targetDay) { alert('No empty ' + meal + ' slot this week!'); return; }
+
+  const existing = plan[targetDay]?.[meal];
+  if (existing && existing.custom) {
+    // Add to existing custom meal
+    if (!existing.items.some(i => i.name === itemName)) {
+      existing.items.push({ name: itemName, inStock: true });
+      saveWeekPlan(plan);
+      renderWeek(); renderGroceryList();
+    }
+  } else {
+    // Open meal builder with this item pre-loaded
+    openMealBuilder(targetDay, meal);
+    setTimeout(() => addMealBuilderItem(itemName, true), 100);
+  }
+}
+
 function closeModal() { document.getElementById('itemModal').classList.remove('open'); }
 function openPhotoModal(src, title) {
   document.getElementById('photoModalImg').src = src;
@@ -2085,6 +2227,20 @@ function renderGroceryList() {
     for (const extra of r.extraIngredients) {
       if (!neededMap[extra]) neededMap[extra] = [];
       neededMap[extra].push(r.title);
+    }
+  }
+  // Also collect "need to buy" items from custom meals on the week plan
+  const weekPlan = loadWeekPlan();
+  for (const day of Object.values(weekPlan)) {
+    for (const slot of Object.values(day)) {
+      if (slot && slot.custom && slot.items) {
+        for (const item of slot.items) {
+          if (!item.inStock && !names.includes(item.name)) {
+            if (!neededMap[item.name]) neededMap[item.name] = [];
+            if (!neededMap[item.name].includes(slot.title)) neededMap[item.name].push(slot.title);
+          }
+        }
+      }
     }
   }
 
@@ -2443,6 +2599,18 @@ function renderWeek() {
           <div class="ate-out-badge">ATE OUT</div>
           <div class="meal-slot-title">${slot.restaurant || 'Restaurant'}</div>
         </div>`;
+      } else if (slot && slot.custom) {
+        // Custom-built meal
+        const itemNames = (slot.items||[]).map(i => i.name).join(', ');
+        const needBuy = (slot.items||[]).filter(i => !i.inStock).length;
+        html += `<div class="week-meal-slot filled" style="border-color:var(--gold);"
+          onclick="openMealBuilder('${dayKey}','${m}')">
+          <button class="meal-slot-remove" onclick="event.stopPropagation();removeMealFromWeek('${dayKey}','${m}')" title="Remove">&times;</button>
+          <div class="meal-slot-label ${m}">${mealLabels[m]}</div>
+          <div class="meal-slot-title">${slot.title}</div>
+          <div style="font-family:'Courier Prime',monospace;font-size:0.5rem;color:var(--text-light);line-height:1.4;margin-top:0.15rem;">${itemNames}</div>
+          ${needBuy > 0 ? `<div style="font-family:'Oswald',sans-serif;font-size:0.45rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-top:0.2rem;">${needBuy} item${needBuy>1?'s':''} to buy</div>` : ''}
+        </div>`;
       } else if (slot) {
         html += `<div class="week-meal-slot filled" draggable="true"
           ondragstart="dragData={day:'${dayKey}',meal:'${m}',title:'${slot.title.replace(/'/g,"\\'")}'};"
@@ -2541,7 +2709,33 @@ function openDailyView(dayKey) {
     html += `<div class="daily-meal-section">
       <div class="daily-meal-label ${m}">${mealNames[m]}</div>`;
 
-    if (slot) {
+    if (slot && slot.ateOut) {
+      html += `<div style="text-align:center;padding:2rem;">
+        <div class="ate-out-badge" style="display:inline-block;margin-bottom:0.5rem;">ATE OUT</div>
+        <div class="daily-recipe-title">${slot.restaurant || 'Restaurant'}</div>
+      </div>`;
+    } else if (slot && slot.custom) {
+      // Custom built meal
+      html += `<div class="daily-recipe-title">${slot.title}</div>
+        <div style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;">Custom meal built from your pantry</div>
+        <div style="margin-bottom:1rem;">`;
+      for (const item of (slot.items || [])) {
+        const invItem = inventory.find(i => i.name === item.name);
+        const img = invItem?.image ? `<img src="${invItem.image}" style="width:50px;height:38px;object-fit:cover;border:1px solid var(--border);border-radius:3px;">` : '';
+        const n = invItem?.nutrition;
+        if (n) totalDayCals += Math.round(n.calories);
+        html += `<div style="display:flex;gap:0.75rem;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+          ${img}
+          <div style="flex:1;">
+            <div style="font-family:'Oswald',sans-serif;font-size:0.85rem;color:var(--brown);">${item.name}</div>
+            ${n ? `<div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--text-light);">${n.calories} cal &bull; ${n.protein}g protein</div>` : ''}
+          </div>
+          ${item.inStock ? '<span style="font-size:0.55rem;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:1px;background:var(--green);color:var(--cream);padding:0.1rem 0.4rem;">In Stock</span>' : '<span style="font-size:0.55rem;font-family:Oswald,sans-serif;text-transform:uppercase;letter-spacing:1px;background:var(--red);color:var(--cream);padding:0.1rem 0.4rem;">Need to Buy</span>'}
+        </div>`;
+      }
+      html += `</div>
+        <button class="btn btn-outline" style="width:100%;" onclick="closeDailyView();openMealBuilder('${dayKey}','${m}')">Edit This Meal</button>`;
+    } else if (slot) {
       const r = RECIPES.find(x => x.title === slot.title);
       if (r) {
         const photoSlug = RECIPE_PHOTOS[r.title];
@@ -2616,6 +2810,15 @@ function pickMealForSlot(dayKey, meal) {
       </div>
       <div style="padding:0.5rem;">`;
 
+  // "Build Your Own" option at top
+  html += `<div style="display:flex;gap:0.75rem;align-items:center;padding:0.75rem;border-bottom:2px solid var(--brown);cursor:pointer;background:var(--cream);" onclick="this.closest('[style*=fixed]').remove();openMealBuilder('${dayKey}','${meal}');" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--cream)'">
+    <div style="width:60px;height:45px;background:var(--brown);display:flex;align-items:center;justify-content:center;border-radius:3px;font-size:1.5rem;">&#9997;&#65039;</div>
+    <div style="flex:1;">
+      <div style="font-family:'Oswald',sans-serif;font-size:0.9rem;color:var(--brown);text-transform:uppercase;letter-spacing:1px;">Build Your Own</div>
+      <div style="font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--text-light);">Pick items from your pantry to create a custom meal</div>
+    </div>
+  </div>`;
+
   for (const r of sorted) {
     const photoSlug = RECIPE_PHOTOS[r.title];
     const imgSrc = photoSlug ? `photos/recipes/${photoSlug}.jpg` : '';
@@ -2631,6 +2834,150 @@ function pickMealForSlot(dayKey, meal) {
   }
   html += '</div></div></div>';
   document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// ============================================
+// CUSTOM MEAL BUILDER
+// ============================================
+let mealBuilderItems = [];
+let mealBuilderTarget = null;
+
+function openMealBuilder(dayKey, meal) {
+  mealBuilderTarget = { dayKey, meal };
+  mealBuilderItems = [];
+
+  // Check if slot already has a custom meal - load its items
+  const plan = loadWeekPlan();
+  const existing = plan[dayKey]?.[meal];
+  if (existing && existing.custom && existing.items) {
+    mealBuilderItems = [...existing.items];
+  }
+
+  const mealLabels = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' };
+  const dayDate = new Date(dayKey + 'T12:00:00');
+  const dayLabel = dayDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const el = document.createElement('div');
+  el.className = 'meal-builder-overlay';
+  el.id = 'mealBuilderOverlay';
+  el.onclick = (e) => { if (e.target === el) el.remove(); };
+  el.innerHTML = `
+    <div class="meal-builder">
+      <div class="meal-builder-header">
+        Build ${mealLabels[meal] || meal} &bull; ${dayLabel}
+        <button class="close-x" onclick="document.getElementById('mealBuilderOverlay').remove()">&times;</button>
+      </div>
+      <div class="meal-builder-body">
+        <div class="mb-name-row">
+          <label>Meal Name:</label>
+          <input type="text" id="mbMealName" placeholder="e.g. Steak & Broccoli Night" value="${existing?.custom ? existing.title : ''}">
+        </div>
+        <div class="mb-selected-label">Your Plate (${mealBuilderItems.length} items)</div>
+        <div id="mbSelectedList"></div>
+        <div style="margin-top:1rem;">
+          <input type="text" class="mb-search" id="mbSearch" placeholder="Search pantry to add items..." oninput="renderMealBuilderSearch(this.value)">
+        </div>
+        <div class="mb-item-list" id="mbItemList"></div>
+        <div class="mb-custom-input">
+          <input type="text" id="mbCustomItem" placeholder="Need something not in pantry?">
+          <button onclick="addCustomMealItem()">+ Add</button>
+        </div>
+      </div>
+      <div class="mb-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('mealBuilderOverlay').remove()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveMealBuilderMeal()">Save to Week</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+  renderMealBuilderSelected();
+  renderMealBuilderSearch('');
+}
+
+function renderMealBuilderSearch(query) {
+  const el = document.getElementById('mbItemList');
+  const q = (query || '').toLowerCase();
+  const filtered = inventory.filter(i => {
+    if (q && !i.name.toLowerCase().includes(q) && !(i.brand||'').toLowerCase().includes(q)) return false;
+    return !mealBuilderItems.some(m => m.name === i.name);
+  }).slice(0, 40);
+
+  el.innerHTML = filtered.map(item => {
+    const img = item.image ? `<img src="${item.image}">` : `<div style="width:36px;height:28px;background:var(--cream);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.9rem;">${ICONS[item.category]||'📦'}</div>`;
+    return `<div class="mb-item" onclick="addMealBuilderItem('${item.name.replace(/'/g,"\\'")}', true)">
+      ${img}
+      <span class="mb-item-name">${item.name}</span>
+      <span class="mb-item-loc">${item.location}</span>
+    </div>`;
+  }).join('');
+  if (!filtered.length) el.innerHTML = `<div style="padding:1rem;text-align:center;font-family:'Special Elite',cursive;font-size:0.8rem;color:var(--text-light);">${q ? 'No matches found' : 'All items added!'}</div>`;
+}
+
+function addMealBuilderItem(name, inStock) {
+  if (mealBuilderItems.some(m => m.name === name)) return;
+  mealBuilderItems.push({ name, inStock: !!inStock });
+  renderMealBuilderSelected();
+  renderMealBuilderSearch(document.getElementById('mbSearch')?.value || '');
+}
+
+function addCustomMealItem() {
+  const input = document.getElementById('mbCustomItem');
+  const name = input.value.trim();
+  if (!name) return;
+  const inStock = inventory.some(i => i.name.toLowerCase() === name.toLowerCase());
+  addMealBuilderItem(name, inStock);
+  input.value = '';
+}
+
+function removeMealBuilderItem(idx) {
+  mealBuilderItems.splice(idx, 1);
+  renderMealBuilderSelected();
+  renderMealBuilderSearch(document.getElementById('mbSearch')?.value || '');
+}
+
+function renderMealBuilderSelected() {
+  const el = document.getElementById('mbSelectedList');
+  const label = document.querySelector('.mb-selected-label');
+  if (label) label.textContent = `Your Plate (${mealBuilderItems.length} item${mealBuilderItems.length !== 1 ? 's' : ''})`;
+  if (!mealBuilderItems.length) {
+    el.innerHTML = `<div style="padding:0.75rem;text-align:center;font-family:'Special Elite',cursive;font-size:0.8rem;color:var(--text-light);">No items yet — search above to add</div>`;
+    return;
+  }
+  el.innerHTML = mealBuilderItems.map((item, i) => `
+    <div class="mb-selected-item">
+      <button class="mb-remove" onclick="removeMealBuilderItem(${i})">&times;</button>
+      <span class="mb-sel-name">${item.name}</span>
+      ${item.inStock ? '<span class="mb-in-stock">In Stock</span>' : '<span class="mb-need-buy">Need to Buy</span>'}
+    </div>
+  `).join('');
+}
+
+function saveMealBuilderMeal() {
+  if (!mealBuilderItems.length) { alert('Add at least one item to your plate!'); return; }
+  if (!mealBuilderTarget) return;
+  const nameInput = document.getElementById('mbMealName');
+  const title = nameInput.value.trim() || mealBuilderItems.map(i => i.name).slice(0, 3).join(' + ');
+
+  const plan = loadWeekPlan();
+  if (!plan[mealBuilderTarget.dayKey]) plan[mealBuilderTarget.dayKey] = {};
+  plan[mealBuilderTarget.dayKey][mealBuilderTarget.meal] = {
+    title,
+    custom: true,
+    items: mealBuilderItems.map(i => ({ name: i.name, inStock: i.inStock }))
+  };
+  saveWeekPlan(plan);
+
+  // Auto-add "need to buy" items to grocery needed (they'll show on grocery list)
+  const dayKey = mealBuilderTarget.dayKey;
+  mealBuilderTarget = null;
+  mealBuilderItems = [];
+  document.getElementById('mealBuilderOverlay').remove();
+  renderWeek();
+  renderGroceryList();
+  // Re-open daily view if it was open
+  if (document.getElementById('dailyOverlay').classList.contains('open')) {
+    openDailyView(dayKey);
+  }
 }
 
 function selectMealForSlot(title) {
