@@ -628,6 +628,25 @@
     font-family: 'Special Elite', cursive; font-size: 0.75rem; color: var(--text-light);
     margin-top: 0.15rem;
   }
+  .ask-chef-bar {
+    background: var(--paper); border: 2px solid var(--brown); padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 1rem;
+  }
+  .ask-chef-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+  .ask-chef-title {
+    font-family: 'Oswald', sans-serif; font-size: 0.85rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--brown);
+  }
+  .ask-chef-desc {
+    font-family: 'Special Elite', cursive; font-size: 0.75rem; color: var(--text-light);
+    margin-top: 0.15rem;
+  }
+  .ask-chef-input {
+    flex: 1; padding: 0.6rem 0.75rem; border: 1.5px solid var(--brown);
+    background: var(--cream); font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+    color: var(--text); outline: none;
+  }
+  .ask-chef-input:focus { border-color: var(--gold); }
   .snap-results-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
     z-index: 350; display: flex; align-items: flex-start; justify-content: center;
@@ -1256,6 +1275,21 @@
     </div>
     <input type="file" id="snapCookFile" accept="image/*" capture="environment" style="display:none" onchange="handleSnapCook(event)">
     <div id="snapCookScanning" style="display:none;text-align:center;padding:2rem;font-family:'Special Elite',cursive;font-size:1.1rem;color:var(--brown);margin-bottom:1rem;">Looking at your ingredients<span class="dots"></span></div>
+
+    <div class="ask-chef-bar">
+      <div class="ask-chef-icon">&#127860;</div>
+      <div style="flex:1;">
+        <div class="ask-chef-title">Ask the Chef</div>
+        <div class="ask-chef-desc">Type what you're craving &mdash; I'll find the recipe and tell you what you already have</div>
+        <form id="askChefForm" onsubmit="handleAskChef(event);return false;" style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+          <input type="text" id="askChefInput" placeholder="e.g. i want a recipe for shrimp fettuccine" class="ask-chef-input" autocomplete="off">
+          <button type="submit" class="btn btn-primary" style="font-family:'Oswald',sans-serif;letter-spacing:1px;">Ask</button>
+        </form>
+      </div>
+    </div>
+    <div id="askChefThinking" style="display:none;text-align:center;padding:2rem;font-family:'Special Elite',cursive;font-size:1.1rem;color:var(--brown);margin-bottom:1rem;min-height:4rem;">
+      <div id="askChefStatus">Chef is thinking<span class="dots"></span></div>
+    </div>
 
     <div class="controls">
       <input class="search-box" type="text" placeholder="Search the menu..." id="recipeSearch">
@@ -3364,6 +3398,195 @@ function showSnapCookResults(result, photoDataUrl) {
   document.body.appendChild(overlay);
 }
 
+async function handleAskChef(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('askChefInput');
+  const query = (input.value || '').trim();
+  if (!query) return;
+  const thinking = document.getElementById('askChefThinking');
+  const statusEl = document.getElementById('askChefStatus');
+  thinking.style.display = 'block';
+
+  const chefMessages = [
+    "Chef is thinking",
+    "Asking Shepherd what he wants",
+    "Asking Eli what he wants",
+    "Asking Judah what he wants to eat",
+    "Making sure there's chips and queso for Dawson",
+    "Telling Neva she's a beautiful chef",
+    "Checking the spice rack",
+    "Flipping through the cookbook",
+    "Tasting the sauce",
+    "Preheating the oven",
+    "Whispering to the garlic",
+    "Consulting Grandma's recipes",
+    "Sharpening the knives"
+  ];
+  let msgIdx = 0;
+  statusEl.innerHTML = chefMessages[0] + '<span class="dots"></span>';
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % chefMessages.length;
+    statusEl.style.opacity = '0';
+    setTimeout(() => {
+      statusEl.innerHTML = chefMessages[msgIdx] + '<span class="dots"></span>';
+      statusEl.style.opacity = '1';
+    }, 250);
+  }, 2200);
+  statusEl.style.transition = 'opacity 0.25s';
+
+  const inventoryList = inventory.map(i => i.name).join(', ');
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `You are a world-class home chef. The user asked: "${query}"
+
+They have these items in their kitchen: ${inventoryList}
+
+Find the BEST 2-3 recipes that match their request. For each recipe include full real-world proportions, timing, and steps. For every ingredient, mark whether it is in their pantry ("have") or something they need to buy ("need").
+
+Return ONLY valid JSON (no markdown, no commentary):
+{
+  "interpretation": "one-line restatement of what they're looking for",
+  "recipes": [
+    {
+      "title": "...",
+      "description": "one-sentence hook",
+      "time": "e.g. 25 min",
+      "servings": 4,
+      "difficulty": "easy|medium|hard",
+      "ingredients": [{"name":"...","amount":"...","status":"have"},{"name":"...","amount":"...","status":"need"}],
+      "spices": ["salt","pepper"],
+      "steps": ["Step 1...","Step 2..."],
+      "chef_tip": "one pro tip"
+    }
+  ]
+}
+
+Match "have" vs "need" by checking the pantry list case-insensitively and allowing partial matches (e.g. "shrimp" matches "Jumbo Shrimp"). Be generous in matching staples like salt, pepper, olive oil, butter, garlic, onion if they appear in the pantry.` }]
+          }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+        })
+      }
+    );
+    const data = await resp.json();
+    clearInterval(msgInterval);
+    thinking.style.display = 'none';
+
+    if (data.error) { alert('Gemini error: ' + (data.error.message || 'Unknown')); return; }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) { alert('Chef couldn\'t come up with a recipe. Try rephrasing.'); return; }
+
+    const result = JSON.parse(jsonMatch[0]);
+    showAskChefResults(result, query);
+    input.value = '';
+  } catch (err) {
+    clearInterval(msgInterval);
+    thinking.style.display = 'none';
+    alert('Failed to ask chef: ' + err.message);
+  }
+}
+
+function showAskChefResults(result, query) {
+  const names = inventory.map(i => i.name.toLowerCase());
+  const haveCheck = (n) => names.some(inv => inv.includes(n.toLowerCase()) || n.toLowerCase().includes(inv));
+
+  const recipeCards = (result.recipes || []).map((r, idx) => {
+    const ingredients = r.ingredients || [];
+    // Recompute status locally in case model got it wrong
+    ingredients.forEach(i => {
+      if (!i.status) i.status = haveCheck(i.name) ? 'have' : 'need';
+    });
+    const haveCount = ingredients.filter(i => i.status === 'have').length;
+    const needCount = ingredients.filter(i => i.status === 'need').length;
+    const pct = ingredients.length ? Math.round((haveCount / ingredients.length) * 100) : 0;
+
+    const ingList = ingredients.map(i => {
+      const have = i.status === 'have';
+      return `<div style="display:flex;gap:0.5rem;align-items:baseline;padding:0.25rem 0;">
+        <span style="color:${have?'var(--green)':'#c23b22'};font-size:0.75rem;font-weight:bold;">${have?'&#10003;':'&#10007;'}</span>
+        <span style="flex:1;"><span style="font-weight:${have?'normal':'bold'};">${i.amount||''} ${i.name}</span></span>
+        <span style="font-size:0.55rem;color:${have?'var(--green)':'#c23b22'};font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:1px;">${have?'have':'need to buy'}</span>
+      </div>`;
+    }).join('');
+
+    const needList = ingredients.filter(i => i.status === 'need');
+    const shoppingBtn = needList.length ? `<button class="btn btn-outline" style="font-size:0.7rem;" onclick="addAskChefNeedsToGroceries(${JSON.stringify(needList.map(i => i.name)).replace(/"/g,'&quot;')})">Add ${needList.length} to Grocery List</button>` : '';
+
+    const spiceList = (r.spices || []).join(', ');
+    const stepsList = (r.steps || []).map(s => `<li style="margin-bottom:0.4rem;">${s}</li>`).join('');
+
+    return `<div class="snap-recipe-card">
+      <div class="src-header">Chef's Pick #${idx+1} &bull; ${pct}% in your pantry</div>
+      <div class="src-body">
+        <div class="src-title">${r.title}</div>
+        <div style="font-family:'Special Elite',cursive;font-size:0.8rem;color:var(--text-light);margin-bottom:0.5rem;">${r.description||''}</div>
+        <div class="src-meta">${r.time||''} &bull; ${r.servings||''} servings &bull; ${r.difficulty||''}</div>
+        <div class="src-ingredients">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">Ingredients (${haveCount} have / ${needCount} need):</strong>
+          ${ingList}
+        </div>
+        ${spiceList ? `<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:var(--text-light);margin-bottom:0.75rem;">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown);">Spices:</strong> ${spiceList}
+        </div>` : ''}
+        <div class="src-steps">
+          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">How to Cook:</strong>
+          <ol>${stepsList}</ol>
+        </div>
+        ${r.chef_tip ? `<div style="margin-top:0.75rem;padding:0.6rem 0.75rem;background:var(--cream);border-left:3px solid var(--gold);font-family:'Special Elite',cursive;font-size:0.8rem;"><strong>Chef's tip:</strong> ${r.chef_tip}</div>` : ''}
+      </div>
+      <div class="src-actions" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button class="btn btn-primary" style="font-size:0.7rem;" onclick="addSnapRecipeToWeek('${(r.title||'').replace(/'/g,"\\'")}')">Add to Week</button>
+        ${shoppingBtn}
+      </div>
+    </div>`;
+  }).join('');
+
+  const overlay = document.createElement('div');
+  overlay.className = 'snap-results-overlay';
+  overlay.id = 'askChefOverlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="snap-results">
+      <div class="snap-results-header">
+        Ask the Chef
+        <button class="close-x" onclick="document.getElementById('askChefOverlay').remove()">&times;</button>
+      </div>
+      <div class="snap-results-body">
+        <div style="font-family:'Special Elite',cursive;font-size:0.9rem;color:var(--brown);margin-bottom:0.25rem;">You asked:</div>
+        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:var(--text);margin-bottom:0.5rem;">&ldquo;${query}&rdquo;</div>
+        ${result.interpretation ? `<div style="font-family:'Courier Prime',monospace;font-size:0.75rem;color:var(--text-light);margin-bottom:1rem;">Chef heard: ${result.interpretation}</div>` : ''}
+        ${recipeCards}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function addAskChefNeedsToGroceries(items) {
+  if (!Array.isArray(items) || !items.length) return;
+  const list = loadExtraGroceries();
+  items.forEach(name => {
+    if (!list.some(e => e.toLowerCase() === name.toLowerCase())) list.push(name);
+  });
+  saveExtraGroceries(list);
+  alert(`Added ${items.length} item${items.length>1?'s':''} to your grocery list.`);
+}
+
+function loadExtraGroceries() {
+  try { return JSON.parse(localStorage.getItem('extraGroceries') || '[]'); } catch { return []; }
+}
+function saveExtraGroceries(list) {
+  localStorage.setItem('extraGroceries', JSON.stringify(list));
+}
+
 function addSnapRecipeToWeek(title) {
   // Find the next empty dinner slot (or lunch, or breakfast)
   const days = getWeekDates(weekOffset);
@@ -3391,7 +3614,7 @@ function addSnapRecipeToWeek(title) {
 // ============================================
 // RECEIPT OCR SCANNER (Gemini Vision)
 // ============================================
-const GEMINI_KEY = 'AIzaSyAz0G7bDI5jnSLm7SSSFcWATqmC3norGZo';
+const GEMINI_KEY = 'AIzaSyAqLi2Fe7I7upPIyDIbfhHkdOHNLhf_2JU';
 let receiptParsedItems = [];
 
 async function handleReceiptUpload(e) {
