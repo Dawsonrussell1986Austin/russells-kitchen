@@ -3497,77 +3497,180 @@ Match "have" vs "need" by checking the pantry list case-insensitively and allowi
 function showAskChefResults(result, query) {
   const names = inventory.map(i => i.name.toLowerCase());
   const haveCheck = (n) => names.some(inv => inv.includes(n.toLowerCase()) || n.toLowerCase().includes(inv));
+  const esc = (s) => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-  const recipeCards = (result.recipes || []).map((r, idx) => {
-    const ingredients = r.ingredients || [];
-    // Recompute status locally in case model got it wrong
-    ingredients.forEach(i => {
+  // Normalize ingredient status once
+  (result.recipes || []).forEach(r => {
+    (r.ingredients || []).forEach(i => {
       if (!i.status) i.status = haveCheck(i.name) ? 'have' : 'need';
     });
+  });
+
+  const recipeSections = (result.recipes || []).map((r, idx) => {
+    const ingredients = r.ingredients || [];
     const haveCount = ingredients.filter(i => i.status === 'have').length;
     const needCount = ingredients.filter(i => i.status === 'need').length;
     const pct = ingredients.length ? Math.round((haveCount / ingredients.length) * 100) : 0;
 
-    const ingList = ingredients.map(i => {
-      const have = i.status === 'have';
-      return `<div style="display:flex;gap:0.5rem;align-items:baseline;padding:0.25rem 0;">
-        <span style="color:${have?'var(--green)':'#c23b22'};font-size:0.75rem;font-weight:bold;">${have?'&#10003;':'&#10007;'}</span>
-        <span style="flex:1;"><span style="font-weight:${have?'normal':'bold'};">${i.amount||''} ${i.name}</span></span>
-        <span style="font-size:0.55rem;color:${have?'var(--green)':'#c23b22'};font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:1px;">${have?'have':'need to buy'}</span>
-      </div>`;
-    }).join('');
+    const haveItems = ingredients.filter(i => i.status === 'have').map(i =>
+      `<li><span class="amount">${esc(i.amount||'')}</span> ${esc(i.name)}</li>`
+    ).join('');
+    const needItems = ingredients.filter(i => i.status === 'need').map(i =>
+      `<li><span class="amount">${esc(i.amount||'')}</span> ${esc(i.name)}</li>`
+    ).join('');
 
-    const needList = ingredients.filter(i => i.status === 'need');
-    const shoppingBtn = needList.length ? `<button class="btn btn-outline" style="font-size:0.7rem;" onclick="addAskChefNeedsToGroceries(${JSON.stringify(needList.map(i => i.name)).replace(/"/g,'&quot;')})">Add ${needList.length} to Grocery List</button>` : '';
+    const spiceList = (r.spices || []).map(esc).join(' &bull; ');
+    const stepsList = (r.steps || []).map(s => `<li>${esc(s)}</li>`).join('');
+    const needNames = ingredients.filter(i => i.status === 'need').map(i => i.name);
+    const addWeekArgs = esc(r.title||'').replace(/'/g,"\\'");
 
-    const spiceList = (r.spices || []).join(', ');
-    const stepsList = (r.steps || []).map(s => `<li style="margin-bottom:0.4rem;">${s}</li>`).join('');
+    return `
+      <article class="recipe">
+        <header class="recipe-head">
+          <div class="eyebrow">Chef's Pick #${idx+1} &middot; ${pct}% in your pantry</div>
+          <h2>${esc(r.title)}</h2>
+          <p class="desc">${esc(r.description||'')}</p>
+          <div class="meta">
+            <span>&#128337; ${esc(r.time||'')}</span>
+            <span>&#127860; ${esc(r.servings||'')} servings</span>
+            <span>&#128170; ${esc(r.difficulty||'')}</span>
+          </div>
+        </header>
 
-    return `<div class="snap-recipe-card">
-      <div class="src-header">Chef's Pick #${idx+1} &bull; ${pct}% in your pantry</div>
-      <div class="src-body">
-        <div class="src-title">${r.title}</div>
-        <div style="font-family:'Special Elite',cursive;font-size:0.8rem;color:var(--text-light);margin-bottom:0.5rem;">${r.description||''}</div>
-        <div class="src-meta">${r.time||''} &bull; ${r.servings||''} servings &bull; ${r.difficulty||''}</div>
-        <div class="src-ingredients">
-          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">Ingredients (${haveCount} have / ${needCount} need):</strong>
-          ${ingList}
+        <div class="cols">
+          <section class="col">
+            <h3 class="have">You Have <span class="count">${haveCount}</span></h3>
+            <ul class="ing have-list">${haveItems || '<li class="empty">Nothing yet</li>'}</ul>
+          </section>
+          <section class="col">
+            <h3 class="need">Shopping List <span class="count">${needCount}</span></h3>
+            <ul class="ing need-list">${needItems || '<li class="empty">All set!</li>'}</ul>
+            ${needNames.length ? `<button class="btn-ghost" onclick='opener.addAskChefNeedsToGroceries(${JSON.stringify(needNames)});this.textContent="Added \u2713";this.disabled=true;'>Add ${needNames.length} to Grocery List</button>` : ''}
+          </section>
         </div>
-        ${spiceList ? `<div style="font-family:'Courier Prime',monospace;font-size:0.7rem;color:var(--text-light);margin-bottom:0.75rem;">
-          <strong style="font-family:'Oswald',sans-serif;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--brown);">Spices:</strong> ${spiceList}
-        </div>` : ''}
-        <div class="src-steps">
-          <strong style="font-family:'Oswald',sans-serif;font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;">How to Cook:</strong>
+
+        ${spiceList ? `<section class="spices"><h3>Spices &amp; Seasonings</h3><p>${spiceList}</p></section>` : ''}
+
+        <section class="steps">
+          <h3>Method</h3>
           <ol>${stepsList}</ol>
+        </section>
+
+        ${r.chef_tip ? `<aside class="tip"><strong>Chef's Tip &mdash;</strong> ${esc(r.chef_tip)}</aside>` : ''}
+
+        <div class="actions">
+          <button class="btn-primary" onclick='opener.addSnapRecipeToWeek("${addWeekArgs}");this.textContent="Added to Week \u2713";this.disabled=true;'>Add to The Week</button>
+          <button class="btn-ghost" onclick="window.print()">Print</button>
         </div>
-        ${r.chef_tip ? `<div style="margin-top:0.75rem;padding:0.6rem 0.75rem;background:var(--cream);border-left:3px solid var(--gold);font-family:'Special Elite',cursive;font-size:0.8rem;"><strong>Chef's tip:</strong> ${r.chef_tip}</div>` : ''}
-      </div>
-      <div class="src-actions" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-        <button class="btn btn-primary" style="font-size:0.7rem;" onclick="addSnapRecipeToWeek('${(r.title||'').replace(/'/g,"\\'")}')">Add to Week</button>
-        ${shoppingBtn}
-      </div>
-    </div>`;
+      </article>
+    `;
   }).join('');
 
-  const overlay = document.createElement('div');
-  overlay.className = 'snap-results-overlay';
-  overlay.id = 'askChefOverlay';
-  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-  overlay.innerHTML = `
-    <div class="snap-results">
-      <div class="snap-results-header">
-        Ask the Chef
-        <button class="close-x" onclick="document.getElementById('askChefOverlay').remove()">&times;</button>
-      </div>
-      <div class="snap-results-body">
-        <div style="font-family:'Special Elite',cursive;font-size:0.9rem;color:var(--brown);margin-bottom:0.25rem;">You asked:</div>
-        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:var(--text);margin-bottom:0.5rem;">&ldquo;${query}&rdquo;</div>
-        ${result.interpretation ? `<div style="font-family:'Courier Prime',monospace;font-size:0.75rem;color:var(--text-light);margin-bottom:1rem;">Chef heard: ${result.interpretation}</div>` : ''}
-        ${recipeCards}
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>${esc(result.recipes?.[0]?.title || 'Chef\u2019s Recipes')}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Oswald:wght@400;600&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:#f7f1e3; --cream:#ede2c7; --brown:#3d2817; --gold:#b8860b;
+    --green:#2d5016; --red:#a42f1a; --text:#2a1e12; --text-light:#6b5a48; --border:#c9b890;
+  }
+  * { box-sizing: border-box; }
+  html,body { margin:0; padding:0; background:var(--cream); color:var(--text); font-family:'Courier Prime',monospace; }
+  .page { max-width: 780px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  .masthead {
+    text-align:center; border-top:4px double var(--brown); border-bottom:4px double var(--brown);
+    padding: 1rem 0; margin-bottom: 2rem;
+  }
+  .masthead .kicker { font-family:'Oswald',sans-serif; letter-spacing:4px; font-size:0.75rem; text-transform:uppercase; color:var(--text-light); }
+  .masthead h1 { font-family:'Playfair Display',serif; font-size:2.2rem; margin: 0.25rem 0; color:var(--brown); }
+  .masthead .asked { font-family:'Special Elite',cursive; font-size:0.95rem; color:var(--text-light); font-style:italic; }
+  .interpretation { text-align:center; font-family:'Courier Prime',monospace; font-size:0.8rem; color:var(--text-light); margin-bottom: 2rem; }
+
+  .recipe {
+    background: var(--paper); border: 2px solid var(--brown);
+    padding: 2rem 1.75rem; margin-bottom: 2.5rem; position: relative;
+  }
+  .recipe::before {
+    content:''; position:absolute; inset:6px; border:1px solid var(--border); pointer-events:none;
+  }
+  .recipe-head { text-align:center; margin-bottom: 1.5rem; }
+  .eyebrow { font-family:'Oswald',sans-serif; letter-spacing:3px; font-size:0.7rem; text-transform:uppercase; color:var(--gold); }
+  .recipe h2 { font-family:'Playfair Display',serif; font-size:2rem; margin: 0.4rem 0 0.5rem; color:var(--brown); }
+  .recipe .desc { font-family:'Special Elite',cursive; font-size:1rem; color:var(--text-light); margin: 0 0 0.75rem; }
+  .meta { display:flex; justify-content:center; gap: 1.25rem; flex-wrap:wrap; font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; color:var(--text); }
+
+  .cols { display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+  @media (max-width: 600px) { .cols { grid-template-columns: 1fr; } }
+  .col h3 {
+    font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:3px; text-transform:uppercase;
+    border-bottom: 2px solid var(--brown); padding-bottom: 0.35rem; margin: 0 0 0.75rem;
+    display:flex; justify-content:space-between; align-items:baseline;
+  }
+  .col h3.have { color: var(--green); border-color: var(--green); }
+  .col h3.need { color: var(--red); border-color: var(--red); }
+  .count { font-size:0.7rem; color:var(--text-light); }
+  .ing { list-style:none; padding:0; margin:0; }
+  .ing li { padding: 0.35rem 0; border-bottom: 1px dashed var(--border); font-size:0.9rem; }
+  .ing li:last-child { border-bottom:none; }
+  .ing .amount { font-weight:700; color:var(--brown); margin-right: 0.4rem; }
+  .ing .empty { color:var(--text-light); font-style:italic; }
+
+  .spices { margin: 1.25rem 0; padding: 0.75rem 1rem; background: var(--cream); border-left: 3px solid var(--gold); }
+  .spices h3 { font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; margin:0 0 0.35rem; color:var(--brown); }
+  .spices p { margin:0; font-family:'Special Elite',cursive; }
+
+  .steps { margin-top: 1.5rem; }
+  .steps h3 { font-family:'Oswald',sans-serif; font-size:0.9rem; letter-spacing:3px; text-transform:uppercase; border-bottom: 2px solid var(--brown); padding-bottom: 0.35rem; margin:0 0 0.75rem; color:var(--brown); }
+  .steps ol { padding-left: 1.5rem; }
+  .steps li { margin-bottom: 0.6rem; line-height: 1.5; }
+
+  .tip { margin-top: 1.25rem; padding: 0.9rem 1rem; background:#fff8e6; border: 1px dashed var(--gold); font-family:'Special Elite',cursive; }
+
+  .actions { display:flex; gap:0.75rem; margin-top: 1.5rem; flex-wrap:wrap; }
+  .btn-primary, .btn-ghost {
+    font-family:'Oswald',sans-serif; letter-spacing:2px; text-transform:uppercase;
+    font-size: 0.75rem; padding: 0.7rem 1.2rem; cursor:pointer; border: 2px solid var(--brown);
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--brown); color: var(--paper); }
+  .btn-primary:hover:not(:disabled) { background: var(--gold); border-color: var(--gold); }
+  .btn-ghost { background: transparent; color: var(--brown); }
+  .btn-ghost:hover:not(:disabled) { background: var(--brown); color: var(--paper); }
+  button:disabled { opacity: 0.6; cursor: default; }
+
+  @media print {
+    body { background:#fff; }
+    .actions, .btn-primary, .btn-ghost { display:none !important; }
+    .recipe { border-color:#000; page-break-after: always; }
+    .recipe::before { display:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div class="kicker">Russell's Kitchen &mdash; The Chef's Desk</div>
+      <h1>Tonight's Recipe</h1>
+      <div class="asked">&ldquo;${esc(query)}&rdquo;</div>
+    </header>
+    ${result.interpretation ? `<p class="interpretation">Chef heard: ${esc(result.interpretation)}</p>` : ''}
+    ${recipeSections}
+  </div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) {
+    alert('Pop-up blocked. Please allow pop-ups for this site so the Chef can serve your recipe.');
+    return;
+  }
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
 }
 
 function addAskChefNeedsToGroceries(items) {
