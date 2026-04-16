@@ -3265,7 +3265,7 @@ async function handleSnapCook(e) {
 
     try {
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${getGeminiKey()}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3324,7 +3324,7 @@ Return ONLY valid JSON, no markdown.` },
       document.getElementById('snapCookFile').value = '';
 
       if (data.error) {
-        alert('Gemini error: ' + (data.error.message || 'Unknown'));
+        if (!handleGeminiError(data.error)) alert('Gemini error: ' + (data.error.message || 'Unknown'));
         return;
       }
 
@@ -3481,7 +3481,7 @@ async function handleAskChef(e) {
 
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${getGeminiKey()}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3521,7 +3521,7 @@ Match "have" vs "need" by checking the pantry list case-insensitively and allowi
     clearInterval(msgInterval);
     thinking.style.display = 'none';
 
-    if (data.error) { alert('Gemini error: ' + (data.error.message || 'Unknown')); return; }
+    if (data.error) { if (!handleGeminiError(data.error)) alert('Gemini error: ' + (data.error.message || 'Unknown')); return; }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -3760,7 +3760,30 @@ function addSnapRecipeToWeek(title) {
 // ============================================
 // RECEIPT OCR SCANNER (Gemini Vision)
 // ============================================
-const GEMINI_KEY = 'AIzaSyAqLi2Fe7I7upPIyDIbfhHkdOHNLhf_2JU';
+// Key is stored ONLY in the user's browser localStorage — never committed to source,
+// so Google's secret scanner can't auto-revoke it. Prompt on first AI feature use.
+function getGeminiKey() {
+  let k = localStorage.getItem('gemini_api_key') || '';
+  if (!k) {
+    k = prompt('Paste your Google Gemini API key (saved in this browser only):') || '';
+    if (k) {
+      k = k.trim();
+      localStorage.setItem('gemini_api_key', k);
+    }
+  }
+  return k;
+}
+function clearGeminiKey() { localStorage.removeItem('gemini_api_key'); }
+function handleGeminiError(err) {
+  const msg = (err && err.message) || '';
+  if (/leaked|API key not valid|expired|revoked/i.test(msg)) {
+    clearGeminiKey();
+    alert("Your Gemini key was revoked or is invalid. I've cleared it — please enter a fresh one.");
+    getGeminiKey();
+    return true;
+  }
+  return false;
+}
 let receiptParsedItems = [];
 
 async function handleReceiptUpload(e) {
@@ -3785,7 +3808,7 @@ async function handleReceiptUpload(e) {
 
     try {
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${getGeminiKey()}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3811,7 +3834,7 @@ Return ONLY a valid JSON array, no markdown, no explanation.` },
       scanning.style.display = 'none';
 
       if (data.error) {
-        alert('Gemini error: ' + (data.error.message || 'Unknown error'));
+        if (!handleGeminiError(data.error)) alert('Gemini error: ' + (data.error.message || 'Unknown error'));
         return;
       }
 
