@@ -236,6 +236,26 @@
   }
   .item-card:hover .remove-btn { opacity: 0.8; }
   .item-card .remove-btn:hover { background: var(--red); opacity: 1; }
+  .item-card.low-stock { border-color: var(--gold); border-width: 2px; }
+  .item-card.low-stock::after {
+    content: 'LOW'; position: absolute; top: 6px; left: 6px;
+    background: var(--gold); color: var(--paper);
+    font-family: 'Oswald', sans-serif; font-size: 0.6rem; font-weight: 600;
+    padding: 0.15rem 0.4rem; letter-spacing: 2px;
+    pointer-events: none; z-index: 2;
+  }
+  .item-card .stock-btn {
+    position: absolute; bottom: 6px; right: 6px;
+    background: var(--paper); border: 1.5px solid var(--brown); color: var(--brown);
+    cursor: pointer; font-size: 0.6rem;
+    padding: 0.25rem 0.5rem; font-family: 'Oswald', sans-serif;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    opacity: 0; transition: all 0.15s; z-index: 2;
+  }
+  .item-card:hover .stock-btn { opacity: 1; }
+  .item-card .stock-btn:hover { background: var(--brown); color: var(--paper); }
+  .item-card .stock-btn.low { border-color: var(--gold); color: var(--gold); background: var(--paper); opacity: 1; }
+  .item-card .stock-btn.low:hover { background: var(--gold); color: var(--paper); }
 
   /* ============ MODAL ============ */
   .modal-overlay {
@@ -2010,8 +2030,12 @@ function renderInventory(filter, search) {
     html += `<div class="category-section"><div class="category-header"><h2>${ICONS[cat]||'\uD83D\uDCE6'} ${cat}</h2><span class="count">${items.length}</span></div><div class="item-grid">`;
     for (const item of items) {
       const idx = inventory.indexOf(item); const n = item.nutrition;
-      html += `<div class="item-card" onclick="openItemModal(${idx})">
+      const lowCls = item.lowStock ? ' low-stock' : '';
+      const stockLabel = item.lowStock ? 'Used Up' : 'Mark Low';
+      const stockClass = item.lowStock ? 'stock-btn low' : 'stock-btn';
+      html += `<div class="item-card${lowCls}" onclick="openItemModal(${idx})">
         <button class="remove-btn" onclick="event.stopPropagation();removeItem(${idx})">X</button>
+        <button class="${stockClass}" onclick="event.stopPropagation();cycleStock(${idx})" title="${item.lowStock?'Used it all — remove and add to grocery list':'Running low'}">${stockLabel}</button>
         ${item.image ? `<img class="item-img" src="${item.image}" alt="${item.name}" loading="lazy" style="cursor:zoom-in;" onclick="event.stopPropagation();openPhotoModal('${item.image}','${item.name.replace(/'/g,"\\'")}')">` : `<div class="item-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--cream);">${ICONS[item.category]||'\uD83D\uDCE6'}</div>`}
         <div class="item-body">
           <div class="item-name">${item.name}</div>
@@ -2087,6 +2111,11 @@ function openItemModal(idx) {
   for (const meal of ['breakfast','lunch','dinner']) {
     addHtml += `<button class="btn btn-outline" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="closeModal();quickAddToWeek('${item.name.replace(/'/g,"\\'")}','${meal}')">${meal.charAt(0).toUpperCase()+meal.slice(1)}</button>`;
   }
+  addHtml += `</div>`;
+  addHtml += `<div style="font-family:'Oswald',sans-serif;font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-top:1rem;margin-bottom:0.5rem;">Stock Status</div>`;
+  addHtml += `<div style="display:flex;gap:0.3rem;flex-wrap:wrap;">`;
+  addHtml += `<button class="btn btn-outline" style="font-size:0.65rem;padding:0.3rem 0.6rem;${item.lowStock?'background:var(--gold);color:var(--paper);border-color:var(--gold);':''}" onclick="toggleLowStock(${idx})">${item.lowStock?'&#10003; Running Low':'Mark Running Low'}</button>`;
+  addHtml += `<button class="btn btn-outline" style="font-size:0.65rem;padding:0.3rem 0.6rem;border-color:var(--red);color:var(--red);" onclick="markItemUsedUp(${idx})">Used It All &rarr; Grocery List</button>`;
   addHtml += `</div>`;
   addToWeekEl.innerHTML = addHtml;
 
@@ -2371,6 +2400,20 @@ function renderGroceryList() {
           }
         }
       }
+    }
+  }
+
+  // Manually-added items (from "Used It All" on pantry cards and Ask the Chef "need" lists)
+  for (const extra of loadExtraGroceries()) {
+    if (!neededMap[extra]) neededMap[extra] = [];
+    if (!neededMap[extra].includes('Used it up')) neededMap[extra].push('Used it up');
+  }
+
+  // Items flagged running low
+  for (const item of inventory) {
+    if (item.lowStock) {
+      if (!neededMap[item.name]) neededMap[item.name] = [];
+      if (!neededMap[item.name].includes('Running low')) neededMap[item.name].push('Running low');
     }
   }
 
@@ -3844,6 +3887,54 @@ function resetReceiptScanner() {
 }
 
 function removeItem(idx) { if(confirm(`Remove "${inventory[idx].name}"?`)){inventory.splice(idx,1);saveInventory();renderInventory();renderRecipes();renderGroceryList();} }
+
+// Cycle pantry item stock state: fresh -> low -> used up (removes + adds to grocery list)
+function cycleStock(idx) {
+  const item = inventory[idx];
+  if (!item) return;
+  if (!item.lowStock) {
+    item.lowStock = true;
+    saveInventory();
+    renderInventory(currentFilter, document.getElementById('searchInput').value);
+    return;
+  }
+  // Already low -> mark used up: remove from pantry, add to grocery list
+  const name = item.name;
+  const list = loadExtraGroceries();
+  if (!list.some(e => e.toLowerCase() === name.toLowerCase())) list.push(name);
+  saveExtraGroceries(list);
+  inventory.splice(idx, 1);
+  saveInventory();
+  renderInventory(currentFilter, document.getElementById('searchInput').value);
+  renderRecipes();
+  renderGroceryList();
+}
+
+// Used from item modal: same final step (used up + grocery list)
+function markItemUsedUp(idx) {
+  const item = inventory[idx];
+  if (!item) return;
+  if (!confirm(`Mark "${item.name}" as used up? It'll move to your grocery list.`)) return;
+  const list = loadExtraGroceries();
+  if (!list.some(e => e.toLowerCase() === item.name.toLowerCase())) list.push(item.name);
+  saveExtraGroceries(list);
+  inventory.splice(idx, 1);
+  saveInventory();
+  closeModal();
+  renderInventory(currentFilter, document.getElementById('searchInput').value);
+  renderRecipes();
+  renderGroceryList();
+}
+
+function toggleLowStock(idx) {
+  const item = inventory[idx];
+  if (!item) return;
+  item.lowStock = !item.lowStock;
+  saveInventory();
+  renderInventory(currentFilter, document.getElementById('searchInput').value);
+  // Refresh modal buttons
+  openItemModal(idx);
+}
 function addItem() {
   const nm=document.getElementById('newName').value.trim(),br=document.getElementById('newBrand').value.trim(),
     cat=document.getElementById('newCategory').value,loc=document.getElementById('newLocation').value;
